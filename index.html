@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Олімпіадний тренажер English</title>
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Unbounded:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* Ідея макета: екзаменаційний бланк. Прохолодний папір, чорнильний текст, зелений штамп як акцент,
+   жовтий маркер для рівня складності. Одна колонка для списків, дві для роботи з текстом. */
+:root{
+  --paper:#f1f4ee; --surface:#ffffff; --ink:#17231f; --muted:#5b6963; --line:#d5dcd3;
+  --accent:#0d6b5b; --accent-ink:#ffffff; --soft:#e3eee8; --mark:#f3cf55; --mark-ink:#3d3000;
+  --good:#1c7a41; --warn:#9a5a00; --bad:#b5362a; --good-soft:#e2f2e7; --warn-soft:#fbefd6; --bad-soft:#fae4e1;
+  --font-display:'Unbounded','Golos Text',system-ui,sans-serif;
+  --font-body:'Golos Text',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --font-read:'Source Serif 4',Georgia,'Times New Roman',serif;
+  --radius:10px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#101916; --surface:#17221e; --ink:#e7eee9; --muted:#9aa9a2; --line:#2b3934;
+    --accent:#4cc0a6; --accent-ink:#04211a; --soft:#1e2f29; --mark:#dcb43a; --mark-ink:#2b2100;
+    --good:#62c98b; --warn:#e3a84f; --bad:#f08a7e; --good-soft:#183326; --warn-soft:#382c14; --bad-soft:#3b1f1c;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#101916; --surface:#17221e; --ink:#e7eee9; --muted:#9aa9a2; --line:#2b3934;
+  --accent:#4cc0a6; --accent-ink:#04211a; --soft:#1e2f29; --mark:#dcb43a; --mark-ink:#2b2100;
+  --good:#62c98b; --warn:#e3a84f; --bad:#f08a7e; --good-soft:#183326; --warn-soft:#382c14; --bad-soft:#3b1f1c;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--paper);color:var(--ink);font:16px/1.5 var(--font-body);-webkit-text-size-adjust:100%}
+h1,h2,h3{margin:0;text-wrap:balance;line-height:1.2}
+h1{font:700 26px/1.2 var(--font-display);letter-spacing:-.01em}
+h2{font:600 19px/1.25 var(--font-body)}
+h3{font:600 16px/1.3 var(--font-body)}
+p{margin:0}
+a{color:var(--accent)}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1120px;margin:0 auto;padding:20px 16px 72px;display:flex;flex-direction:column;gap:22px}
+.muted{color:var(--muted)} .small{font-size:14px} .num{font-variant-numeric:tabular-nums}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center} .row.end{justify-content:flex-end} .row.between{justify-content:space-between}
+.stack{display:flex;flex-direction:column;gap:12px}
+.grow{flex:1 1 auto;min-width:0}
+
+/* шапка */
+.top{background:var(--surface);border-bottom:1px solid var(--line)}
+.top-in{max-width:1120px;margin:0 auto;padding:10px 16px;display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center}
+.brand{font:700 15px/1 var(--font-display);background:none;border:0;padding:6px 0;cursor:pointer;display:flex;gap:8px;align-items:center}
+.brand i{font-style:normal;background:var(--accent);color:var(--accent-ink);padding:4px 7px;border-radius:5px;font-size:12px}
+.tabs{display:flex;gap:4px;flex-wrap:wrap}
+.tab{background:none;border:0;padding:8px 12px;border-radius:8px;cursor:pointer;font-weight:500;color:var(--muted)}
+.tab:hover{background:var(--soft);color:var(--ink)}
+.tab[aria-current="page"]{background:var(--soft);color:var(--accent);font-weight:600}
+.who{margin-left:auto;display:flex;gap:10px;align-items:center;font-size:14px}
+.banner{background:var(--warn-soft);border:1px solid var(--line);border-left:4px solid var(--mark);padding:10px 14px;border-radius:var(--radius);font-size:14px}
+
+/* кнопки та поля */
+.btn{background:var(--accent);color:var(--accent-ink);border:1px solid var(--accent);padding:9px 16px;border-radius:8px;font-weight:600;cursor:pointer;line-height:1.2}
+.btn:hover{filter:brightness(1.08)} .btn:disabled{opacity:.55;cursor:default}
+.btn.ghost{background:transparent;color:var(--accent);border-color:var(--line)}
+.btn.ghost:hover{background:var(--soft);filter:none}
+.btn.danger{background:var(--bad);border-color:var(--bad);color:#fff}
+.btn.sm{padding:6px 10px;font-size:14px}
+.link{background:none;border:0;padding:0;color:var(--accent);cursor:pointer;text-decoration:underline;font-size:inherit}
+label.f{display:flex;flex-direction:column;gap:5px;font-size:14px;font-weight:500}
+input[type=text],input[type=password],input[type=email],input[type=number],select,textarea{
+  background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:9px 11px;width:100%;min-width:0}
+textarea{resize:vertical;line-height:1.55}
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+
+/* картки, плитки, мітки */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px}
+.tile b{display:block;font:700 24px/1.1 var(--font-display);font-variant-numeric:tabular-nums}
+.tile span{font-size:13px;color:var(--muted)}
+.pill{display:inline-block;padding:2px 9px;border-radius:99px;font-size:13px;font-weight:600;white-space:nowrap;background:var(--soft);color:var(--ink)}
+.pill.good{background:var(--good-soft);color:var(--good)} .pill.warn{background:var(--warn-soft);color:var(--warn)} .pill.bad{background:var(--bad-soft);color:var(--bad)}
+.lvl{display:inline-block;align-self:flex-start;background:var(--mark);color:var(--mark-ink);font-size:12px;font-weight:700;padding:2px 8px;border-radius:4px;letter-spacing:.02em}
+.lvl.b{background:var(--ink);color:var(--paper)}
+.tasks{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.task{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px;display:flex;flex-direction:column;gap:10px}
+.task h3{font:600 18px/1.25 var(--font-read)}
+.task .foot{margin-top:auto;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.empty{border:1px dashed var(--line);border-radius:var(--radius);padding:26px 18px;text-align:center;color:var(--muted)}
+
+/* таблиці */
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:middle}
+th{font-weight:600;color:var(--muted);font-size:13px;white-space:nowrap;background:var(--surface)}
+tr:last-child td{border-bottom:0}
+td.c,th.c{text-align:center}
+.matrix th.t{max-width:120px;white-space:normal;font-weight:500;vertical-align:bottom;line-height:1.25}
+.cell{background:none;border:0;padding:3px 6px;border-radius:6px;cursor:pointer;font-weight:600;font-variant-numeric:tabular-nums;color:var(--ink)}
+.cell:hover{background:var(--soft)}
+code.pw{font:500 14px ui-monospace,Menlo,Consolas,monospace;background:var(--soft);padding:2px 6px;border-radius:5px}
+
+/* виконання завдання */
+.runbar{position:sticky;top:0;z-index:5;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:10px 14px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.timer{font:700 20px/1 var(--font-display);font-variant-numeric:tabular-nums;padding:6px 10px;border-radius:8px;background:var(--soft)}
+.timer.low{background:var(--bad-soft);color:var(--bad)}
+.two{display:grid;grid-template-columns:1fr;gap:18px;align-items:start}
+@media (min-width:900px){.two{grid-template-columns:minmax(0,1.1fr) minmax(0,1fr)} .two .sticky{position:sticky;top:76px;max-height:calc(100vh - 96px);overflow:auto}}
+.passage{font:400 18px/1.65 var(--font-read)}
+.passage h2{font:600 24px/1.2 var(--font-read);margin-bottom:12px}
+.passage p{margin:0 0 14px;max-width:66ch;position:relative;padding-left:26px}
+.passage p::before{content:attr(data-n);position:absolute;left:0;top:.35em;font:600 12px/1 var(--font-body);color:var(--muted)}
+.prompt{font:400 17px/1.6 var(--font-read);white-space:pre-wrap;max-width:66ch}
+.q{border-top:1px solid var(--line);padding:14px 0;display:flex;flex-direction:column;gap:8px}
+.q:first-of-type{border-top:0}
+.q .qt{font-weight:600;display:flex;gap:8px}
+.q .qt b{color:var(--accent);min-width:22px}
+.q .kind{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.opt{display:flex;gap:9px;align-items:flex-start;padding:7px 10px;border:1px solid var(--line);border-radius:8px;cursor:pointer}
+.opt:hover{background:var(--soft)} .opt input{margin-top:4px;accent-color:var(--accent)}
+.opts{display:flex;flex-direction:column;gap:6px} .opts.inline{flex-direction:row;flex-wrap:wrap}
+.q.ok{border-left:4px solid var(--good);padding-left:12px} .q.no{border-left:4px solid var(--bad);padding-left:12px}
+.ans{font-size:15px} .ans .y{color:var(--good);font-weight:600} .ans .n{color:var(--bad);font-weight:600}
+.note{font-size:14px;color:var(--muted);background:var(--soft);padding:7px 10px;border-radius:8px}
+.essay{font:400 17px/1.65 var(--font-read);white-space:pre-wrap;max-width:68ch;overflow-wrap:anywhere}
+textarea.write{font:400 17px/1.65 var(--font-read);min-height:340px}
+
+/* аналіз письма */
+.meter{height:10px;border-radius:99px;background:var(--soft);position:relative;overflow:hidden}
+.meter .zone{position:absolute;top:0;bottom:0;background:var(--good-soft);border-left:2px solid var(--good);border-right:2px solid var(--good)}
+.meter .fill{position:absolute;left:0;top:3px;bottom:3px;background:var(--ink);border-radius:99px}
+.hints{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:7px;font-size:14px}
+.hints li{display:flex;gap:8px;align-items:flex-start}
+.hints li::before{content:"";flex:0 0 10px;height:10px;border-radius:50%;margin-top:6px;background:var(--muted)}
+.hints li.ok::before{background:var(--good)} .hints li.warn::before{background:var(--warn);border-radius:2px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center}
+.stats div{background:var(--soft);border-radius:8px;padding:8px 4px}
+.stats b{display:block;font-size:19px;font-variant-numeric:tabular-nums}
+.stats span{font-size:12px;color:var(--muted)}
+.score{font:700 30px/1 var(--font-display);font-variant-numeric:tabular-nums}
+.crit{display:grid;grid-template-columns:1fr auto;gap:8px 14px;align-items:center}
+.crit select{width:74px}
+
+/* редактор */
+.qedit{border:1px solid var(--line);border-radius:var(--radius);padding:14px;display:flex;flex-direction:column;gap:10px;background:var(--paper)}
+.optedit{display:flex;gap:8px;align-items:center}
+.optedit input[type=radio]{accent-color:var(--accent);flex:0 0 auto}
+
+/* вхід */
+.auth{max-width:440px;margin:6vh auto 0;display:flex;flex-direction:column;gap:18px}
+.auth .logo{font:700 22px/1.2 var(--font-display)}
+.auth .logo i{font-style:normal;color:var(--accent)}
+
+dialog{border:1px solid var(--line);border-radius:14px;background:var(--surface);color:var(--ink);padding:22px;max-width:min(440px,calc(100vw - 32px));width:100%}
+dialog::backdrop{background:rgba(10,20,16,.5)}
+dialog .dlg-body{margin:10px 0 18px;color:var(--muted)}
+#toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:11px 18px;border-radius:10px;font-size:15px;max-width:calc(100vw - 32px);z-index:50;display:none;box-shadow:0 6px 24px rgba(0,0,0,.25)}
+#toast.err{background:var(--bad);color:#fff}
+details>summary{cursor:pointer;font-weight:600;color:var(--accent)}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+@media (max-width:520px){h1{font-size:21px} .passage{font-size:17px} .who .name{display:none}}
+</style>
+</head>
+<body>
+<div id="app"><div class="wrap"><p class="muted">Завантаження…</p></div></div>
+<dialog id="dlg"></dialog>
+<div id="toast" role="status" aria-live="polite"></div>
+<noscript><p style="padding:20px">Для роботи тренажера увімкніть JavaScript.</p></noscript>
+
+<script src="firebase-config.js"></script>
+<script src="bank.js"></script>
+<script>
+(function(){
+'use strict';
+
+/* ---------- довідники ---------- */
+const LEVELS = { A:'Шкільний / міський', B:'Обласний / всеукраїнський' };
+const KINDS = { mcq:'Вибір однієї відповіді', tfng:'True / False / Not Given', gap:'Вписати слово' };
+const KIND_CAP = { mcq:'Choose the best answer', tfng:'True / False / Not Given', gap:'Type your answer' };
+const GENRES = { essay:'Есе', letter:'Офіційний лист', article:'Стаття', review:'Відгук', other:'Інше' };
+const CRIT = [['c','Зміст і розкриття теми'],['o','Структура і зв’язність'],['v','Лексика'],['g','Граматика і правопис']];
+const TF = { T:'True', F:'False', NG:'Not Given' };
+const DOMAIN = '@students.example.com';
+const FB_VERSION = '10.12.2';
+
+/* ---------- дрібні помічники ---------- */
+const $ = (s, r) => (r || document).querySelector(s);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const LS = {
+  get(k, d){ try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch(e){ return d; } },
+  set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} },
+  del(k){ try { localStorage.removeItem(k); } catch(e){} }
+};
+const mkErr = code => { const e = new Error(code); e.code = code; return e; };
+const fmtTime = s => { s = Math.max(0, Math.floor(s)); const m = Math.floor(s/60), r = s%60; return (m<10?'0':'')+m+':'+(r<10?'0':'')+r; };
+const fmtDate = t => { try { return new Date(t).toLocaleString('uk-UA', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}); } catch(e){ return ''; } };
+const genPw = () => { const a='abcdefghjkmnpqrstuvwxyz23456789'; let s=''; for(let i=0;i<6;i++) s+=a[Math.floor(Math.random()*a.length)]; return s; };
+const plural = (n, one, few, many) => { const a = Math.abs(n) % 100, b = a % 10; return n + ' ' + (a > 10 && a < 20 ? many : b === 1 ? one : b >= 2 && b <= 4 ? few : many); };
+const normLogin = s => String(s||'').trim().toLowerCase();
+const toEmail = login => login.includes('@') ? login : login + DOMAIN;
+const normAns = s => String(s==null?'':s).trim().toLowerCase().replace(/[’`]/g,"'").replace(/\s+/g,' ').replace(/[.,;:!?]+$/,'');
+function errText(e){
+  const c = (e && e.code) || '';
+  const map = {
+    'auth/invalid-credential':'Невірний логін або пароль.', 'auth/wrong-password':'Невірний логін або пароль.',
+    'auth/user-not-found':'Невірний логін або пароль.', 'auth/invalid-email':'Перевірте логін або e-mail.',
+    'auth/email-already-in-use':'Такий логін уже зайнятий.', 'auth/weak-password':'Пароль має містити щонайменше 6 символів.',
+    'auth/network-request-failed':'Немає з’єднання з інтернетом.', 'auth/too-many-requests':'Забагато спроб. Спробуйте за кілька хвилин.',
+    'auth/operation-not-allowed':'У Firebase не ввімкнено вхід за e-mail і паролем (див. інструкцію, крок 2).',
+    'permission-denied':'Немає доступу до бази. Перевірте, чи опубліковано правила Firestore (див. інструкцію, крок 3).',
+    'unavailable':'База даних зараз недоступна. Перевірте інтернет.', 'demo/no-reset':'У демо-режимі відновлення пароля недоступне.'
+  };
+  return map[c] || ('Сталася помилка: ' + ((e && e.message) || c || 'невідома'));
+}
+let toastTimer = null;
+function toast(msg, isErr){
+  const t = $('#toast'); t.textContent = msg; t.className = isErr ? 'err' : ''; t.style.display = 'block';
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.style.display = 'none'; }, isErr ? 6000 : 3500);
+}
+function ask(title, bodyHtml, okLabel, danger){
+  return new Promise(res => {
+    const d = $('#dlg');
+    d.innerHTML = '<h3>'+esc(title)+'</h3><div class="dlg-body">'+(bodyHtml||'')+'</div><div class="row end">'+
+      '<button type="button" class="btn ghost" data-v="0">Скасувати</button>'+
+      '<button type="button" class="btn '+(danger?'danger':'')+'" data-v="1">'+esc(okLabel||'Так')+'</button></div>';
+    let done = false; const fin = v => { if(done) return; done = true; try{ d.close(); }catch(e){} res(v); };
+    d.onclick = e => { const b = e.target.closest('[data-v]'); if(b) fin(b.dataset.v === '1'); };
+    d.oncancel = () => fin(false);
+    try { d.showModal(); } catch(e){ fin(true); }
+  });
+}
+
+/* ---------- сховище: демо (у браузері) ---------- */
+function localStore(){
+  let db = LS.get('olymp_demo_v1', null) || { accounts:[], session:null, cols:{} };
+  const save = () => LS.set('olymp_demo_v1', db);
+  const col = c => (db.cols[c] = db.cols[c] || {});
+  const clone = o => JSON.parse(JSON.stringify(o));
+  const newUid = () => 'u' + Math.random().toString(36).slice(2, 12);
+  const add = (email, pw) => { if(db.accounts.some(a => a.email === email)) throw mkErr('auth/email-already-in-use'); if(String(pw).length < 6) throw mkErr('auth/weak-password'); const a = { uid:newUid(), email, pw }; db.accounts.push(a); return a; };
+  return {
+    mode:'demo',
+    async init(){},
+    isEmpty(){ return !db.accounts.length; },
+    user(){ const a = db.accounts.find(a => a.uid === db.session); return a ? { uid:a.uid, email:a.email } : null; },
+    async signUp(email, pw){ const a = add(email, pw); db.session = a.uid; save(); return a.uid; },
+    async signIn(email, pw){ const a = db.accounts.find(a => a.email === email && a.pw === pw); if(!a) throw mkErr('auth/invalid-credential'); db.session = a.uid; save(); },
+    async signOut(){ db.session = null; save(); },
+    async sendReset(){ throw mkErr('demo/no-reset'); },
+    async createAccount(email, pw){ const a = add(email, pw); save(); return a.uid; },
+    async changePassword(email, oldPw, newPw){ const a = db.accounts.find(a => a.email === email && a.pw === oldPw); if(!a) throw mkErr('auth/invalid-credential'); a.pw = newPw; save(); },
+    async deleteAccount(email, pw){ db.accounts = db.accounts.filter(a => !(a.email === email && a.pw === pw)); save(); },
+    async get(c, id){ const d = col(c)[id]; return d ? Object.assign({ id }, clone(d)) : null; },
+    async set(c, id, data){ col(c)[id] = clone(data); save(); },
+    async update(c, id, data){ if(!col(c)[id]) throw mkErr('not-found'); Object.assign(col(c)[id], clone(data)); save(); },
+    async del(c, id){ delete col(c)[id]; save(); },
+    async list(c, where){ return Object.keys(col(c)).map(id => Object.assign({ id }, clone(col(c)[id]))).filter(d => !where || d[where[0]] === where[1]); },
+    newId(){ return 't' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+  };
+}
+
+/* ---------- сховище: хмара (Firebase) ---------- */
+function loadScript(src){ return new Promise((res, rej) => { const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = () => rej(new Error('Не вдалося завантажити ' + src)); document.head.appendChild(s); }); }
+function cloudStore(cfg){
+  let auth, fs, current = null;
+  const second = async fn => {
+    const app2 = firebase.initializeApp(cfg, 'aux' + Date.now());
+    try { const a = app2.auth(); await a.setPersistence(firebase.auth.Auth.Persistence.NONE); return await fn(a); }
+    finally { try { await app2.auth().signOut(); } catch(e){} try { await app2.delete(); } catch(e){} }
+  };
+  const pack = d => Object.assign({ id:d.id }, d.data());
+  return {
+    mode:'cloud',
+    async init(){
+      const base = 'https://www.gstatic.com/firebasejs/' + FB_VERSION + '/';
+      await loadScript(base + 'firebase-app-compat.js');
+      await loadScript(base + 'firebase-auth-compat.js');
+      await loadScript(base + 'firebase-firestore-compat.js');
+      firebase.initializeApp(cfg); auth = firebase.auth(); fs = firebase.firestore();
+      await new Promise(res => { let first = true; auth.onAuthStateChanged(u => { current = u; if(first){ first = false; res(); } }); });
+    },
+    isEmpty(){ return false; },
+    user(){ const u = auth.currentUser || current; return u ? { uid:u.uid, email:u.email } : null; },
+    async signUp(email, pw){ const c = await auth.createUserWithEmailAndPassword(email, pw); return c.user.uid; },
+    async signIn(email, pw){ await auth.signInWithEmailAndPassword(email, pw); },
+    async signOut(){ await auth.signOut(); current = null; },
+    async sendReset(email){ await auth.sendPasswordResetEmail(email); },
+    createAccount(email, pw){ return second(async a => (await a.createUserWithEmailAndPassword(email, pw)).user.uid); },
+    changePassword(email, oldPw, newPw){ return second(async a => { const c = await a.signInWithEmailAndPassword(email, oldPw); await c.user.updatePassword(newPw); }); },
+    deleteAccount(email, pw){ return second(async a => { const c = await a.signInWithEmailAndPassword(email, pw); await c.user.delete(); }); },
+    async get(c, id){ const d = await fs.collection(c).doc(id).get(); return d.exists ? pack(d) : null; },
+    async set(c, id, data){ await fs.collection(c).doc(id).set(data); },
+    async update(c, id, data){ await fs.collection(c).doc(id).update(data); },
+    async del(c, id){ await fs.collection(c).doc(id).delete(); },
+    async list(c, where){ let q = fs.collection(c); if(where) q = q.where(where[0], '==', where[1]); return (await q.get()).docs.map(pack); },
+    newId(){ return fs.collection('tasks').doc().id; }
+  };
+}
+
+/* ---------- стан ---------- */
+const cfg = window.FIREBASE_CONFIG;
+const cloudOn = !!(cfg && cfg.apiKey && cfg.projectId && !/ВСТАВТЕ|YOUR_|XXXX/i.test(cfg.apiKey));
+const S = { store:null, phase:'loading', user:null, role:null, profile:null, owner:null, tab:null, screen:null,
+            tasks:[], subs:[], keys:{}, students:[], error:'' };
+const app = $('#app');
+
+const taskById = id => S.tasks.find(t => t.id === id) || null;
+const subById = id => S.subs.find(s => s.id === id) || null;
+const subFor = (taskId, uid) => subById(taskId + '_' + uid);
+const studentById = uid => S.students.find(s => s.id === uid) || null;
+const sortTasks = a => a.slice().sort((x, y) => (x.type === y.type ? 0 : x.type === 'reading' ? -1 : 1) || (x.level||'').localeCompare(y.level||'') || (x.createdAt||0) - (y.createdAt||0));
+const draftKey = taskId => 'olymp_draft_' + (S.user ? S.user.uid : '') + '_' + taskId;
+
+/* ---------- перевірка читання ---------- */
+function isRight(q, key, given){
+  if(!key || !key.answers) return null;
+  const right = key.answers[q.id];
+  if(given == null || given === '') return false;
+  if(q.kind === 'gap') return (Array.isArray(right) ? right : [right]).some(r => normAns(r) === normAns(given));
+  return String(right) === String(given);
+}
+function scoreReading(task, key, answers){
+  if(!task || !key) return null;
+  let ok = 0; const qs = task.questions || [];
+  qs.forEach(q => { if(isRight(q, key, (answers||{})[q.id])) ok++; });
+  return { ok, total: qs.length };
+}
+function showAnswer(q, v){
+  if(v == null || v === '') return '—';
+  if(q.kind === 'mcq') return (q.options || [])[Number(v)] != null ? q.options[Number(v)] : '—';
+  if(q.kind === 'tfng') return TF[v] || v;
+  return Array.isArray(v) ? v.join(' / ') : String(v);
+}
+const gradeTotal = g => g && g.scores ? CRIT.reduce((s, c) => s + (Number(g.scores[c[0]]) || 0), 0) : null;
+
+/* ---------- автоматичний аналіз письма ---------- */
+const LINKERS = ['however','moreover','furthermore','in addition','on the one hand','on the other hand','firstly','secondly','thirdly','finally','for example','for instance','therefore','consequently','as a result','in conclusion','to sum up','nevertheless','although','whereas','despite','in my opinion','in contrast','besides','thus','what is more','to begin with','all in all'];
+const STOP = new Set('the a an and or but if of to in on at for with from by as is are was were be been being it its this that these those i you he she we they me him her us them my your his our their not no so do does did have has had will would can could should may might must there here than then very more most also just about into over after before when while which who whom what where why how all any some such only own same too because them they people think thing things'.split(' '));
+const INFORMAL = ['gonna','wanna','gotta','kids','stuff','guys','okay','cool','awesome','a lot of','lots of','kind of','sort of'];
+function analyze(text, task){
+  const t = String(text || '').trim();
+  const words = t ? (t.match(/[A-Za-zÀ-ɏ]+(?:['’-][A-Za-z]+)*/g) || []) : [];
+  const paras = t ? t.split(/\n\s*\n/.test(t) ? /\n\s*\n/ : /\n+/).map(s => s.trim()).filter(Boolean) : [];
+  const sents = t ? (t.match(/[^.!?\n]+[.!?]+|[^.!?\n]+$/gm) || []).filter(s => /[A-Za-z]/.test(s)) : [];
+  const n = words.length, low = t.toLowerCase();
+  const avg = sents.length ? Math.round(n / sents.length) : 0;
+  const hints = [];
+  const min = Number(task.minWords) || 0, max = Number(task.maxWords) || 0;
+  if(min && n < min) hints.push({ s:'warn', t:'Замало слів: бракує щонайменше ' + (min - n) + '.' });
+  else if(max && n > max) hints.push({ s:'warn', t:'Забагато слів: скоротіть щонайменше на ' + (n - max) + '.' });
+  else if(min || max) hints.push({ s:'ok', t:'Обсяг у межах завдання.' });
+  const mp = Number(task.minParagraphs) || 0;
+  if(mp) hints.push(paras.length >= mp ? { s:'ok', t:'Абзаців: ' + paras.length + '. Структура поділена на частини.' } : { s:'warn', t:'Абзаців: ' + paras.length + ', потрібно щонайменше ' + mp + ' (вступ, основна частина, висновок).' });
+  const found = LINKERS.filter(l => new RegExp('\\b' + l + '\\b').test(low));
+  if(n >= 40) hints.push(found.length >= 3 ? { s:'ok', t:'Слова-зв’язки (' + found.length + '): ' + found.slice(0, 6).join(', ') + (found.length > 6 ? '…' : '') + '.' } : { s:'warn', t:'Мало слів-зв’язок (' + found.length + '). Додайте, наприклад: however, moreover, for example, to sum up.' });
+  const long = sents.filter(s => (s.match(/[A-Za-z]+/g) || []).length > 35).length;
+  if(long) hints.push({ s:'warn', t:'Дуже довгих речень (понад 35 слів): ' + long + '. Поділіть їх.' });
+  if(sents.length >= 4 && avg < 9) hints.push({ s:'warn', t:'Речення короткі (середня довжина: ' + avg + ' сл.). Поєднайте частину з них у складні.' });
+  const freq = {}; words.forEach(w => { const k = w.toLowerCase(); if(k.length >= 4 && !STOP.has(k)) freq[k] = (freq[k] || 0) + 1; });
+  const limit = Math.max(4, Math.round(n / 40));
+  const rep = Object.keys(freq).filter(k => freq[k] >= limit).sort((a, b) => freq[b] - freq[a]).slice(0, 4);
+  if(rep.length) hints.push({ s:'warn', t:'Часто повторюються: ' + rep.map(k => k + ' (' + freq[k] + ')').join(', ') + '. Доберіть синоніми.' });
+  if(task.formal){
+    const contr = t.match(/\b(?:\w+n['’]t|\w+['’](?:re|ve|ll|d|m)|(?:it|that|there|he|she|what|let|here|who)['’]s)\b/gi) || [];
+    if(contr.length) hints.push({ s:'warn', t:'Скорочення в офіційному стилі (' + contr.length + '): ' + Array.from(new Set(contr.map(c => c.toLowerCase()))).slice(0, 4).join(', ') + '. Пишіть повні форми.' });
+    const inf = INFORMAL.filter(w => new RegExp('\\b' + w + '\\b').test(low));
+    if(inf.length) hints.push({ s:'warn', t:'Розмовні слова: ' + inf.join(', ') + '. Замініть на нейтральні.' });
+  }
+  if(task.genre === 'letter' && n >= 20){
+    hints.push(/^dear\b/i.test(t) ? { s:'ok', t:'Лист починається зі звертання.' } : { s:'warn', t:'Лист має починатися зі звертання (Dear Sir or Madam, / Dear Mr Brown,).' });
+    hints.push(/yours (?:sincerely|faithfully)|(?:kind|best) regards/i.test(t) ? { s:'ok', t:'Є завершальна формула.' } : { s:'warn', t:'Додайте завершальну формулу (Yours faithfully, / Yours sincerely,).' });
+  }
+  if(/(^|[\s(])i(?=[\s'’,.!?]|$)/m.test(t)) hints.push({ s:'warn', t:'Займенник I завжди пишеться з великої літери.' });
+  if(/[.!?]\s+[a-z]/.test(t)) hints.push({ s:'warn', t:'Після крапки речення починається з великої літери.' });
+  const uniq = new Set(words.map(w => w.toLowerCase())).size;
+  return { words:n, paras:paras.length, sents:sents.length, avg, variety: n ? Math.round(uniq / n * 100) : 0, hints };
+}
+function analysisHtml(a, task){
+  const min = Number(task.minWords) || 0, max = Number(task.maxWords) || 0, span = Math.max(max * 1.3, a.words * 1.05, 50);
+  const zone = (min || max) ? '<div class="zone" style="left:'+(min/span*100)+'%;width:'+((max-min)/span*100)+'%"></div>' : '';
+  return '<div class="row between"><b class="num">'+plural(a.words, 'слово', 'слова', 'слів')+'</b><span class="muted small num">'+(min||max ? 'потрібно '+min+'–'+max : '')+'</span></div>'+
+    '<div class="meter" aria-hidden="true">'+zone+'<div class="fill" style="width:'+Math.min(100, a.words/span*100)+'%"></div></div>'+
+    '<div class="stats"><div><b>'+a.paras+'</b><span>абзаців</span></div><div><b>'+a.sents+'</b><span>речень</span></div><div><b>'+a.variety+'%</b><span>різних слів</span></div></div>'+
+    (a.hints.length ? '<ul class="hints">'+a.hints.map(h => '<li class="'+h.s+'">'+esc(h.t)+'</li>').join('')+'</ul>' : '')+
+    '<p class="muted small">Підказки автоматичні й не оцінюють зміст. Остаточну оцінку ставить учитель.</p>';
+}
+
+/* ---------- завантаження даних ---------- */
+async function loadAll(){
+  const st = S.store;
+  if(S.role === 'teacher'){
+    const r = await Promise.all([st.list('tasks'), st.list('users'), st.list('submissions'), st.list('keys')]);
+    S.tasks = sortTasks(r[0]); S.students = r[1].sort((a, b) => (a.group||'').localeCompare(b.group||'', 'uk') || (a.name||'').localeCompare(b.name||'', 'uk'));
+    S.subs = r[2]; S.keys = {}; r[3].forEach(k => { S.keys[k.id] = k; });
+  } else {
+    const r = await Promise.all([st.list('tasks', ['published', true]), st.list('submissions', ['uid', S.user.uid])]);
+    S.tasks = sortTasks(r[0]); S.subs = r[1]; S.keys = {};
+    await Promise.all(S.subs.filter(s => s.type === 'reading').map(async s => { try { const k = await st.get('keys', s.taskId); if(k) S.keys[s.taskId] = k; } catch(e){} }));
+  }
+}
+async function session(){
+  const st = S.store;
+  S.user = st.user(); S.role = null; S.profile = null; S.screen = null;
+  try { S.owner = await st.get('meta', 'owner'); }
+  catch(e){ S.phase = 'error'; S.error = errText(e); return render(); }
+  if(!S.owner){ S.phase = 'setup'; return render(); }
+  if(!S.user){ S.phase = 'login'; return render(); }
+  try {
+    if(S.owner.uid === S.user.uid){ S.role = 'teacher'; S.tab = 'rezultaty'; }
+    else { S.profile = await st.get('users', S.user.uid); if(!S.profile){ S.phase = 'noaccess'; return render(); } S.role = 'student'; S.tab = 'zavdannia'; }
+    await loadAll();
+  } catch(e){ S.phase = 'error'; S.error = errText(e); return render(); }
+  const h = (location.hash || '').slice(1);
+  if(S.role === 'teacher' && ['rezultaty','zavdannia','uchni'].includes(h)) S.tab = h;
+  S.phase = 'app'; render();
+}
+
+/* ---------- демо-дані ---------- */
+function splitTask(full){
+  const t = { type:full.type, level:full.level, minutes:Number(full.minutes)||0, title:full.title, published: full.published !== false, createdAt: full.createdAt || Date.now() };
+  if(full.type === 'reading'){
+    t.intro = full.intro || ''; t.passage = full.passage || '';
+    const answers = {}, notes = {};
+    t.questions = (full.questions || []).map((q, i) => {
+      const id = q.id || ('q' + (i + 1)); const o = { id, kind:q.kind, text:q.text };
+      if(q.kind === 'mcq') o.options = q.options.slice();
+      answers[id] = q.kind === 'gap' ? (Array.isArray(q.a) ? q.a : String(q.a||'').split(';').map(s => s.trim()).filter(Boolean)) : q.kind === 'mcq' ? Number(q.a) : q.a;
+      if(q.n) notes[id] = q.n;
+      return o;
+    });
+    return { task:t, key:{ answers, notes } };
+  }
+  Object.assign(t, { genre:full.genre || 'essay', formal:!!full.formal, prompt:full.prompt || '', minWords:Number(full.minWords)||0, maxWords:Number(full.maxWords)||0, minParagraphs:Number(full.minParagraphs)||0 });
+  return { task:t, key:null };
+}
+async function importBank(){
+  const bank = window.STARTER_BANK || []; let i = 0;
+  for(const full of bank){
+    const r = splitTask(Object.assign({}, full, { createdAt: Date.now() + (i++) }));
+    await S.store.set('tasks', full.id, r.task);
+    if(r.key) await S.store.set('keys', full.id, r.key);
+  }
+  return bank.length;
+}
+async function seedDemo(){
+  const st = S.store, now = Date.now(), day = 864e5;
+  const tUid = await st.createAccount('teacher@demo.example', 'demo123');
+  await st.set('meta', 'owner', { uid:tUid, name:'Демо-вчитель' });
+  await importBank();
+  const mk = async (name, login, group) => { const uid = await st.createAccount(login + DOMAIN, 'demo123'); await st.set('users', uid, { name, group, login, email:login + DOMAIN, pw:'demo123', createdAt:now }); return uid; };
+  const u1 = await mk('Олена Коваль', 'olena', '11-А'), u2 = await mk('Максим Гнатюк', 'maksym', '10-Б'); await mk('Ірина Савчук', 'iryna', '10-Б');
+  const E = window.DEMO_ESSAYS || {};
+  await st.set('submissions', 'starter-r1_' + u1, { uid:u1, taskId:'starter-r1', type:'reading', seconds:912, submittedAt:now - 3*day, auto:false, answers:{ q1:2, q2:0, q3:3, q4:1, q5:0, q6:'F', q7:'T', q8:'F', q9:'F', q10:'F' } });
+  await st.set('submissions', 'starter-w1_' + u1, { uid:u1, taskId:'starter-w1', type:'writing', seconds:2140, submittedAt:now - 2*day, auto:false, text:E.strong || '', grade:{ scores:{ c:4, o:5, v:3, g:4 }, comment:'Чітка структура і доречні приклади. У формальному есе уникай скорочень (doesn’t, don’t) і розмовного a lot of; спробуй many / a great number of.', at:now - day } });
+  await st.set('submissions', 'starter-r1_' + u2, { uid:u2, taskId:'starter-r1', type:'reading', seconds:1188, submittedAt:now - 2*day, auto:false, answers:{ q1:2, q2:1, q3:3, q4:1, q5:2, q6:'NG', q7:'T', q8:'T', q9:'NG', q10:'T' } });
+  await st.set('submissions', 'starter-w1_' + u2, { uid:u2, taskId:'starter-w1', type:'writing', seconds:1502, submittedAt:now - day/3, auto:false, text:E.weak || '' });
+}
+
+/* ---------- відображення: загальне ---------- */
+function header(){
+  const tabs = S.role === 'teacher' ? [['rezultaty','Результати'],['zavdannia','Завдання'],['uchni','Учні']] : [];
+  const name = S.role === 'teacher' ? (S.owner.name || 'Учитель') : (S.profile ? S.profile.name : '');
+  return '<header class="top"><div class="top-in">'+
+    '<button class="brand" data-act="home"><i>EN</i>Олімпіадний тренажер</button>'+
+    (tabs.length ? '<nav class="tabs" aria-label="Розділи">'+tabs.map(t => '<button class="tab" data-act="tab" data-tab="'+t[0]+'"'+(S.tab === t[0] && !S.screen ? ' aria-current="page"' : '')+'>'+t[1]+'</button>').join('')+'</nav>' : '')+
+    '<div class="who"><span class="name">'+esc(name)+(S.role === 'teacher' ? ' · учитель' : '')+'</span><button class="btn ghost sm" data-act="logout">Вийти</button></div>'+
+  '</div></header>';
+}
+const demoBanner = () => S.store.mode !== 'demo' ? '' : '<div class="banner"><b>Демо-режим.</b> Дані зберігаються лише в цьому браузері.' + (S.role === 'teacher' ? ' Щоб учні входили зі своїх пристроїв, підключіть безкоштовну базу Firebase за інструкцією.' : '') + '</div>';
+const lvl = l => '<span class="lvl '+(l === 'B' ? 'b' : '')+'">'+esc(LEVELS[l] || '')+'</span>';
+const back = (label) => '<div><button class="link" data-act="home">← '+esc(label || 'До списку')+'</button></div>';
+
+function render(keepScroll){
+  stopTimer();
+  let html;
+  if(S.phase === 'loading') html = '<div class="wrap"><p class="muted">Завантаження…</p></div>';
+  else if(S.phase === 'error') html = '<div class="wrap"><div class="auth"><div class="logo">Олімпіадний <i>тренажер</i></div><div class="card stack"><h2>Не вдалося відкрити тренажер</h2><p>'+esc(S.error)+'</p><div><button class="btn" data-act="reload">Спробувати ще раз</button></div></div></div></div>';
+  else if(S.phase === 'setup') html = viewSetup();
+  else if(S.phase === 'login') html = viewLogin();
+  else if(S.phase === 'noaccess') html = '<div class="wrap"><div class="auth"><div class="card stack"><h2>Обліковий запис не підключено</h2><p class="muted">Цей логін не внесено до списку учнів. Зверніться до вчителя.</p><div><button class="btn" data-act="logout">Вийти</button></div></div></div></div>';
+  else {
+    const sc = S.screen;
+    const inner = sc ? SCREENS[sc.name](sc) : (S.role === 'teacher' ? TABS[S.tab]() : studentHome());
+    html = header() + '<main class="wrap">' + demoBanner() + inner + '</main>';
+  }
+  app.innerHTML = html;
+  if(!keepScroll) window.scrollTo(0, 0);
+  const sc = S.screen;
+  if(S.phase === 'app' && sc && sc.name === 'run'){ startTimer(); if(taskById(sc.id).type === 'writing') liveAnalysis(); }
+}
+
+/* ---------- вхід і перше налаштування ---------- */
+function viewSetup(){
+  return '<div class="wrap"><div class="auth" data-enter="setup"><div class="logo">Олімпіадний <i>тренажер</i></div>'+
+    '<div class="card stack"><h2>Перше налаштування</h2><p class="muted">Створіть обліковий запис учителя. Він буде єдиним, хто керує завданнями, учнями та оцінками.</p>'+
+    '<label class="f">Ваше ім’я<input type="text" id="su-name" autocomplete="name"></label>'+
+    '<label class="f">E-mail<input type="email" id="su-email" autocomplete="email"></label>'+
+    '<label class="f">Пароль (щонайменше 6 символів)<input type="password" id="su-pw" autocomplete="new-password"></label>'+
+    '<div><button class="btn" data-act="setup">Створити кабінет учителя</button></div></div></div></div>';
+}
+function viewLogin(){
+  const demo = S.store.mode === 'demo';
+  return '<div class="wrap"><div class="auth" data-enter="login"><div class="logo">Олімпіадний <i>тренажер</i><div class="muted small" style="font:400 15px/1.4 var(--font-body);margin-top:6px">Читання і письмо англійською для 10–11 класів</div></div>'+
+    '<div class="card stack"><h2>Вхід</h2>'+
+    '<label class="f">Логін учня або e-mail учителя<input type="text" id="li-login" autocomplete="username" autocapitalize="none" spellcheck="false"></label>'+
+    '<label class="f">Пароль<input type="password" id="li-pw" autocomplete="current-password"></label>'+
+    '<div class="row between"><button class="btn" data-act="login">Увійти</button>'+(demo ? '' : '<button class="link small" data-act="resetPw">Учитель забув пароль</button>')+'</div></div>'+
+    (demo ? '<div class="card stack"><h3>Спробувати без реєстрації</h3><p class="muted small">Демо-режим із прикладами завдань і робіт. Усе зберігається лише у вашому браузері.</p><div class="row"><button class="btn ghost" data-act="demoLogin" data-who="teacher">Увійти як учитель</button><button class="btn ghost" data-act="demoLogin" data-who="olena">Увійти як учениця</button></div></div>' : '')+
+  '</div></div>';
+}
+
+/* ---------- учень: список завдань ---------- */
+function studentStats(){
+  const done = S.subs.length, rd = [], wr = []; let waiting = 0;
+  S.subs.forEach(s => {
+    if(s.type === 'reading'){ const sc = scoreReading(taskById(s.taskId), S.keys[s.taskId], s.answers); if(sc && sc.total) rd.push(sc.ok / sc.total * 100); }
+    else { const g = gradeTotal(s.grade); if(g == null) waiting++; else wr.push(g); }
+  });
+  const avg = a => a.length ? Math.round(a.reduce((x, y) => x + y, 0) / a.length * 10) / 10 : null;
+  return { done, total:S.tasks.length, rd:avg(rd), wr:avg(wr), waiting };
+}
+function statusOf(task, sub){
+  if(!sub) return LS.get(draftKey(task.id), null) ? { cls:'warn', text:'Розпочато', btn:'Продовжити' } : { cls:'', text:'Не виконано', btn:'Відкрити' };
+  if(task.type === 'reading'){ const sc = scoreReading(task, S.keys[task.id], sub.answers); return { cls:'good', text: sc ? sc.ok + ' / ' + sc.total : 'Здано', btn:'Результат' }; }
+  const g = gradeTotal(sub.grade);
+  return g == null ? { cls:'warn', text:'Очікує перевірки', btn:'Переглянути' } : { cls:'good', text: g + ' / 20', btn:'Результат' };
+}
+function taskCard(t){
+  const sub = subFor(t.id, S.user.uid), st = statusOf(t, sub);
+  const meta = t.type === 'reading' ? (t.questions || []).length + ' питань' : (GENRES[t.genre] || 'Письмо') + ' · ' + t.minWords + '–' + t.maxWords + ' слів';
+  return '<article class="task">'+lvl(t.level)+'<h3>'+esc(t.title)+'</h3><p class="muted small">'+esc(meta)+(t.minutes ? ' · ' + t.minutes + ' хв' : '')+'</p>'+
+    '<div class="foot"><span class="pill '+st.cls+' num">'+esc(st.text)+'</span><button class="btn sm '+(sub ? 'ghost' : '')+'" data-act="openTask" data-id="'+esc(t.id)+'">'+st.btn+'</button></div></article>';
+}
+function studentHome(){
+  const s = studentStats(), rd = S.tasks.filter(t => t.type === 'reading'), wr = S.tasks.filter(t => t.type === 'writing');
+  const sec = (title, list) => '<section class="stack"><h2>'+title+'</h2>'+(list.length ? '<div class="tasks">'+list.map(taskCard).join('')+'</div>' : '<div class="empty">Учитель ще не додав завдань у цей розділ.</div>')+'</section>';
+  return '<h1>Привіт, '+esc((S.profile.name || '').split(' ')[0])+'!</h1>'+
+    '<div class="tiles"><div class="tile"><b>'+s.done+' / '+s.total+'</b><span>завдань виконано</span></div>'+
+    '<div class="tile"><b>'+(s.rd == null ? '—' : Math.round(s.rd) + '%')+'</b><span>середній результат із читання</span></div>'+
+    '<div class="tile"><b>'+(s.wr == null ? '—' : s.wr)+'</b><span>середній бал за письмо з 20</span></div>'+
+    '<div class="tile"><b>'+s.waiting+'</b><span>робіт очікують перевірки</span></div></div>'+
+    sec('Читання', rd) + sec('Письмо', wr);
+}
+
+/* ---------- учень: виконання ---------- */
+const SCREENS = {};
+SCREENS.intro = sc => {
+  const t = taskById(sc.id);
+  return back()+'<div class="card stack" style="max-width:720px">'+lvl(t.level)+'<h1>'+esc(t.title)+'</h1>'+
+    '<ul class="stack" style="margin:0;padding-left:20px">'+
+    (t.minutes ? '<li>На виконання відведено <b>'+t.minutes+' хв</b>. Відлік починається після натискання кнопки і не зупиняється, якщо закрити сторінку.</li><li>Коли час вийде, роботу буде здано автоматично.</li>' : '<li>Час не обмежено.</li>')+
+    '<li>Здати роботу можна <b>лише один раз</b>.</li>'+
+    (t.type === 'reading' ? '<li>Після здачі ви одразу побачите правильні відповіді та пояснення.</li>' : '<li>Під час письма сторінка показує обсяг і автоматичні підказки. Оцінку та коментар поставить учитель.</li>')+
+    '</ul><div><button class="btn" data-act="startTask" data-id="'+esc(t.id)+'">Почати роботу</button></div></div>';
+};
+function passageHtml(t){ return '<div class="passage"><h2>'+esc(t.title)+'</h2>'+String(t.passage || '').split(/\n\s*\n/).map(s => s.trim()).filter(Boolean).map((p, i) => '<p data-n="'+(i + 1)+'">'+esc(p)+'</p>').join('')+'</div>'; }
+SCREENS.run = sc => {
+  const t = taskById(sc.id);
+  const bar = '<div class="runbar"><div class="grow"><b>'+esc(t.title)+'</b></div><span class="timer num" id="timer" title="'+(t.minutes ? 'Залишилось часу' : 'Минуло часу')+'">--:--</span><button class="btn" data-act="submit">Здати роботу</button></div>';
+  if(t.type === 'reading'){
+    const qs = (t.questions || []).map((q, i) => {
+      const v = sc.answers[q.id]; let body;
+      if(q.kind === 'mcq') body = '<div class="opts">'+q.options.map((o, j) => '<label class="opt"><input type="radio" name="'+esc(q.id)+'" value="'+j+'" data-q="'+esc(q.id)+'"'+(String(v) === String(j) ? ' checked' : '')+'><span>'+esc(o)+'</span></label>').join('')+'</div>';
+      else if(q.kind === 'tfng') body = '<div class="opts inline">'+Object.keys(TF).map(k => '<label class="opt"><input type="radio" name="'+esc(q.id)+'" value="'+k+'" data-q="'+esc(q.id)+'"'+(v === k ? ' checked' : '')+'><span>'+TF[k]+'</span></label>').join('')+'</div>';
+      else body = '<input type="text" id="g-'+esc(q.id)+'" data-q="'+esc(q.id)+'" value="'+esc(v || '')+'" autocomplete="off" autocapitalize="none" spellcheck="false" style="max-width:280px" aria-label="Відповідь на питання '+(i + 1)+'">';
+      return '<div class="q"><span class="kind">'+KIND_CAP[q.kind]+'</span><div class="qt"><b>'+(i + 1)+'.</b><span>'+esc(q.text)+'</span></div>'+body+'</div>';
+    }).join('');
+    return bar+'<div class="two"><div class="card sticky">'+passageHtml(t)+'</div><div class="card">'+(t.intro ? '<p class="muted" style="margin-bottom:8px">'+esc(t.intro)+'</p>' : '')+qs+'<div style="margin-top:14px"><button class="btn" data-act="submit">Здати роботу</button></div></div></div>';
+  }
+  return bar+'<div class="two"><div class="stack"><div class="card stack">'+lvl(t.level)+'<div class="prompt">'+esc(t.prompt)+'</div></div>'+
+    '<textarea class="write" id="essay" spellcheck="false" autocomplete="off" autocorrect="off" aria-label="Текст роботи" placeholder="Write your answer here…">'+esc(sc.text || '')+'</textarea></div>'+
+    '<aside class="card stack sticky" id="analysis" aria-live="polite"></aside></div>';
+};
+function liveAnalysis(){ const sc = S.screen, box = $('#analysis'); if(!sc || !box) return; const t = taskById(sc.id); box.innerHTML = '<h3>Перевірка під час письма</h3>' + analysisHtml(analyze(sc.text || '', t), t); }
+let timerId = null;
+function stopTimer(){ if(timerId){ clearInterval(timerId); timerId = null; } }
+function startTimer(){
+  const tick = () => {
+    const sc = S.screen, el = $('#timer'); if(!sc || sc.name !== 'run' || !el) return stopTimer();
+    const t = taskById(sc.id), elapsed = (Date.now() - sc.start) / 1000;
+    if(t.minutes > 0){ const left = t.minutes * 60 - elapsed; el.textContent = fmtTime(left); el.classList.toggle('low', left <= 120); if(left <= 0 && !sc.expired){ sc.expired = true; submitWork(true); } }
+    else el.textContent = fmtTime(elapsed);
+  };
+  tick(); timerId = setInterval(tick, 1000);
+}
+function saveDraft(){ const sc = S.screen; if(sc && sc.name === 'run') LS.set(draftKey(sc.id), { start:sc.start, answers:sc.answers, text:sc.text }); }
+async function submitWork(auto){
+  const sc = S.screen; if(!sc || sc.name !== 'run' || sc.sending) return;
+  const t = taskById(sc.id);
+  if(!auto && !sc.expired){
+    let body = 'Після здачі змінити відповіді буде неможливо.';
+    if(t.type === 'reading'){ const miss = t.questions.filter(q => sc.answers[q.id] == null || sc.answers[q.id] === '').length; if(miss) body = '<b>Без відповіді залишилось питань: '+miss+'.</b> ' + body; }
+    else { const a = analyze(sc.text, t); if(a.words < t.minWords) body = '<b>У роботі '+plural(a.words, 'слово', 'слова', 'слів')+', а потрібно щонайменше '+t.minWords+'.</b> ' + body; }
+    if(!(await ask('Здати роботу?', body, 'Здати'))) return;
+  }
+  sc.sending = true;
+  const elapsed = Math.round((Date.now() - sc.start) / 1000);
+  const sub = { uid:S.user.uid, taskId:t.id, type:t.type, seconds: t.minutes ? Math.min(elapsed, t.minutes * 60) : elapsed, submittedAt:Date.now(), auto: !!(auto || sc.expired) };
+  if(t.type === 'reading') sub.answers = Object.assign({}, sc.answers); else sub.text = sc.text || '';
+  const id = t.id + '_' + S.user.uid;
+  try { await S.store.set('submissions', id, sub); }
+  catch(e){ sc.sending = false; toast(errText(e) + ' Натисніть «Здати роботу» ще раз.', true); return; }
+  S.subs = S.subs.filter(s => s.id !== id).concat([Object.assign({ id }, sub)]);
+  if(t.type === 'reading'){ try { const k = await S.store.get('keys', t.id); if(k) S.keys[t.id] = k; } catch(e){} }
+  LS.del(draftKey(t.id));
+  S.screen = { name:'sub', id }; render();
+  if(sub.auto) toast('Час вийшов. Роботу здано автоматично.');
+}
+
+/* ---------- перегляд зданої роботи (учень і вчитель) ---------- */
+SCREENS.sub = sc => {
+  const sub = subById(sc.id); if(!sub) return back()+'<div class="empty">Роботу не знайдено.</div>';
+  const t = taskById(sub.taskId), teacher = S.role === 'teacher', stu = teacher ? studentById(sub.uid) : S.profile;
+  const head = back(teacher ? 'До результатів' : 'До списку')+'<div class="stack" style="gap:6px">'+(t ? lvl(t.level) : '')+'<h1>'+esc(t ? t.title : 'Завдання приховано')+'</h1>'+
+    '<p class="muted small">'+(teacher ? esc((stu ? stu.name : 'Учня видалено') + (stu && stu.group ? ', ' + stu.group : '')) + ' · ' : '')+'здано '+fmtDate(sub.submittedAt)+' · витрачено '+fmtTime(sub.seconds || 0)+(sub.auto ? ' · здано автоматично, бо вийшов час' : '')+'</p></div>';
+  const tools = teacher ? '<div class="row"><button class="btn ghost sm" data-act="retake" data-id="'+esc(sub.id)+'">Дозволити повторну спробу</button></div>' : '';
+  if(!t) return head+'<div class="empty">Учитель приховав це завдання, тому подробиці недоступні.</div>'+tools;
+  if(sub.type === 'reading'){
+    const key = S.keys[t.id], scr = scoreReading(t, key, sub.answers);
+    const qs = t.questions.map((q, i) => {
+      const given = (sub.answers || {})[q.id], r = isRight(q, key, given), right = key && key.answers ? key.answers[q.id] : null;
+      return '<div class="q '+(r === true ? 'ok' : r === false ? 'no' : '')+'"><div class="qt"><b>'+(i + 1)+'.</b><span>'+esc(q.text)+'</span></div>'+
+        '<div class="ans">Відповідь: <span class="'+(r === true ? 'y' : r === false ? 'n' : '')+'">'+esc(showAnswer(q, given))+'</span>'+(r === false ? ' · правильно: <span class="y">'+esc(showAnswer(q, right))+'</span>' : '')+'</div>'+
+        (key && key.notes && key.notes[q.id] ? '<div class="note">'+esc(key.notes[q.id])+'</div>' : '')+'</div>';
+    }).join('');
+    return head+'<div class="card row between"><div><div class="score">'+(scr ? scr.ok + ' / ' + scr.total : '—')+'</div><span class="muted small">правильних відповідей'+(scr && scr.total ? ' · ' + Math.round(scr.ok / scr.total * 100) + '%' : '')+'</span></div>'+tools+'</div>'+
+      '<div class="two"><div class="card sticky">'+passageHtml(t)+'</div><div class="card">'+qs+'</div></div>';
+  }
+  const a = analyze(sub.text, t), g = sub.grade, total = gradeTotal(g);
+  let gradeBox;
+  if(teacher){
+    gradeBox = '<div class="card stack"><h3>Оцінювання</h3><div class="crit">'+CRIT.map(c => '<label for="gr-'+c[0]+'">'+c[1]+'</label><select id="gr-'+c[0]+'">'+[0,1,2,3,4,5].map(n => '<option value="'+n+'"'+(g && Number(g.scores[c[0]]) === n ? ' selected' : '')+'>'+n+'</option>').join('')+'</select>').join('')+'</div>'+
+      '<label class="f">Коментар для учня<textarea id="gr-comment" rows="5">'+esc(g ? g.comment : '')+'</textarea></label>'+
+      '<div class="row between"><span class="muted small">'+(g ? 'Оцінено ' + fmtDate(g.at) + ' · ' + total + ' / 20' : 'Кожен критерій: 0–5 балів, разом 20')+'</span><button class="btn" data-act="saveGrade" data-id="'+esc(sub.id)+'">'+(g ? 'Оновити оцінку' : 'Зберегти оцінку')+'</button></div></div>';
+  } else if(g){
+    gradeBox = '<div class="card stack"><div><div class="score">'+total+' / 20</div><span class="muted small">оцінка вчителя</span></div><div class="crit">'+CRIT.map(c => '<span>'+c[1]+'</span><b class="num">'+(Number(g.scores[c[0]]) || 0)+' / 5</b>').join('')+'</div>'+(g.comment ? '<div class="note" style="white-space:pre-wrap;font-size:15px;color:var(--ink)">'+esc(g.comment)+'</div>' : '')+'</div>';
+  } else gradeBox = '<div class="card"><span class="pill warn">Очікує перевірки</span><p class="muted small" style="margin-top:8px">Оцінка й коментар з’являться тут, коли вчитель перевірить роботу.</p></div>';
+  return head+'<div class="two"><div class="stack"><div class="card stack"><details><summary>Умова завдання</summary><div class="prompt" style="margin-top:10px">'+esc(t.prompt)+'</div></details><div class="essay">'+(sub.text ? esc(sub.text) : '<span class="muted">Роботу здано порожньою.</span>')+'</div></div>'+tools+'</div>'+
+    '<div class="stack">'+gradeBox+'<div class="card stack"><h3>Автоматична перевірка</h3>'+analysisHtml(a, t)+'</div></div></div>';
+};
+
+/* ---------- учитель: результати ---------- */
+const TABS = {};
+function cellFor(t, sub){
+  if(!sub) return '<span class="muted">·</span>';
+  if(t.type === 'reading'){ const s = scoreReading(t, S.keys[t.id], sub.answers); return '<button class="cell" data-act="openSub" data-id="'+esc(sub.id)+'">'+(s ? s.ok + '/' + s.total : 'здано')+'</button>'; }
+  const g = gradeTotal(sub.grade);
+  return g == null ? '<button class="cell" data-act="openSub" data-id="'+esc(sub.id)+'"><span class="pill warn">перевірити</span></button>' : '<button class="cell" data-act="openSub" data-id="'+esc(sub.id)+'">'+g+'/20</button>';
+}
+TABS.rezultaty = () => {
+  const queue = S.subs.filter(s => s.type === 'writing' && !s.grade).sort((a, b) => a.submittedAt - b.submittedAt);
+  const head = '<div class="row between"><h1>Результати</h1><button class="btn ghost sm" data-act="refresh">Оновити дані</button></div>'+
+    '<div class="tiles"><div class="tile"><b>'+S.students.length+'</b><span>учнів</span></div><div class="tile"><b>'+S.tasks.filter(t => t.published).length+'</b><span>опублікованих завдань</span></div><div class="tile"><b>'+S.subs.length+'</b><span>зданих робіт</span></div><div class="tile"><b>'+queue.length+'</b><span>письмових робіт очікують перевірки</span></div></div>';
+  if(!S.tasks.length || !S.students.length) return head+'<div class="card stack"><h2>З чого почати</h2><ol class="stack" style="margin:0;padding-left:22px"><li>У розділі <button class="link" data-act="tab" data-tab="zavdannia">Завдання</button> додайте стартовий банк або створіть власні завдання.</li><li>У розділі <button class="link" data-act="tab" data-tab="uchni">Учні</button> створіть логіни й паролі для учнів.</li><li>Надішліть учням адресу цього сайту та їхні дані для входу.</li></ol></div>';
+  const q = queue.length ? '<section class="stack"><h2>Очікують перевірки</h2><div class="scroll"><table><tbody>'+queue.map(s => { const st = studentById(s.uid), t = taskById(s.taskId); return '<tr><td><b>'+esc(st ? st.name : 'Учня видалено')+'</b> <span class="muted">'+esc(st ? st.group || '' : '')+'</span></td><td>'+esc(t ? t.title : '—')+'</td><td class="muted num">'+fmtDate(s.submittedAt)+'</td><td class="c"><button class="btn sm" data-act="openSub" data-id="'+esc(s.id)+'">Перевірити</button></td></tr>'; }).join('')+'</tbody></table></div></section>' : '';
+  const cols = S.tasks;
+  const matrix = '<section class="stack"><h2>Усі учні й завдання</h2><p class="muted small">Читання: правильних відповідей. Письмо: бал із 20. Натисніть на результат, щоб відкрити роботу.</p><div class="scroll"><table class="matrix"><thead><tr><th>Учень</th>'+cols.map(t => '<th class="t c">'+(t.type === 'reading' ? 'Чит.' : 'Письмо')+'<br>'+esc(t.title)+'</th>').join('')+'</tr></thead><tbody>'+
+    S.students.map(st => '<tr><td style="white-space:nowrap"><b>'+esc(st.name)+'</b> <span class="muted">'+esc(st.group || '')+'</span></td>'+cols.map(t => '<td class="c num">'+cellFor(t, subFor(t.id, st.id))+'</td>').join('')+'</tr>').join('')+'</tbody></table></div></section>';
+  return head + q + matrix;
+};
+
+/* ---------- учитель: завдання ---------- */
+TABS.zavdannia = () => {
+  const hasBank = (window.STARTER_BANK || []).some(b => taskById(b.id));
+  const head = '<div class="row between"><h1>Завдання</h1><div class="row"><button class="btn" data-act="newTask" data-type="reading">Нове: читання</button><button class="btn" data-act="newTask" data-type="writing">Нове: письмо</button>'+(hasBank ? '' : '<button class="btn ghost" data-act="importBank">Додати стартовий банк</button>')+'</div></div>';
+  if(!S.tasks.length) return head+'<div class="empty stack" style="align-items:center"><p>Завдань ще немає. Стартовий банк містить 4 тексти для читання і 4 теми письма для 10–11 класів.</p><button class="btn" data-act="importBank">Додати стартовий банк</button></div>';
+  return head+'<div class="scroll"><table><thead><tr><th>Назва</th><th>Вид</th><th>Рівень</th><th class="c">Час</th><th class="c">Здано</th><th>Учням</th><th></th></tr></thead><tbody>'+
+    S.tasks.map(t => '<tr><td><b>'+esc(t.title)+'</b></td><td>'+(t.type === 'reading' ? 'Читання, ' + (t.questions || []).length + ' пит.' : esc(GENRES[t.genre] || 'Письмо'))+'</td><td>'+lvl(t.level)+'</td><td class="c num">'+(t.minutes ? t.minutes + ' хв' : '—')+'</td><td class="c num">'+S.subs.filter(s => s.taskId === t.id).length+'</td>'+
+      '<td><button class="cell" data-act="togglePub" data-id="'+esc(t.id)+'" title="Натисніть, щоб змінити"><span class="pill '+(t.published ? 'good' : '')+'">'+(t.published ? 'Відкрито' : 'Приховано')+'</span></button></td>'+
+      '<td style="white-space:nowrap"><button class="btn ghost sm" data-act="editTask" data-id="'+esc(t.id)+'">Редагувати</button> <button class="btn ghost sm" data-act="delTask" data-id="'+esc(t.id)+'">Видалити</button></td></tr>').join('')+'</tbody></table></div>';
+};
+function blankQ(kind){ return kind === 'mcq' ? { kind, text:'', options:['','','',''], a:0, n:'' } : kind === 'tfng' ? { kind, text:'', a:'T', n:'' } : { kind, text:'', a:'', n:'' }; }
+function draftFrom(t){
+  if(!t) return null;
+  const d = JSON.parse(JSON.stringify(t));
+  if(d.type === 'reading'){ const k = S.keys[t.id] || { answers:{}, notes:{} }; d.questions = (d.questions || []).map(q => { const a = k.answers[q.id]; return Object.assign({}, q, { a: q.kind === 'gap' ? (Array.isArray(a) ? a.join('; ') : (a || '')) : a, n: (k.notes || {})[q.id] || '' }); }); }
+  return d;
+}
+SCREENS.edit = sc => {
+  const d = sc.draft, rd = d.type === 'reading';
+  const common = '<div class="fields"><label class="f" style="grid-column:1/-1">Назва<input type="text" id="ed-title" data-bind="title" value="'+esc(d.title)+'"></label>'+
+    '<label class="f">Рівень<select id="ed-level" data-bind="level">'+Object.keys(LEVELS).map(k => '<option value="'+k+'"'+(d.level === k ? ' selected' : '')+'>'+LEVELS[k]+' етап</option>').join('')+'</select></label>'+
+    '<label class="f">Час, хв (0 — без обмеження)<input type="number" id="ed-min" min="0" max="240" data-bind="minutes" data-num value="'+esc(d.minutes)+'"></label>'+
+    '<label class="f">Доступ<select id="ed-pub" data-bind="published" data-bool><option value="1"'+(d.published ? ' selected' : '')+'>Відкрито для учнів</option><option value="0"'+(d.published ? '' : ' selected')+'>Приховано</option></select></label></div>';
+  let body;
+  if(rd){
+    body = '<label class="f">Інструкція англійською (над питаннями)<input type="text" id="ed-intro" data-bind="intro" value="'+esc(d.intro)+'"></label>'+
+      '<label class="f">Текст для читання (абзаци відокремлюйте порожнім рядком)<textarea id="ed-passage" rows="12" data-bind="passage" style="font-family:var(--font-read)">'+esc(d.passage)+'</textarea></label>'+
+      '<h2>Питання</h2>'+d.questions.map((q, i) => {
+        let ans;
+        if(q.kind === 'mcq') ans = '<div class="stack" style="gap:6px"><span class="small muted">Варіанти. Позначте правильний.</span>'+q.options.map((o, j) => '<div class="optedit"><input type="radio" name="ed-a-'+i+'" id="ed-a-'+i+'-'+j+'" value="'+j+'" data-bind="questions.'+i+'.a" data-num'+(Number(q.a) === j ? ' checked' : '')+' aria-label="Правильний варіант '+(j + 1)+'"><input type="text" id="ed-o-'+i+'-'+j+'" data-bind="questions.'+i+'.options.'+j+'" value="'+esc(o)+'" aria-label="Варіант '+(j + 1)+'">'+(q.options.length > 2 ? '<button class="btn ghost sm" data-act="delOpt" data-i="'+i+'" data-j="'+j+'" aria-label="Прибрати варіант">×</button>' : '')+'</div>').join('')+(q.options.length < 6 ? '<div><button class="link small" data-act="addOpt" data-i="'+i+'">+ варіант</button></div>' : '')+'</div>';
+        else if(q.kind === 'tfng') ans = '<label class="f">Правильна відповідь<select id="ed-tf-'+i+'" data-bind="questions.'+i+'.a" style="max-width:200px">'+Object.keys(TF).map(k => '<option value="'+k+'"'+(q.a === k ? ' selected' : '')+'>'+TF[k]+'</option>').join('')+'</select></label>';
+        else ans = '<label class="f">Правильна відповідь (кілька допустимих варіантів через крапку з комою)<input type="text" id="ed-g-'+i+'" data-bind="questions.'+i+'.a" value="'+esc(q.a)+'"></label>';
+        return '<div class="qedit"><div class="row between"><b>Питання '+(i + 1)+'</b><div class="row"><select id="ed-k-'+i+'" data-kind="'+i+'" aria-label="Тип питання" style="width:auto">'+Object.keys(KINDS).map(k => '<option value="'+k+'"'+(q.kind === k ? ' selected' : '')+'>'+KINDS[k]+'</option>').join('')+'</select><button class="btn ghost sm" data-act="delQ" data-i="'+i+'">Видалити</button></div></div>'+
+          '<label class="f">Формулювання<input type="text" id="ed-t-'+i+'" data-bind="questions.'+i+'.text" value="'+esc(q.text)+'"></label>'+ans+
+          '<label class="f">Пояснення для учня (показується після здачі)<input type="text" id="ed-n-'+i+'" data-bind="questions.'+i+'.n" value="'+esc(q.n)+'"></label></div>';
+      }).join('')+'<div class="row"><button class="btn ghost" data-act="addQ" data-kind="mcq">+ Вибір відповіді</button><button class="btn ghost" data-act="addQ" data-kind="tfng">+ True / False / Not Given</button><button class="btn ghost" data-act="addQ" data-kind="gap">+ Вписати слово</button></div>';
+  } else {
+    body = '<div class="fields"><label class="f">Жанр<select id="ed-genre" data-bind="genre">'+Object.keys(GENRES).map(k => '<option value="'+k+'"'+(d.genre === k ? ' selected' : '')+'>'+GENRES[k]+'</option>').join('')+'</select></label>'+
+      '<label class="f">Стиль<select id="ed-formal" data-bind="formal" data-bool><option value="1"'+(d.formal ? ' selected' : '')+'>Офіційний (без скорочень)</option><option value="0"'+(d.formal ? '' : ' selected')+'>Нейтральний</option></select></label>'+
+      '<label class="f">Слів від<input type="number" id="ed-minw" min="0" data-bind="minWords" data-num value="'+esc(d.minWords)+'"></label>'+
+      '<label class="f">Слів до<input type="number" id="ed-maxw" min="0" data-bind="maxWords" data-num value="'+esc(d.maxWords)+'"></label>'+
+      '<label class="f">Абзаців щонайменше<input type="number" id="ed-minp" min="0" max="12" data-bind="minParagraphs" data-num value="'+esc(d.minParagraphs)+'"></label></div>'+
+      '<label class="f">Умова завдання англійською<textarea id="ed-prompt" rows="9" data-bind="prompt" style="font-family:var(--font-read)">'+esc(d.prompt)+'</textarea></label>';
+  }
+  return back('До завдань')+'<h1>'+(sc.id ? 'Редагування' : 'Нове завдання')+': '+(rd ? 'читання' : 'письмо')+'</h1><div class="card stack">'+common+body+'</div>'+
+    '<div class="row end"><button class="btn ghost" data-act="home">Скасувати</button><button class="btn" data-act="saveTask">Зберегти завдання</button></div>';
+};
+function setPath(obj, path, val){ const p = path.split('.'); let o = obj; for(let i = 0; i < p.length - 1; i++) o = o[p[i]]; o[p[p.length - 1]] = val; }
+function validateDraft(d){
+  if(!String(d.title || '').trim()) return 'Вкажіть назву завдання.';
+  if(d.type === 'reading'){
+    if(!String(d.passage || '').trim()) return 'Додайте текст для читання.';
+    if(!d.questions.length) return 'Додайте хоча б одне питання.';
+    for(let i = 0; i < d.questions.length; i++){
+      const q = d.questions[i], n = 'Питання ' + (i + 1) + ': ';
+      if(!String(q.text || '').trim()) return n + 'немає формулювання.';
+      if(q.kind === 'mcq'){ if(q.options.some(o => !String(o).trim())) return n + 'заповніть усі варіанти або приберіть зайві.'; if(!(Number(q.a) >= 0 && Number(q.a) < q.options.length)) return n + 'позначте правильний варіант.'; }
+      if(q.kind === 'gap' && !String(q.a || '').trim()) return n + 'вкажіть правильну відповідь.';
+    }
+  } else {
+    if(!String(d.prompt || '').trim()) return 'Додайте умову завдання.';
+    if(Number(d.maxWords) && Number(d.minWords) > Number(d.maxWords)) return 'Мінімум слів більший за максимум.';
+  }
+  return '';
+}
+
+/* ---------- учитель: учні ---------- */
+TABS.uchni = () => {
+  const form = '<div class="card stack" data-enter="addStudent"><h2>Додати учня</h2><div class="fields">'+
+    '<label class="f">Прізвище та ім’я<input type="text" id="st-name" autocomplete="off"></label>'+
+    '<label class="f">Клас або група<input type="text" id="st-group" autocomplete="off" placeholder="11-А"></label>'+
+    '<label class="f">Логін (латиницею)<input type="text" id="st-login" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="koval.olena"></label>'+
+    '<label class="f">Пароль<input type="text" id="st-pw" autocomplete="off" value="'+genPw()+'"></label></div>'+
+    '<div><button class="btn" data-act="addStudent">Додати учня</button></div></div>';
+  const list = S.students.length ? '<div class="scroll"><table><thead><tr><th>Учень</th><th>Клас</th><th>Логін</th><th>Пароль</th><th class="c">Здано робіт</th><th></th></tr></thead><tbody>'+
+    S.students.map(s => '<tr><td><b>'+esc(s.name)+'</b></td><td>'+esc(s.group || '')+'</td><td><code class="pw">'+esc(s.login)+'</code></td><td><code class="pw">'+esc(s.pw)+'</code></td><td class="c num">'+S.subs.filter(x => x.uid === s.id).length+'</td>'+
+      '<td style="white-space:nowrap"><button class="btn ghost sm" data-act="newPw" data-id="'+esc(s.id)+'">Новий пароль</button> <button class="btn ghost sm" data-act="delStudent" data-id="'+esc(s.id)+'">Видалити</button></td></tr>').join('')+'</tbody></table></div>'
+    : '<div class="empty">Учнів ще немає. Додайте першого у формі вище.</div>';
+  return '<h1>Учні</h1>'+form+'<p class="muted small">Учні входять на цьому ж сайті за логіном і паролем із таблиці. Паролі видно лише вам.</p>'+list;
+};
+
+/* ---------- дії ---------- */
+const val = id => { const el = document.getElementById(id); return el ? el.value : ''; };
+const ACT = {
+  reload(){ location.reload(); },
+  async setup(){
+    const name = val('su-name').trim(), email = normLogin(val('su-email')), pw = val('su-pw');
+    if(!name || !email.includes('@')) return toast('Вкажіть ім’я та e-mail.', true);
+    if(pw.length < 6) return toast('Пароль має містити щонайменше 6 символів.', true);
+    const uid = await S.store.signUp(email, pw);
+    await S.store.set('meta', 'owner', { uid, name });
+    await session();
+  },
+  async login(){
+    const login = normLogin(val('li-login')), pw = val('li-pw');
+    if(!login || !pw) return toast('Введіть логін і пароль.', true);
+    await S.store.signIn(toEmail(login), pw); await session();
+  },
+  async demoLogin(el){ const who = el.dataset.who; await S.store.signIn(who === 'teacher' ? 'teacher@demo.example' : who + DOMAIN, 'demo123'); await session(); },
+  async resetPw(){
+    const login = normLogin(val('li-login'));
+    if(!login.includes('@')) return toast('Введіть свій e-mail у поле логіна й натисніть ще раз. Учням пароль змінює вчитель.', true);
+    await S.store.sendReset(login); toast('Лист для відновлення пароля надіслано на ' + login + '.');
+  },
+  async logout(){ if(S.screen && S.screen.name === 'run') saveDraft(); await S.store.signOut(); try { history.replaceState(null, '', location.pathname + location.search); } catch(e){} await session(); },
+  async home(){
+    const sc = S.screen;
+    if(sc && sc.name === 'run'){ saveDraft(); if(!(await ask('Вийти із завдання?', 'Відповіді збережено на цьому пристрої, але відлік часу триває.', 'Вийти'))) return; }
+    if(sc && sc.name === 'edit' && sc.dirty && !(await ask('Закрити без збереження?', 'Зміни в завданні буде втрачено.', 'Закрити', true))) return;
+    S.screen = null; render();
+  },
+  tab(el){ S.tab = el.dataset.tab; S.screen = null; try { location.hash = S.tab; } catch(e){} render(); },
+  async refresh(){ await loadAll(); render(true); toast('Дані оновлено.'); },
+  openTask(el){
+    const id = el.dataset.id, t = taskById(id); if(!t) return;
+    const sub = subFor(id, S.user.uid);
+    if(sub){ S.screen = { name:'sub', id:sub.id }; return render(); }
+    const d = LS.get(draftKey(id), null);
+    S.screen = d && d.start ? { name:'run', id, start:d.start, answers:d.answers || {}, text:d.text || '' } : { name:'intro', id };
+    render();
+  },
+  startTask(el){ S.screen = { name:'run', id:el.dataset.id, start:Date.now(), answers:{}, text:'' }; saveDraft(); render(); },
+  async submit(){ await submitWork(false); },
+  openSub(el){ S.screen = { name:'sub', id:el.dataset.id }; render(); },
+  async saveGrade(el){
+    const sub = subById(el.dataset.id); if(!sub) return;
+    const scores = {}; CRIT.forEach(c => { scores[c[0]] = Number(val('gr-' + c[0])) || 0; });
+    const grade = { scores, comment:val('gr-comment').trim(), at:Date.now() };
+    await S.store.update('submissions', sub.id, { grade }); sub.grade = grade;
+    S.screen = null; S.tab = 'rezultaty'; render(); toast('Оцінку збережено. Учень побачить її у своєму кабінеті.');
+  },
+  async retake(el){
+    if(!(await ask('Дозволити повторну спробу?', 'Поточну роботу учня буде видалено без можливості відновлення.', 'Видалити роботу', true))) return;
+    await S.store.del('submissions', el.dataset.id); S.subs = S.subs.filter(s => s.id !== el.dataset.id);
+    S.screen = null; render(); toast('Роботу видалено. Учень може виконати завдання знову.');
+  },
+  async importBank(){ const n = await importBank(); await loadAll(); render(); toast('Додано завдань: ' + n + '.'); },
+  newTask(el){
+    const type = el.dataset.type;
+    const d = type === 'reading' ? { type, title:'', level:'A', minutes:25, published:true, intro:'', passage:'', questions:[blankQ('mcq')] }
+      : { type, title:'', level:'A', minutes:40, published:true, genre:'essay', formal:true, prompt:'', minWords:150, maxWords:200, minParagraphs:4 };
+    S.screen = { name:'edit', id:null, draft:d, dirty:false }; render();
+  },
+  editTask(el){ const t = taskById(el.dataset.id); if(!t) return; S.screen = { name:'edit', id:t.id, draft:draftFrom(t), dirty:false }; render(); },
+  addQ(el){ S.screen.draft.questions.push(blankQ(el.dataset.kind)); S.screen.dirty = true; render(true); },
+  delQ(el){ S.screen.draft.questions.splice(Number(el.dataset.i), 1); S.screen.dirty = true; render(true); },
+  addOpt(el){ S.screen.draft.questions[Number(el.dataset.i)].options.push(''); S.screen.dirty = true; render(true); },
+  delOpt(el){ const q = S.screen.draft.questions[Number(el.dataset.i)], j = Number(el.dataset.j); q.options.splice(j, 1); if(Number(q.a) === j) q.a = 0; else if(Number(q.a) > j) q.a = Number(q.a) - 1; S.screen.dirty = true; render(true); },
+  async saveTask(){
+    const sc = S.screen, d = sc.draft, bad = validateDraft(d); if(bad) return toast(bad, true);
+    const old = sc.id ? taskById(sc.id) : null, id = sc.id || S.store.newId();
+    const full = Object.assign({}, d, { createdAt: old ? old.createdAt : Date.now() });
+    if(d.type === 'reading') full.questions = d.questions.map((q, i) => Object.assign({}, q, { id: q.id || ('q' + Date.now().toString(36) + i) }));
+    const r = splitTask(full);
+    r.task.title = r.task.title.trim();
+    await S.store.set('tasks', id, r.task);
+    if(r.key) await S.store.set('keys', id, r.key);
+    await loadAll(); S.screen = null; S.tab = 'zavdannia'; render(); toast('Завдання збережено.');
+  },
+  async delTask(el){
+    const t = taskById(el.dataset.id); if(!t) return;
+    const subs = S.subs.filter(s => s.taskId === t.id);
+    if(!(await ask('Видалити завдання?', '«' + esc(t.title) + '»' + (subs.length ? ' і зданих робіт до нього: <b>' + subs.length + '</b>.' : '.') + ' Відновити буде неможливо.', 'Видалити', true))) return;
+    for(const s of subs) await S.store.del('submissions', s.id);
+    await S.store.del('tasks', t.id); if(t.type === 'reading') await S.store.del('keys', t.id);
+    await loadAll(); render(true); toast('Завдання видалено.');
+  },
+  async togglePub(el){ const t = taskById(el.dataset.id); if(!t) return; await S.store.update('tasks', t.id, { published: !t.published }); t.published = !t.published; render(true); },
+  async addStudent(){
+    const name = val('st-name').trim(), group = val('st-group').trim(), login = normLogin(val('st-login')), pw = val('st-pw').trim();
+    if(!name) return toast('Вкажіть прізвище та ім’я учня.', true);
+    if(!/^[a-z0-9][a-z0-9._-]{2,29}$/.test(login)) return toast('Логін: 3–30 символів, латинські літери, цифри, крапка або дефіс.', true);
+    if(pw.length < 6) return toast('Пароль має містити щонайменше 6 символів.', true);
+    const email = login + DOMAIN, uid = await S.store.createAccount(email, pw);
+    await S.store.set('users', uid, { name, group, login, email, pw, createdAt:Date.now() });
+    await loadAll(); render(true); toast('Учня додано: ' + login + ' / ' + pw);
+  },
+  async newPw(el){
+    const s = studentById(el.dataset.id); if(!s) return;
+    const pw = genPw();
+    if(!(await ask('Змінити пароль?', 'Учень ' + esc(s.name) + ' отримає новий пароль: <code class="pw">' + pw + '</code>. Старий перестане діяти.', 'Змінити'))) return;
+    await S.store.changePassword(s.email, s.pw, pw); await S.store.update('users', s.id, { pw }); s.pw = pw; render(true); toast('Новий пароль: ' + pw);
+  },
+  async delStudent(el){
+    const s = studentById(el.dataset.id); if(!s) return;
+    const subs = S.subs.filter(x => x.uid === s.id);
+    if(!(await ask('Видалити учня?', esc(s.name) + (subs.length ? ' і зданих робіт: <b>' + subs.length + '</b>.' : '.') + ' Відновити буде неможливо.', 'Видалити', true))) return;
+    try { await S.store.deleteAccount(s.email, s.pw); } catch(e){}
+    for(const x of subs) await S.store.del('submissions', x.id);
+    await S.store.del('users', s.id); await loadAll(); render(true); toast('Учня видалено.');
+  }
+};
+let busy = false;
+async function run(name, el){
+  if(busy || !ACT[name]) return; busy = true;
+  const btn = el && el.tagName === 'BUTTON' && el.classList.contains('btn') ? el : null; if(btn) btn.disabled = true;
+  try { await ACT[name](el); } catch(e){ console.error(e); toast(errText(e), true); }
+  finally { busy = false; if(btn && btn.isConnected) btn.disabled = false; }
+}
+document.addEventListener('click', e => { const el = e.target.closest('[data-act]'); if(el && app.contains(el)){ e.preventDefault(); run(el.dataset.act, el); } });
+document.addEventListener('keydown', e => { if(e.key !== 'Enter' || e.target.tagName !== 'INPUT') return; const box = e.target.closest('[data-enter]'); if(box){ e.preventDefault(); run(box.dataset.enter, null); } });
+function onField(e){
+  const el = e.target, sc = S.screen; if(!sc) return;
+  if(sc.name === 'run'){
+    if(el.dataset.q){ if(el.type === 'radio'){ if(el.checked) sc.answers[el.dataset.q] = isNaN(Number(el.value)) ? el.value : Number(el.value); } else sc.answers[el.dataset.q] = el.value; saveDraft(); }
+    else if(el.id === 'essay'){ sc.text = el.value; saveDraft(); liveAnalysis(); }
+    return;
+  }
+  if(sc.name === 'edit'){
+    if(el.dataset.kind != null){ if(e.type !== 'change') return; const i = Number(el.dataset.kind), old = sc.draft.questions[i], q = blankQ(el.value); q.text = old.text; q.n = old.n; if(old.id) q.id = old.id; sc.draft.questions[i] = q; sc.dirty = true; return render(true); }
+    if(el.dataset.bind){
+      if(el.type === 'radio' && !el.checked) return;
+      let v = el.value; if('num' in el.dataset) v = Number(v) || 0; if('bool' in el.dataset) v = v === '1';
+      setPath(sc.draft, el.dataset.bind, v); sc.dirty = true;
+    }
+  }
+}
+document.addEventListener('input', onField);
+document.addEventListener('change', onField);
+window.addEventListener('hashchange', () => { const h = (location.hash || '').slice(1); if(S.phase === 'app' && S.role === 'teacher' && !S.screen && ['rezultaty','zavdannia','uchni'].includes(h) && h !== S.tab){ S.tab = h; render(); } });
+window.addEventListener('beforeunload', () => { if(S.screen && S.screen.name === 'run') saveDraft(); });
+
+/* ---------- запуск ---------- */
+(async function boot(){
+  try {
+    S.store = cloudOn ? cloudStore(cfg) : localStore();
+    await S.store.init();
+    if(S.store.mode === 'demo' && S.store.isEmpty()) await seedDemo();
+    await session();
+  } catch(e){ console.error(e); S.phase = 'error'; S.error = errText(e); if(!S.store) S.store = localStore(); render(); }
+})();
+})();
+</script>
+</body>
+</html>
