@@ -2,7 +2,7 @@
    Поля питання: kind (mcq | tfng | gap), text, options, a (правильна відповідь), n (пояснення для учня). */
 window.STARTER_BANK = [
   {
-    id: 'starter-r1', type: 'reading', level: 'A', minutes: 20, title: 'The Repair Café',
+    id: 'starter-r1', vocab: [{"w": "to mend", "t": "лагодити, ремонтувати", "ex": "People had simply forgotten that objects can be mended."}, {"w": "landfill", "t": "сміттєзвалище", "ex": "two tonnes of things that did not end up in landfill"}, {"w": "spare parts", "t": "запчастини", "ex": "usually because spare parts are no longer produced"}, {"w": "to be encouraged to", "t": "отримувати заохочення (до чогось)", "ex": "they are encouraged to hold the screwdriver themselves"}, {"w": "to guarantee", "t": "гарантувати", "ex": "Nothing is guaranteed."}, {"w": "duty", "t": "обов’язок", "ex": "opening every week would turn a pleasure into a duty"}, {"w": "to turn up", "t": "приходити, з’являтися", "ex": "Nineteen people turned up to the first meeting."}], type: 'reading', level: 'A', minutes: 20, title: 'The Repair Café',
     intro: 'Read the article. For questions 1–5 choose the best answer. For questions 6–10 decide if the statement is True, False or Not Given.',
     passage: `On the first Saturday of every month, the community hall in Millbrook smells of coffee and hot solder. Long tables fill up with broken toasters, torn jackets, silent radios and bicycles with bent wheels. This is the Repair Café, where volunteers fix things for free and, more importantly, show their owners how to do it.
 
@@ -29,7 +29,7 @@ The town council has recently offered the café a permanent room. The volunteers
     ]
   },
   {
-    id: 'starter-r2', type: 'reading', level: 'A', minutes: 25, title: 'The Night Train',
+    id: 'starter-r2', vocab: [{"w": "compartment", "t": "купе", "ex": "The compartment was already half asleep when she found it."}, {"w": "bunk", "t": "спальна полиця", "ex": "a narrow bunk and three strangers"}, {"w": "to reserve something for", "t": "приберігати щось для", "ex": "with the care most people reserve for babies"}, {"w": "bar", "t": "такт (у музиці)", "ex": "a mistake in the eleventh bar"}, {"w": "conductor", "t": "провідник (у потязі)", "ex": "The conductor will offer it in ten minutes."}, {"w": "entrance exam", "t": "вступний іспит", "ex": "the music school entrance exam"}], type: 'reading', level: 'A', minutes: 25, title: 'The Night Train',
     intro: 'Read the story. Questions 1–5: choose the best answer. Questions 6–9: complete each sentence with ONE word from the text. Questions 10–12: True, False or Not Given.',
     passage: `Mira had never travelled alone before, and the night train to Lviv was not the place she would have chosen to begin. Her aunt had promised to meet her at the station at six in the morning; until then there were nine hours, a narrow bunk and three strangers.
 
@@ -58,7 +58,7 @@ Later, lying in the dark, Mira noticed that the wheels kept a steady rhythm, fou
     ]
   },
   {
-    id: 'starter-r3', type: 'reading', level: 'B', minutes: 30, title: 'Arriving Without Travelling',
+    id: 'starter-r3', vocab: [{"w": "bargain", "t": "вигідна угода", "ex": "what an extraordinary bargain it offers"}, {"w": "shortcut", "t": "коротший шлях", "ex": "can afterwards sketch the route and suggest shortcuts"}, {"w": "to sketch", "t": "накреслити, зробити ескіз", "ex": "can afterwards sketch the route"}, {"w": "to acquire", "t": "набувати, здобувати", "ex": "a skill that is not practised is not acquired"}, {"w": "to inhabit", "t": "жити, мешкати (в)", "ex": "a city one passes through rather than inhabits"}, {"w": "on purpose", "t": "навмисно", "ex": "for taking the long way home on purpose"}, {"w": "to consult", "t": "звертатися (до джерела), радитися", "ex": "an internal model of space that can be consulted"}], type: 'reading', level: 'B', minutes: 30, title: 'Arriving Without Travelling',
     intro: 'Read the essay. Questions 1–6: choose the best answer. Questions 7–10: True, False or Not Given. Questions 11–13: complete each sentence with ONE word from the text.',
     passage: `Ask anyone under thirty how to get to a place they visit every week and there is a fair chance they will reach for their phone. Satellite navigation has become so ordinary that we rarely notice what an extraordinary bargain it offers: perfect directions in exchange for never needing to know where we are.
 
@@ -88,7 +88,7 @@ None of this is an argument for throwing the phone into the river. It is an argu
     ]
   },
   {
-    id: 'starter-r4', type: 'reading', level: 'B', minutes: 30, title: 'The Second-Language Self',
+    id: 'starter-r4', vocab: [{"w": "anecdote", "t": "історія з життя, випадок", "ex": "such remarks were treated as charming anecdotes"}, {"w": "to dismiss", "t": "відкидати, не брати до уваги", "ex": "the results are harder to dismiss"}, {"w": "to be swayed by", "t": "піддаватися впливу", "ex": "less swayed by the way a choice is worded"}, {"w": "consequences", "t": "наслідки", "ex": "judge an action by its consequences"}, {"w": "disgust", "t": "огида", "ex": "the feeling of disgust it provokes"}, {"w": "lullaby", "t": "колискова", "ex": "in the middle of quarrels, lullabies and scoldings"}, {"w": "mutually exclusive", "t": "взаємовиключні", "ex": "The two explanations are not mutually exclusive."}], type: 'reading', level: 'B', minutes: 30, title: 'The Second-Language Self',
     intro: 'Read the article. Questions 1–6: choose the best answer. Questions 7–10: True, False or Not Given. Questions 11–13: complete each sentence with ONE word from the text.',
     passage: `Bilingual people often report a curious sensation: they feel like slightly different persons depending on the language they are speaking. One is bolder in English, more polite in Japanese, funnier in the language of one's childhood. For a long time such remarks were treated as charming anecdotes. In recent decades, though, psychologists have begun to test them, and the results are harder to dismiss.
 
@@ -115,6 +115,53 @@ Still, the practical implications are intriguing. Diplomats, doctors and judges 
       { kind: 'gap', text: 'The most widely accepted explanation for the effect is emotional ______.', a: ['distance'], n: 'Абзац 3.' },
       { kind: 'gap', text: 'A second language is usually acquired in a ______.', a: ['classroom'], n: 'Абзац 3.' },
       { kind: 'gap', text: 'According to the second theory, a foreign language forces the mind to change ______.', a: ['gear'], n: 'Абзац 4.' }
+    ]
+  },
+  {
+    id: 'starter-u1', type: 'use', level: 'A', minutes: 15, title: 'Why We Yawn',
+    intro: 'Questions 1–8: read the text and think of ONE word which best fits each gap. Questions 9–14: use the word in capitals to form a word that fits the gap.',
+    passage: `Everybody yawns, but scientists still cannot agree (1) ______ why we do it. For a long time, people believed that yawning brought more oxygen (2) ______ the brain. However, experiments have shown that breathing extra oxygen does not make people yawn any (3) ______ often.
+
+A more recent theory suggests that yawning helps to cool the brain down. When the brain gets too warm, it works less efficiently, (4) ______ a deep breath of cooler air may help it to stay alert. This may be the reason (5) ______ we often yawn when we are tired or bored.
+
+Yawning is also contagious. Simply reading about it can make you yawn, and you might (6) ______ be yawning right now! Interestingly, people are more likely to "catch" a yawn from a friend (7) ______ from a stranger, which suggests that empathy plays a part. Even dogs can catch yawns (8) ______ their owners.`,
+    vocab: [
+      {w:'to yawn', t:'позіхати', ex:'Everybody yawns, but scientists still cannot agree why we do it.'},
+      {w:'contagious', t:'заразний', ex:'Yawning is also contagious.'},
+      {w:'alert', t:'пильний, бадьорий', ex:'may help it to stay alert'},
+      {w:'empathy', t:'емпатія, співпереживання', ex:'which suggests that empathy plays a part'},
+      {w:'efficiently', t:'ефективно', ex:'it works less efficiently'}
+    ],
+    questions: [
+      { kind: 'gap', text: 'Gap (1)', a: ['on', 'about'], n: 'agree on / agree about — дійти згоди щодо чогось.' },
+      { kind: 'gap', text: 'Gap (2)', a: ['to', 'into'], n: 'bring something to the brain — доставляти до мозку.' },
+      { kind: 'gap', text: 'Gap (3)', a: ['more'], n: 'not … any more often — не частіше.' },
+      { kind: 'gap', text: 'Gap (4)', a: ['so', 'and'], n: 'Сполучник наслідку: so (тому).' },
+      { kind: 'gap', text: 'Gap (5)', a: ['why', 'that'], n: 'the reason why — причина, чому.' },
+      { kind: 'gap', text: 'Gap (6)', a: ['even', 'well', 'already'], n: 'you might even be yawning — можливо, ти навіть позіхаєш.' },
+      { kind: 'gap', text: 'Gap (7)', a: ['than'], n: 'more likely … than — порівняння.' },
+      { kind: 'gap', text: 'Gap (8)', a: ['from'], n: 'catch something from somebody — «підхопити» від когось.' },
+      { kind: 'wf', text: 'Yawning is a completely ______ reaction that we cannot control.', word: 'VOLUNTARY', a: ['involuntary'], n: 'Заперечний префікс in-: involuntary — мимовільний.' },
+      { kind: 'wf', text: 'Scientists have carried out several ______ into why animals yawn.', word: 'INVESTIGATE', a: ['investigations'], n: 'Після several потрібен іменник у множині.' },
+      { kind: 'wf', text: 'The results of the study were rather ______.', word: 'SURPRISE', a: ['surprising'], n: 'Прикметник на -ing описує те, що викликає почуття.' },
+      { kind: 'wf', text: 'Lack of sleep can seriously affect your ______.', word: 'CONCENTRATE', a: ['concentration'], n: 'Після your потрібен іменник.' },
+      { kind: 'wf', text: 'Many people consider yawning in public ______.', word: 'POLITE', a: ['impolite'], n: 'Заперечний префікс im- перед p: impolite.' },
+      { kind: 'wf', text: 'Children often yawn when they feel ______.', word: 'BORE', a: ['bored'], n: 'Прикметник на -ed описує почуття людини.' }
+    ]
+  },
+  {
+    id: 'starter-u2', type: 'use', level: 'B', minutes: 15, title: 'Key Word Transformations',
+    intro: 'Complete the second sentence so that it has a similar meaning to the first sentence, using the word given. Do not change the word given. Use between three and six words, including the word given.',
+    passage: '',
+    questions: [
+      { kind: 'kwt', text: "I haven't seen Tom for three years.", word: 'LAST', stem: 'I ______ three years ago.', a: ['last saw Tom', 'last saw him'], n: 'Present Perfect з for → Past Simple з ago: last saw.' },
+      { kind: 'kwt', text: "It wasn't necessary for you to bring food.", word: 'NEED', stem: 'You ______ food.', a: ["didn't need to bring", 'did not need to bring', "needn't have brought", 'need not have brought'], n: "needn't have done / didn't need to do — не було потреби." },
+      { kind: 'kwt', text: '"I\'m sorry I broke your phone," said Mark.', word: 'APOLOGISED', stem: 'Mark ______ my phone.', a: ['apologised for breaking', 'apologised for having broken'], n: 'apologise for + -ing.' },
+      { kind: 'kwt', text: 'They say the castle was built in the 12th century.', word: 'SAID', stem: 'The castle ______ in the 12th century.', a: ['is said to have been built'], n: 'Безособовий пасив: is said to have been done (дія в минулому).' },
+      { kind: 'kwt', text: 'I regret not studying harder for the exam.', word: 'WISH', stem: 'I ______ harder for the exam.', a: ['wish I had studied', "wish I'd studied"], n: 'Жаль про минуле: wish + Past Perfect.' },
+      { kind: 'kwt', text: "It's possible that she missed the train.", word: 'HAVE', stem: 'She ______ the train.', a: ['may have missed', 'might have missed', 'could have missed'], n: 'Припущення про минуле: may/might/could have + V3.' },
+      { kind: 'kwt', text: 'He started playing the piano ten years ago.', word: 'BEEN', stem: 'He ______ the piano for ten years.', a: ['has been playing', "'s been playing"], n: 'Present Perfect Continuous з for.' },
+      { kind: 'kwt', text: 'The film was so boring that we left early.', word: 'SUCH', stem: 'It ______ that we left early.', a: ['was such a boring film'], n: 'so + прикметник → such a + прикметник + іменник.' }
     ]
   },
   {

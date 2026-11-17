@@ -16,6 +16,7 @@
   --paper:#f1f4ee; --surface:#ffffff; --ink:#17231f; --muted:#5b6963; --line:#d5dcd3;
   --accent:#0d6b5b; --accent-ink:#ffffff; --soft:#e3eee8; --mark:#f3cf55; --mark-ink:#3d3000;
   --good:#1c7a41; --warn:#9a5a00; --bad:#b5362a; --good-soft:#e2f2e7; --warn-soft:#fbefd6; --bad-soft:#fae4e1;
+  --s1:#0d6b5b; --s2:#a8730a; --s3:#6a4fb8;
   --font-display:'Unbounded','Golos Text',system-ui,sans-serif;
   --font-body:'Golos Text',system-ui,-apple-system,'Segoe UI',sans-serif;
   --font-read:'Source Serif 4',Georgia,'Times New Roman',serif;
@@ -27,6 +28,7 @@
     --paper:#101916; --surface:#17221e; --ink:#e7eee9; --muted:#9aa9a2; --line:#2b3934;
     --accent:#4cc0a6; --accent-ink:#04211a; --soft:#1e2f29; --mark:#dcb43a; --mark-ink:#2b2100;
     --good:#62c98b; --warn:#e3a84f; --bad:#f08a7e; --good-soft:#183326; --warn-soft:#382c14; --bad-soft:#3b1f1c;
+    --s1:#4cc0a6; --s2:#e0b54a; --s3:#b3a1f0;
     color-scheme:dark;
   }
 }
@@ -34,6 +36,7 @@
   --paper:#101916; --surface:#17221e; --ink:#e7eee9; --muted:#9aa9a2; --line:#2b3934;
   --accent:#4cc0a6; --accent-ink:#04211a; --soft:#1e2f29; --mark:#dcb43a; --mark-ink:#2b2100;
   --good:#62c98b; --warn:#e3a84f; --bad:#f08a7e; --good-soft:#183326; --warn-soft:#382c14; --bad-soft:#3b1f1c;
+  --s1:#4cc0a6; --s2:#e0b54a; --s3:#b3a1f0;
   color-scheme:dark;
 }
 *{box-sizing:border-box}
@@ -158,6 +161,39 @@ textarea.write{font:400 17px/1.65 var(--font-read);min-height:340px}
 .auth .logo{font:700 22px/1.2 var(--font-display)}
 .auth .logo i{font-style:normal;color:var(--accent)}
 
+/* use of english, терміни, тренування */
+.kw{display:inline-block;font:700 12px/1 var(--font-body);letter-spacing:.07em;text-transform:uppercase;padding:5px 8px;border:1.5px solid var(--ink);border-radius:5px;margin:2px 0;vertical-align:middle}
+.kwt{display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+.deadlines{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.deadlines li{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;border-bottom:1px solid var(--line);padding:6px 0}
+.deadlines li:last-child{border-bottom:0}
+.late{display:inline-block;margin-left:4px;color:var(--warn);font-weight:700}
+.qcheck{align-self:flex-start}
+/* прогрес */
+.chart{width:100%;height:auto;display:block}
+.chart text{fill:var(--muted);font:12px var(--font-body)}
+.chart .grid{stroke:var(--line);stroke-width:1}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+.bars{display:flex;flex-direction:column;gap:9px}
+.bar{display:grid;grid-template-columns:minmax(110px,210px) minmax(60px,1fr) 46px 64px;gap:10px;align-items:center;font-size:14px}
+.bar .track{height:10px;border-radius:99px;background:var(--soft);overflow:hidden}
+.bar .track i{display:block;height:100%;border-radius:99px;background:var(--accent)}
+.bar .track i.low{background:var(--bad)} .bar .track i.mid{background:var(--warn)}
+.tip{border-left:4px solid var(--warn);background:var(--warn-soft);padding:10px 14px;border-radius:8px;font-size:15px}
+/* словник і картки */
+.dots{display:inline-flex;gap:3px;vertical-align:middle}
+.dots i{width:7px;height:7px;border-radius:50%;background:var(--line)}
+.dots i.on{background:var(--accent)}
+.flash{max-width:560px;margin:0 auto;width:100%;min-height:260px;display:flex;flex-direction:column;gap:14px;align-items:center;justify-content:center;text-align:center;padding:28px 20px}
+.flash .word{font:600 32px/1.2 var(--font-read)}
+.flash .tr{font:600 22px/1.3 var(--font-body);color:var(--accent)}
+.flash .ex{font:italic 17px/1.5 var(--font-read);color:var(--muted);max-width:46ch}
+#seladd{position:absolute;z-index:40;display:none;box-shadow:0 4px 14px rgba(0,0,0,.2)}
+.corr{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;font-size:15px}
+.corr li{border-bottom:1px solid var(--line);padding-bottom:8px}
+.corr li:last-child{border-bottom:0}
+.corr s{color:var(--bad)} .corr b{color:var(--good)}
 /* імпорт із фото */
 .vh{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden}
 .drop{border:2px dashed var(--line);border-radius:var(--radius);padding:26px 16px;display:flex;flex-direction:column;gap:6px;align-items:center;text-align:center;cursor:pointer;background:var(--paper)}
@@ -190,6 +226,7 @@ details>summary{cursor:pointer;font-weight:600;color:var(--accent)}
 <div id="app"><div class="wrap"><p class="muted">Завантаження…</p></div></div>
 <dialog id="dlg"></dialog>
 <div id="toast" role="status" aria-live="polite"></div>
+<button type="button" id="seladd" class="btn sm">+ У словник</button>
 <noscript><p style="padding:20px">Для роботи тренажера увімкніть JavaScript.</p></noscript>
 
 <script src="firebase-config.js"></script>
@@ -200,8 +237,14 @@ details>summary{cursor:pointer;font-weight:600;color:var(--accent)}
 
 /* ---------- довідники ---------- */
 const LEVELS = { A:'Шкільний / міський', B:'Обласний / всеукраїнський' };
-const KINDS = { mcq:'Вибір однієї відповіді', tfng:'True / False / Not Given', gap:'Вписати слово' };
-const KIND_CAP = { mcq:'Choose the best answer', tfng:'True / False / Not Given', gap:'Type your answer' };
+const KINDS = { mcq:'Вибір однієї відповіді', tfng:'True / False / Not Given', gap:'Вписати слово', wf:'Словотвір', kwt:'Трансформація з ключовим словом' };
+const KIND_CAP = { mcq:'Choose the best answer', tfng:'True / False / Not Given', gap:'Type your answer', wf:'Word formation', kwt:'Key word transformation' };
+const KINDS_FOR = { reading:['mcq','tfng','gap'], use:['mcq','gap','wf','kwt'] };
+const TYPE_NAME = { reading:'Читання', use:'Use of English', writing:'Письмо' };
+const TYPE_SHORT = { reading:'Чит.', use:'UoE', writing:'Письмо' };
+const TYPE_ORDER = { reading:0, use:1, writing:2 };
+const TEXT_KINDS = ['gap','wf','kwt'];
+const isAuto = t => !!t && (t.type === 'reading' || t.type === 'use');
 const GENRES = { essay:'Есе', letter:'Офіційний лист', article:'Стаття', review:'Відгук', other:'Інше' };
 const CRIT = [['c','Зміст і розкриття теми'],['o','Структура і зв’язність'],['v','Лексика'],['g','Граматика і правопис']];
 const TF = { T:'True', F:'False', NG:'Not Given' };
@@ -237,7 +280,7 @@ const genPw = () => { const a='abcdefghjkmnpqrstuvwxyz23456789'; let s=''; for(l
 const plural = (n, one, few, many) => { const a = Math.abs(n) % 100, b = a % 10; return n + ' ' + (a > 10 && a < 20 ? many : b === 1 ? one : b >= 2 && b <= 4 ? few : many); };
 const normLogin = s => String(s||'').trim().toLowerCase();
 const toEmail = login => login.includes('@') ? login : login + DOMAIN;
-const normAns = s => String(s==null?'':s).trim().toLowerCase().replace(/[’`]/g,"'").replace(/\s+/g,' ').replace(/[.,;:!?]+$/,'');
+const normAns = s => String(s==null?'':s).trim().toLowerCase().replace(/[’`‘]/g,"'").replace(/\s*'\s*/g,"'").replace(/\s+/g,' ').replace(/[.,;:!?]+$/,'');
 function errText(e){
   const c = (e && e.code) || '';
   if(String(c).indexOf('ai/') === 0) return e.message;
@@ -343,7 +386,7 @@ function cloudStore(cfg){
 const cfg = window.FIREBASE_CONFIG;
 const cloudOn = !!(cfg && cfg.apiKey && cfg.projectId && !/ВСТАВТЕ|YOUR_|XXXX/i.test(cfg.apiKey));
 const S = { settings:{}, resGroup:'', store:null, phase:'loading', user:null, role:null, profile:null, owner:null, tab:null, screen:null,
-            tasks:[], subs:[], keys:{}, students:[], error:'' };
+            tasks:[], subs:[], keys:{}, students:[], vocab:{ words:[], progress:{} }, error:'' };
 const app = $('#app');
 
 const allGroups = () => Array.from(new Set(S.students.map(x => String(x.group || '').trim()).filter(Boolean))).sort((a, b) => a.localeCompare(b, 'uk'));
@@ -352,7 +395,7 @@ const taskById = id => S.tasks.find(t => t.id === id) || null;
 const subById = id => S.subs.find(s => s.id === id) || null;
 const subFor = (taskId, uid) => subById(taskId + '_' + uid);
 const studentById = uid => S.students.find(s => s.id === uid) || null;
-const sortTasks = a => a.slice().sort((x, y) => (x.type === y.type ? 0 : x.type === 'reading' ? -1 : 1) || (x.level||'').localeCompare(y.level||'') || (x.createdAt||0) - (y.createdAt||0));
+const sortTasks = a => a.slice().sort((x, y) => ((TYPE_ORDER[x.type] || 0) - (TYPE_ORDER[y.type] || 0)) || (x.level||'').localeCompare(y.level||'') || (x.createdAt||0) - (y.createdAt||0));
 const draftKey = taskId => 'olymp_draft_' + (S.user ? S.user.uid : '') + '_' + taskId;
 
 /* ---------- перевірка читання ---------- */
@@ -360,7 +403,7 @@ function isRight(q, key, given){
   if(!key || !key.answers) return null;
   const right = key.answers[q.id];
   if(given == null || given === '') return false;
-  if(q.kind === 'gap') return (Array.isArray(right) ? right : [right]).some(r => normAns(r) === normAns(given));
+  if(TEXT_KINDS.includes(q.kind)) return (Array.isArray(right) ? right : [right]).some(r => normAns(r) === normAns(given));
   return String(right) === String(given);
 }
 function scoreReading(task, key, answers){
@@ -376,6 +419,31 @@ function showAnswer(q, v){
   return Array.isArray(v) ? v.join(' / ') : String(v);
 }
 const gradeTotal = g => g && g.scores ? CRIT.reduce((s, c) => s + (Number(g.scores[c[0]]) || 0), 0) : null;
+function qTextHtml(q){
+  if(q.kind === 'kwt') return '<span class="kwt"><span>'+esc(q.text)+'</span><span class="kw">'+esc(q.word || '')+'</span><span>'+esc(q.stem || '')+'</span></span>';
+  if(q.kind === 'wf') return '<span>'+esc(q.text)+' <span class="kw">'+esc(q.word || '')+'</span></span>';
+  return '<span>'+esc(q.text)+'</span>';
+}
+function qInputHtml(q, i, v, locked){
+  const dis = locked ? ' disabled' : '';
+  if(q.kind === 'mcq') return '<div class="opts">'+q.options.map((o, j) => '<label class="opt"><input type="radio" name="'+esc(q.id)+'" value="'+j+'" data-q="'+esc(q.id)+'"'+(String(v) === String(j) ? ' checked' : '')+dis+'><span>'+esc(o)+'</span></label>').join('')+'</div>';
+  if(q.kind === 'tfng') return '<div class="opts inline">'+Object.keys(TF).map(k => '<label class="opt"><input type="radio" name="'+esc(q.id)+'" value="'+k+'" data-q="'+esc(q.id)+'"'+(v === k ? ' checked' : '')+dis+'><span>'+TF[k]+'</span></label>').join('')+'</div>';
+  return '<input type="text" id="g-'+esc(q.id)+'" data-q="'+esc(q.id)+'" value="'+esc(v || '')+'" autocomplete="off" autocapitalize="none" spellcheck="false" style="max-width:'+(q.kind === 'kwt' ? 440 : 280)+'px" aria-label="Відповідь на питання '+(i + 1)+'"'+dis+'>';
+}
+/* терміни */
+const dueTs = t => t && t.due ? new Date(t.due + 'T23:59:59').getTime() : 0;
+const fmtDue = d => { const p = String(d || '').split('-'); return p.length === 3 ? p[2] + '.' + p[1] : String(d || ''); };
+const isLate = (t, sub) => !!(t && t.due && sub && sub.submittedAt > dueTs(t));
+const isOverdue = (t, sub) => !!(t && t.due && !t.practice && !sub && Date.now() > dueTs(t));
+function duePill(t, sub){
+  if(!t || !t.due || t.practice) return '';
+  if(sub) return isLate(t, sub) ? '<span class="pill warn">здано із запізненням</span>' : '';
+  const ms = dueTs(t) - Date.now();
+  if(ms < 0) return '<span class="pill bad">прострочено ('+fmtDue(t.due)+')</span>';
+  const d = Math.floor(ms / 864e5);
+  return '<span class="pill '+(d < 2 ? 'warn' : '')+'">'+(d < 1 ? 'сьогодні до 23:59' : 'до '+fmtDue(t.due))+'</span>';
+}
+const trainKey = id => 'olymp_train_' + (S.user ? S.user.uid : '') + '_' + id;
 
 /* ---------- автоматичний аналіз письма ---------- */
 const LINKERS = ['however','moreover','furthermore','in addition','on the one hand','on the other hand','firstly','secondly','thirdly','finally','for example','for instance','therefore','consequently','as a result','in conclusion','to sum up','nevertheless','although','whereas','despite','in my opinion','in contrast','besides','thus','what is more','to begin with','all in all'];
@@ -439,7 +507,9 @@ async function loadAll(){
   } else {
     const r = await Promise.all([st.list('tasks', ['published', true]), st.list('submissions', ['uid', S.user.uid])]);
     S.tasks = sortTasks(r[0].filter(t => visibleFor(t, S.profile))); S.subs = r[1]; S.keys = {};
-    await Promise.all(S.subs.filter(s => s.type === 'reading').map(async s => { try { const k = await st.get('keys', s.taskId); if(k) S.keys[s.taskId] = k; } catch(e){} }));
+    const need = new Set(S.subs.filter(s => s.type !== 'writing').map(s => s.taskId)); S.tasks.forEach(t => { if(t.practice && isAuto(t)) need.add(t.id); });
+    await Promise.all(Array.from(need).map(async id => { try { const k = await st.get('keys', id); if(k) S.keys[id] = k; } catch(e){} }));
+    try { const v = await st.get('vocab', S.user.uid); S.vocab = { words:(v && v.words) || [], progress:(v && v.progress) || {} }; } catch(e){ S.vocab = { words:[], progress:{} }; }
   }
 }
 async function session(){
@@ -458,19 +528,24 @@ async function session(){
   } catch(e){ S.phase = 'error'; S.error = errText(e); return render(); }
   const h = (location.hash || '').slice(1);
   if(S.role === 'teacher' && TAB_IDS.includes(h)) S.tab = h;
+  if(S.role === 'student' && STAB_IDS.includes(h)) S.tab = h;
   S.phase = 'app'; render();
 }
 
 /* ---------- демо-дані ---------- */
 function splitTask(full){
-  const t = { groups: Array.isArray(full.groups) ? full.groups.filter(Boolean) : [], type:full.type, level:full.level, minutes:Number(full.minutes)||0, title:full.title, published: full.published !== false, createdAt: full.createdAt || Date.now() };
-  if(full.type === 'reading'){
+  const t = { groups: Array.isArray(full.groups) ? full.groups.filter(Boolean) : [], type:full.type, level:full.level, minutes:Number(full.minutes)||0, title:full.title, published: full.published !== false, createdAt: full.createdAt || Date.now(),
+    due: /^\d{4}-\d{2}-\d{2}$/.test(String(full.due || '')) ? full.due : '', practice: isAuto(full) && !!full.practice,
+    vocab: (Array.isArray(full.vocab) ? full.vocab : []).map(v => ({ w:String(v.w || '').trim(), t:String(v.t || '').trim(), ex:String(v.ex || '').trim() })).filter(v => v.w) };
+  if(isAuto(full)){
     t.intro = full.intro || ''; t.passage = full.passage || '';
     const answers = {}, notes = {};
     t.questions = (full.questions || []).map((q, i) => {
       const id = q.id || ('q' + (i + 1)); const o = { id, kind:q.kind, text:q.text };
       if(q.kind === 'mcq') o.options = q.options.slice();
-      answers[id] = q.kind === 'gap' ? (Array.isArray(q.a) ? q.a : String(q.a||'').split(';').map(s => s.trim()).filter(Boolean)) : q.kind === 'mcq' ? Number(q.a) : q.a;
+      if(q.kind === 'wf' || q.kind === 'kwt') o.word = String(q.word || '').trim();
+      if(q.kind === 'kwt') o.stem = String(q.stem || '').trim();
+      answers[id] = TEXT_KINDS.includes(q.kind) ? (Array.isArray(q.a) ? q.a : String(q.a||'').split(';').map(s => s.trim()).filter(Boolean)) : q.kind === 'mcq' ? Number(q.a) : q.a;
       if(q.n) notes[id] = q.n;
       return o;
     });
@@ -500,11 +575,17 @@ async function seedDemo(){
   await st.set('submissions', 'starter-w1_' + u1, { uid:u1, taskId:'starter-w1', type:'writing', seconds:2140, submittedAt:now - 2*day, auto:false, text:E.strong || '', grade:{ scores:{ c:4, o:5, v:3, g:4 }, comment:'Чітка структура і доречні приклади. У формальному есе уникай скорочень (doesn’t, don’t) і розмовного a lot of; спробуй many / a great number of.', at:now - day } });
   await st.set('submissions', 'starter-r1_' + u2, { uid:u2, taskId:'starter-r1', type:'reading', seconds:1188, submittedAt:now - 2*day, auto:false, answers:{ q1:2, q2:1, q3:3, q4:1, q5:2, q6:'NG', q7:'T', q8:'T', q9:'NG', q10:'T' } });
   await st.set('submissions', 'starter-w1_' + u2, { uid:u2, taskId:'starter-w1', type:'writing', seconds:1502, submittedAt:now - day/3, auto:false, text:E.weak || '' });
+  await st.set('submissions', 'starter-r3_' + u2, { uid:u2, taskId:'starter-r3', type:'reading', seconds:1650, submittedAt:now - 1.5*day, auto:false, answers:{ q1:1, q2:3, q3:2, q4:2, q5:1, q6:3, q7:'F', q8:'NG', q9:'F', q10:'F', q11:'model', q12:'remember', q13:'way' } });
+  await st.set('submissions', 'starter-u1_' + u2, { uid:u2, taskId:'starter-u1', type:'use', seconds:780, submittedAt:now - day, auto:false, answers:{ q1:'about', q2:'to', q3:'less', q4:'so', q5:'why', q6:'even', q7:'that', q8:'from', q9:'unvoluntary', q10:'investigation', q11:'surprising', q12:'concentration', q13:'impolite', q14:'boring' } });
+  const iso = t => new Date(t).toISOString().slice(0, 10);
+  await st.update('tasks', 'starter-w2', { due: iso(now + 3*day) });
+  await st.update('tasks', 'starter-r4', { due: iso(now - day) });
+  await st.update('tasks', 'starter-u2', { practice: true });
 }
 
 /* ---------- відображення: загальне ---------- */
 function header(){
-  const tabs = S.role === 'teacher' ? [['rezultaty','Результати'],['zavdannia','Завдання'],['uchni','Учні'],['nalashtuvannia','Налаштування']] : [];
+  const tabs = S.role === 'teacher' ? [['rezultaty','Результати'],['zavdannia','Завдання'],['uchni','Учні'],['nalashtuvannia','Налаштування']] : [['zavdannia','Завдання'],['progres','Прогрес'],['slovnyk','Словник']];
   const name = S.role === 'teacher' ? (S.owner.name || 'Учитель') : (S.profile ? S.profile.name : '');
   return '<header class="top"><div class="top-in">'+
     '<button class="brand" data-act="home"><i>EN</i>'+esc(SITE.name)+'</button>'+
@@ -526,13 +607,14 @@ function render(keepScroll){
   else if(S.phase === 'noaccess') html = '<div class="wrap"><div class="auth"><div class="card stack"><h2>Обліковий запис не підключено</h2><p class="muted">Цей логін не внесено до списку учнів. Зверніться до вчителя.</p><div><button class="btn" data-act="logout">Вийти</button></div></div></div></div>';
   else {
     const sc = S.screen;
-    const inner = sc ? SCREENS[sc.name](sc) : (S.role === 'teacher' ? TABS[S.tab]() : studentHome());
+    const inner = sc ? SCREENS[sc.name](sc) : (S.role === 'teacher' ? TABS[S.tab]() : (STABS[S.tab] || studentHome)());
     html = header() + '<main class="wrap">' + demoBanner() + inner + '</main>';
   }
   app.innerHTML = html;
   if(!keepScroll) window.scrollTo(0, 0);
   const sc = S.screen;
   if(S.phase === 'app' && sc && sc.name === 'run'){ startTimer(); if(taskById(sc.id).type === 'writing') liveAnalysis(); }
+  hideSelAdd();
 }
 
 /* ---------- вхід і перше налаштування ---------- */
@@ -551,44 +633,52 @@ function viewLogin(){
     '<label class="f">Логін учня або e-mail учителя<input type="text" id="li-login" autocomplete="username" autocapitalize="none" spellcheck="false"></label>'+
     '<label class="f">Пароль<input type="password" id="li-pw" autocomplete="current-password"></label>'+
     '<div class="row between"><button class="btn" data-act="login">Увійти</button>'+(demo ? '' : '<button class="link small" data-act="resetPw">Учитель забув пароль</button>')+'</div></div>'+
-    (demo ? '<div class="card stack"><h3>Спробувати без реєстрації</h3><p class="muted small">Демо-режим із прикладами завдань і робіт. Усе зберігається лише у вашому браузері.</p><div class="row"><button class="btn ghost" data-act="demoLogin" data-who="teacher">Увійти як учитель</button><button class="btn ghost" data-act="demoLogin" data-who="olena">Увійти як учениця</button></div></div>' : '')+
+    (demo ? '<div class="card stack"><h3>Спробувати без реєстрації</h3><p class="muted small">Демо-режим із прикладами завдань і робіт. Усе зберігається лише у вашому браузері.</p><div class="row"><button class="btn ghost" data-act="demoLogin" data-who="teacher">Увійти як учитель</button><button class="btn ghost" data-act="demoLogin" data-who="maksym">Увійти як учень</button></div></div>' : '')+
   '</div></div>';
 }
 
 /* ---------- учень: список завдань ---------- */
 function studentStats(){
-  const done = S.subs.length, rd = [], wr = []; let waiting = 0;
+  const graded = S.tasks.filter(t => !t.practice), rd = [], ue = [], wr = []; let waiting = 0, done = 0;
   S.subs.forEach(s => {
-    if(s.type === 'reading'){ const sc = scoreReading(taskById(s.taskId), S.keys[s.taskId], s.answers); if(sc && sc.total) rd.push(sc.ok / sc.total * 100); }
+    const t = taskById(s.taskId); if(!t || t.practice) return; done++;
+    if(isAuto(t)){ const sc = scoreReading(t, S.keys[s.taskId], s.answers); if(sc && sc.total) (t.type === 'use' ? ue : rd).push(sc.ok / sc.total * 100); }
     else { const g = gradeTotal(s.grade); if(g == null) waiting++; else wr.push(g); }
   });
   const avg = a => a.length ? Math.round(a.reduce((x, y) => x + y, 0) / a.length * 10) / 10 : null;
-  return { done, total:S.tasks.length, rd:avg(rd), wr:avg(wr), waiting };
+  return { done, total:graded.length, rd:avg(rd), ue:avg(ue), wr:avg(wr), waiting };
 }
 function statusOf(task, sub){
+  if(task.practice){ const b = LS.get(trainKey(task.id), null); return { cls: b ? 'good' : '', text: b ? 'Найкраще: ' + b.best + ' / ' + b.total : 'Тренування', btn:'Тренуватися' }; }
   if(!sub) return LS.get(draftKey(task.id), null) ? { cls:'warn', text:'Розпочато', btn:'Продовжити' } : { cls:'', text:'Не виконано', btn:'Відкрити' };
-  if(task.type === 'reading'){ const sc = scoreReading(task, S.keys[task.id], sub.answers); return { cls:'good', text: sc ? sc.ok + ' / ' + sc.total : 'Здано', btn:'Результат' }; }
+  if(isAuto(task)){ const sc = scoreReading(task, S.keys[task.id], sub.answers); return { cls:'good', text: sc ? sc.ok + ' / ' + sc.total : 'Здано', btn:'Результат' }; }
   const g = gradeTotal(sub.grade);
   return g == null ? { cls:'warn', text:'Очікує перевірки', btn:'Переглянути' } : { cls:'good', text: g + ' / 20', btn:'Результат' };
 }
 function taskCard(t){
   const sub = subFor(t.id, S.user.uid), st = statusOf(t, sub);
-  const meta = t.type === 'reading' ? (t.questions || []).length + ' питань' : (GENRES[t.genre] || 'Письмо') + ' · ' + t.minWords + '–' + t.maxWords + ' слів';
-  return '<article class="task">'+lvl(t.level)+'<h3>'+esc(t.title)+'</h3><p class="muted small">'+esc(meta)+(t.minutes ? ' · ' + t.minutes + ' хв' : '')+'</p>'+
+  const meta = isAuto(t) ? (t.questions || []).length + ' питань' : (GENRES[t.genre] || 'Письмо') + ' · ' + t.minWords + '–' + t.maxWords + ' слів';
+  const tags = (t.practice ? '<span class="pill">без оцінки</span>' : '') + duePill(t, sub);
+  return '<article class="task"><div class="row">'+lvl(t.level)+tags+'</div><h3>'+esc(t.title)+'</h3><p class="muted small">'+esc(meta)+(t.minutes && !t.practice ? ' · ' + t.minutes + ' хв' : '')+'</p>'+
     '<div class="foot"><span class="pill '+st.cls+' num">'+esc(st.text)+'</span><button class="btn sm '+(sub ? 'ghost' : '')+'" data-act="openTask" data-id="'+esc(t.id)+'">'+st.btn+'</button></div></article>';
 }
+const byDue = (a, b) => (a.due ? dueTs(a) : Infinity) - (b.due ? dueTs(b) : Infinity);
 function studentHome(){
-  const s = studentStats(), rd = S.tasks.filter(t => t.type === 'reading'), wr = S.tasks.filter(t => t.type === 'writing');
-  const sec = (title, list) => '<section class="stack"><h2>'+title+'</h2>'+(list.length ? '<div class="tasks">'+list.map(taskCard).join('')+'</div>' : '<div class="empty">Учитель ще не додав завдань у цей розділ.</div>')+'</section>';
+  const s = studentStats();
+  const sec = (type) => { const list = S.tasks.filter(t => t.type === type).sort(byDue); return list.length || type !== 'use' ? '<section class="stack"><h2>'+TYPE_NAME[type]+'</h2>'+(list.length ? '<div class="tasks">'+list.map(taskCard).join('')+'</div>' : '<div class="empty">Учитель ще не додав завдань у цей розділ.</div>')+'</section>' : ''; };
   const set = S.settings || {}, hi = '<h1>Привіт, '+esc((S.profile.name || '').split(' ')[0])+'!</h1>';
   const ann = String(set.announcement || '').trim() ? '<div class="banner info"><b>Оголошення.</b> '+esc(String(set.announcement).trim())+'</div>' : '';
   if(set.closed) return hi + '<div class="card stack"><h2>Сайт тимчасово закрито</h2><p style="white-space:pre-wrap">'+esc(String(set.closedMessage || '').trim() || 'Учитель тимчасово закрив доступ до завдань. Зайдіть пізніше.')+'</p></div>';
-  return hi + ann +
+  const soon = S.tasks.filter(t => t.due && !t.practice && !subFor(t.id, S.user.uid)).sort(byDue);
+  const dl = soon.length ? '<section class="card stack"><h2>Терміни</h2><ul class="deadlines">'+soon.slice(0, 6).map(t => '<li><span><b>'+esc(t.title)+'</b> <span class="muted small">'+TYPE_NAME[t.type]+'</span></span><span class="row">'+duePill(t, null)+'<button class="btn sm" data-act="openTask" data-id="'+esc(t.id)+'">Відкрити</button></span></li>').join('')+'</ul></section>' : '';
+  const pct = v => v == null ? '—' : Math.round(v) + '%';
+  return hi + ann + dl +
     '<div class="tiles"><div class="tile"><b>'+s.done+' / '+s.total+'</b><span>завдань виконано</span></div>'+
-    '<div class="tile"><b>'+(s.rd == null ? '—' : Math.round(s.rd) + '%')+'</b><span>середній результат із читання</span></div>'+
+    '<div class="tile"><b>'+pct(s.rd)+'</b><span>середній результат із читання</span></div>'+
+    (S.tasks.some(t => t.type === 'use') ? '<div class="tile"><b>'+pct(s.ue)+'</b><span>середній результат Use of English</span></div>' : '')+
     '<div class="tile"><b>'+(s.wr == null ? '—' : s.wr)+'</b><span>середній бал за письмо з 20</span></div>'+
     '<div class="tile"><b>'+s.waiting+'</b><span>робіт очікують перевірки</span></div></div>'+
-    sec('Читання', rd) + sec('Письмо', wr);
+    sec('reading') + sec('use') + sec('writing');
 }
 
 /* ---------- учень: виконання ---------- */
@@ -599,22 +689,18 @@ SCREENS.intro = sc => {
     '<ul class="stack" style="margin:0;padding-left:20px">'+
     (t.minutes ? '<li>На виконання відведено <b>'+t.minutes+' хв</b>. Відлік починається після натискання кнопки і не зупиняється, якщо закрити сторінку.</li><li>Коли час вийде, роботу буде здано автоматично.</li>' : '<li>Час не обмежено.</li>')+
     '<li>Здати роботу можна <b>лише один раз</b>.</li>'+
-    (t.type === 'reading' ? '<li>Після здачі ви одразу побачите правильні відповіді та пояснення.</li>' : '<li>Під час письма сторінка показує обсяг і автоматичні підказки. Оцінку та коментар поставить учитель.</li>')+
+    (t.due ? '<li>Термін виконання: <b>до '+fmtDue(t.due)+' включно</b>.</li>' : '')+
+    (isAuto(t) ? '<li>Після здачі ви одразу побачите правильні відповіді та пояснення.</li>' : '<li>Під час письма сторінка показує обсяг і автоматичні підказки. Оцінку та коментар поставить учитель.</li>')+
     '</ul><div><button class="btn" data-act="startTask" data-id="'+esc(t.id)+'">Почати роботу</button></div></div>';
 };
 function passageHtml(t){ return '<div class="passage"><h2>'+esc(t.title)+'</h2>'+String(t.passage || '').split(/\n\s*\n/).map(s => s.trim()).filter(Boolean).map((p, i) => '<p data-n="'+(i + 1)+'">'+esc(p)+'</p>').join('')+'</div>'; }
 SCREENS.run = sc => {
   const t = taskById(sc.id);
   const bar = '<div class="runbar"><div class="grow"><b>'+esc(t.title)+'</b></div><span class="timer num" id="timer" title="'+(t.minutes ? 'Залишилось часу' : 'Минуло часу')+'">--:--</span><button class="btn" data-act="submit">Здати роботу</button></div>';
-  if(t.type === 'reading'){
-    const qs = (t.questions || []).map((q, i) => {
-      const v = sc.answers[q.id]; let body;
-      if(q.kind === 'mcq') body = '<div class="opts">'+q.options.map((o, j) => '<label class="opt"><input type="radio" name="'+esc(q.id)+'" value="'+j+'" data-q="'+esc(q.id)+'"'+(String(v) === String(j) ? ' checked' : '')+'><span>'+esc(o)+'</span></label>').join('')+'</div>';
-      else if(q.kind === 'tfng') body = '<div class="opts inline">'+Object.keys(TF).map(k => '<label class="opt"><input type="radio" name="'+esc(q.id)+'" value="'+k+'" data-q="'+esc(q.id)+'"'+(v === k ? ' checked' : '')+'><span>'+TF[k]+'</span></label>').join('')+'</div>';
-      else body = '<input type="text" id="g-'+esc(q.id)+'" data-q="'+esc(q.id)+'" value="'+esc(v || '')+'" autocomplete="off" autocapitalize="none" spellcheck="false" style="max-width:280px" aria-label="Відповідь на питання '+(i + 1)+'">';
-      return '<div class="q"><span class="kind">'+KIND_CAP[q.kind]+'</span><div class="qt"><b>'+(i + 1)+'.</b><span>'+esc(q.text)+'</span></div>'+body+'</div>';
-    }).join('');
-    return bar+'<div class="two"><div class="card sticky">'+passageHtml(t)+'</div><div class="card">'+(t.intro ? '<p class="muted" style="margin-bottom:8px">'+esc(t.intro)+'</p>' : '')+qs+'<div style="margin-top:14px"><button class="btn" data-act="submit">Здати роботу</button></div></div></div>';
+  if(isAuto(t)){
+    const qs = (t.questions || []).map((q, i) => '<div class="q"><span class="kind">'+KIND_CAP[q.kind]+'</span><div class="qt"><b>'+(i + 1)+'.</b>'+qTextHtml(q)+'</div>'+qInputHtml(q, i, sc.answers[q.id])+'</div>').join('');
+    const qcard = '<div class="card">'+(t.intro ? '<p class="muted" style="margin-bottom:8px">'+esc(t.intro)+'</p>' : '')+qs+'<div style="margin-top:14px"><button class="btn" data-act="submit">Здати роботу</button></div></div>';
+    return bar+(String(t.passage || '').trim() ? '<div class="two"><div class="card sticky">'+passageHtml(t)+'</div>'+qcard+'</div>' : '<div style="max-width:860px">'+qcard+'</div>');
   }
   return bar+'<div class="two"><div class="stack"><div class="card stack">'+lvl(t.level)+'<div class="prompt">'+esc(t.prompt)+'</div></div>'+
     '<textarea class="write" id="essay" spellcheck="false" autocomplete="off" autocorrect="off" aria-label="Текст роботи" placeholder="Write your answer here…">'+esc(sc.text || '')+'</textarea></div>'+
@@ -638,19 +724,19 @@ async function submitWork(auto){
   const t = taskById(sc.id);
   if(!auto && !sc.expired){
     let body = 'Після здачі змінити відповіді буде неможливо.';
-    if(t.type === 'reading'){ const miss = t.questions.filter(q => sc.answers[q.id] == null || sc.answers[q.id] === '').length; if(miss) body = '<b>Без відповіді залишилось питань: '+miss+'.</b> ' + body; }
+    if(isAuto(t)){ const miss = t.questions.filter(q => sc.answers[q.id] == null || sc.answers[q.id] === '').length; if(miss) body = '<b>Без відповіді залишилось питань: '+miss+'.</b> ' + body; }
     else { const a = analyze(sc.text, t); if(a.words < t.minWords) body = '<b>У роботі '+plural(a.words, 'слово', 'слова', 'слів')+', а потрібно щонайменше '+t.minWords+'.</b> ' + body; }
     if(!(await ask('Здати роботу?', body, 'Здати'))) return;
   }
   sc.sending = true;
   const elapsed = Math.round((Date.now() - sc.start) / 1000);
   const sub = { uid:S.user.uid, taskId:t.id, type:t.type, seconds: t.minutes ? Math.min(elapsed, t.minutes * 60) : elapsed, submittedAt:Date.now(), auto: !!(auto || sc.expired) };
-  if(t.type === 'reading') sub.answers = Object.assign({}, sc.answers); else sub.text = sc.text || '';
+  if(isAuto(t)) sub.answers = Object.assign({}, sc.answers); else sub.text = sc.text || '';
   const id = t.id + '_' + S.user.uid;
   try { await S.store.set('submissions', id, sub); }
   catch(e){ sc.sending = false; toast(errText(e) + ' Натисніть «Здати роботу» ще раз.', true); return; }
   S.subs = S.subs.filter(s => s.id !== id).concat([Object.assign({ id }, sub)]);
-  if(t.type === 'reading'){ try { const k = await S.store.get('keys', t.id); if(k) S.keys[t.id] = k; } catch(e){} }
+  if(isAuto(t)){ try { const k = await S.store.get('keys', t.id); if(k) S.keys[t.id] = k; } catch(e){} }
   LS.del(draftKey(t.id));
   S.screen = { name:'sub', id }; render();
   if(sub.auto) toast('Час вийшов. Роботу здано автоматично.');
@@ -661,68 +747,301 @@ SCREENS.sub = sc => {
   const sub = subById(sc.id); if(!sub) return back()+'<div class="empty">Роботу не знайдено.</div>';
   const t = taskById(sub.taskId), teacher = S.role === 'teacher', stu = teacher ? studentById(sub.uid) : S.profile;
   const head = back(teacher ? 'До результатів' : 'До списку')+'<div class="stack" style="gap:6px">'+(t ? lvl(t.level) : '')+'<h1>'+esc(t ? t.title : 'Завдання приховано')+'</h1>'+
-    '<p class="muted small">'+(teacher ? esc((stu ? stu.name : 'Учня видалено') + (stu && stu.group ? ', ' + stu.group : '')) + ' · ' : '')+'здано '+fmtDate(sub.submittedAt)+' · витрачено '+fmtTime(sub.seconds || 0)+(sub.auto ? ' · здано автоматично, бо вийшов час' : '')+'</p></div>';
-  const tools = teacher ? '<div class="row"><button class="btn ghost sm" data-act="retake" data-id="'+esc(sub.id)+'">Дозволити повторну спробу</button></div>' : '';
+    '<p class="muted small">'+(teacher ? esc((stu ? stu.name : 'Учня видалено') + (stu && stu.group ? ', ' + stu.group : '')) + ' · ' : '')+'здано '+fmtDate(sub.submittedAt)+' · витрачено '+fmtTime(sub.seconds || 0)+(sub.auto ? ' · здано автоматично, бо вийшов час' : '')+(isLate(t, sub) ? ' · <b style="color:var(--warn)">здано із запізненням</b> (термін до '+fmtDue(t.due)+')' : '')+'</p></div>';
+  const tools = teacher ? '<div class="row"><button class="btn ghost sm" data-act="retake" data-id="'+esc(sub.id)+'">Дозволити повторну спробу</button></div>'
+    : (t && isAuto(t) ? '<div class="row"><button class="btn ghost sm" data-act="train" data-id="'+esc(t.id)+'">Пройти ще раз для тренування</button></div>' : '');
   if(!t) return head+'<div class="empty">Учитель приховав це завдання, тому подробиці недоступні.</div>'+tools;
-  if(sub.type === 'reading'){
+  if(isAuto(t)){
     const key = S.keys[t.id], scr = scoreReading(t, key, sub.answers);
     const qs = t.questions.map((q, i) => {
       const given = (sub.answers || {})[q.id], r = isRight(q, key, given), right = key && key.answers ? key.answers[q.id] : null;
-      return '<div class="q '+(r === true ? 'ok' : r === false ? 'no' : '')+'"><div class="qt"><b>'+(i + 1)+'.</b><span>'+esc(q.text)+'</span></div>'+
+      return '<div class="q '+(r === true ? 'ok' : r === false ? 'no' : '')+'"><div class="qt"><b>'+(i + 1)+'.</b>'+qTextHtml(q)+'</div>'+
         '<div class="ans">Відповідь: <span class="'+(r === true ? 'y' : r === false ? 'n' : '')+'">'+esc(showAnswer(q, given))+'</span>'+(r === false ? ' · правильно: <span class="y">'+esc(showAnswer(q, right))+'</span>' : '')+'</div>'+
         (key && key.notes && key.notes[q.id] ? '<div class="note">'+esc(key.notes[q.id])+'</div>' : '')+'</div>';
     }).join('');
     return head+'<div class="card row between"><div><div class="score">'+(scr ? scr.ok + ' / ' + scr.total : '—')+'</div><span class="muted small">правильних відповідей'+(scr && scr.total ? ' · ' + Math.round(scr.ok / scr.total * 100) + '%' : '')+'</span></div>'+tools+'</div>'+
-      '<div class="two"><div class="card sticky">'+passageHtml(t)+'</div><div class="card">'+qs+'</div></div>';
+      (String(t.passage || '').trim() ? '<div class="two"><div class="card sticky">'+passageHtml(t)+'</div><div class="card">'+qs+'</div></div>' : '<div class="card" style="max-width:860px">'+qs+'</div>');
   }
   const a = analyze(sub.text, t), g = sub.grade, total = gradeTotal(g);
   let gradeBox;
   if(teacher){
-    gradeBox = '<div class="card stack"><h3>Оцінювання</h3><div class="crit">'+CRIT.map(c => '<label for="gr-'+c[0]+'">'+c[1]+'</label><select id="gr-'+c[0]+'">'+[0,1,2,3,4,5].map(n => '<option value="'+n+'"'+(g && Number(g.scores[c[0]]) === n ? ' selected' : '')+'>'+n+'</option>').join('')+'</select>').join('')+'</div>'+
-      '<label class="f">Коментар для учня<textarea id="gr-comment" rows="5">'+esc(g ? g.comment : '')+'</textarea></label>'+
+    const ai = sc.ai, src = ai || g, corr = ai ? ai.corrections : (g && g.corrections) || [];
+    gradeBox = '<div class="card stack"><div class="row between"><h3>Оцінювання</h3><button class="btn ghost sm" data-act="aiGrade" data-id="'+esc(sub.id)+'"'+(sc.aiStatus ? ' disabled' : '')+'>'+(ai ? 'Оцінити ШІ ще раз' : 'Попередня оцінка ШІ')+'</button></div>'+
+      (sc.aiStatus ? '<p class="status" role="status">'+esc(sc.aiStatus)+'</p>' : '')+
+      (ai ? '<div class="banner info">ШІ запропонував бали й коментар. Перевірте, змініть за потреби й натисніть «Зберегти оцінку».</div>' : '')+
+      '<div class="crit">'+CRIT.map(c => '<label for="gr-'+c[0]+'">'+c[1]+'</label><select id="gr-'+c[0]+'">'+[0,1,2,3,4,5].map(n => '<option value="'+n+'"'+(src && Number(src.scores[c[0]]) === n ? ' selected' : '')+'>'+n+'</option>').join('')+'</select>').join('')+'</div>'+
+      '<label class="f">Коментар для учня<textarea id="gr-comment" rows="5">'+esc(src ? src.comment : '')+'</textarea></label>'+
+      (corr.length ? '<div class="stack" style="gap:8px"><b>Виправлення ('+corr.length+')</b>'+corrHtml(corr)+'<label class="chk" style="align-self:flex-start"><input type="checkbox" id="gr-corr" checked>Показати виправлення учневі</label></div>' : '')+
       '<div class="row between"><span class="muted small">'+(g ? 'Оцінено ' + fmtDate(g.at) + ' · ' + total + ' / 20' : 'Кожен критерій: 0–5 балів, разом 20')+'</span><button class="btn" data-act="saveGrade" data-id="'+esc(sub.id)+'">'+(g ? 'Оновити оцінку' : 'Зберегти оцінку')+'</button></div></div>';
   } else if(g){
-    gradeBox = '<div class="card stack"><div><div class="score">'+total+' / 20</div><span class="muted small">оцінка вчителя</span></div><div class="crit">'+CRIT.map(c => '<span>'+c[1]+'</span><b class="num">'+(Number(g.scores[c[0]]) || 0)+' / 5</b>').join('')+'</div>'+(g.comment ? '<div class="note" style="white-space:pre-wrap;font-size:15px;color:var(--ink)">'+esc(g.comment)+'</div>' : '')+'</div>';
+    gradeBox = '<div class="card stack"><div><div class="score">'+total+' / 20</div><span class="muted small">оцінка вчителя</span></div><div class="crit">'+CRIT.map(c => '<span>'+c[1]+'</span><b class="num">'+(Number(g.scores[c[0]]) || 0)+' / 5</b>').join('')+'</div>'+(g.comment ? '<div class="note" style="white-space:pre-wrap;font-size:15px;color:var(--ink)">'+esc(g.comment)+'</div>' : '')+
+      ((g.corrections || []).length ? '<div class="stack" style="gap:8px"><b>Виправлення</b>'+corrHtml(g.corrections)+'</div>' : '')+'</div>';
   } else gradeBox = '<div class="card"><span class="pill warn">Очікує перевірки</span><p class="muted small" style="margin-top:8px">Оцінка й коментар з’являться тут, коли вчитель перевірить роботу.</p></div>';
   return head+'<div class="two"><div class="stack"><div class="card stack"><details><summary>Умова завдання</summary><div class="prompt" style="margin-top:10px">'+esc(t.prompt)+'</div></details><div class="essay">'+(sub.text ? esc(sub.text) : '<span class="muted">Роботу здано порожньою.</span>')+'</div></div>'+tools+'</div>'+
     '<div class="stack">'+gradeBox+'<div class="card stack"><h3>Автоматична перевірка</h3>'+analysisHtml(a, t)+'</div></div></div>';
 };
 
+
+/* ---------- тренувальний режим ---------- */
+SCREENS.train = sc => {
+  const t = taskById(sc.id); if(!t) return back()+'<div class="empty">Завдання недоступне.</div>';
+  const key = S.keys[t.id]; let ok = 0, cnt = 0;
+  const qs = (t.questions || []).map((q, i) => {
+    const v = sc.answers[q.id], ch = !!sc.checked[q.id], r = ch ? isRight(q, key, v) : null, right = key && key.answers ? key.answers[q.id] : null;
+    if(ch){ cnt++; if(r) ok++; }
+    return '<div class="q '+(ch ? (r ? 'ok' : 'no') : '')+'"><span class="kind">'+KIND_CAP[q.kind]+'</span><div class="qt"><b>'+(i + 1)+'.</b>'+qTextHtml(q)+'</div>'+qInputHtml(q, i, v)+
+      (ch ? '<div class="ans">'+(r ? '<span class="y">Правильно!</span>' : '<span class="n">'+(v == null || v === '' ? 'Немає відповіді.' : 'Неправильно.')+'</span> Правильна відповідь: <span class="y">'+esc(showAnswer(q, right))+'</span>')+'</div>'+(key && key.notes && key.notes[q.id] ? '<div class="note">'+esc(key.notes[q.id])+'</div>' : '')
+        : '<button class="btn ghost sm qcheck" data-act="trCheck" data-qid="'+esc(q.id)+'">Перевірити</button>')+'</div>';
+  }).join('');
+  const total = (t.questions || []).length;
+  const bar = '<div class="runbar"><div class="grow"><b>'+esc(t.title)+'</b> <span class="pill">тренування без оцінки</span></div><span class="num"><b>'+ok+'</b> з '+cnt+' перевірених · усього '+total+'</span><button class="btn ghost sm" data-act="trReset">Почати заново</button><button class="btn" data-act="trCheckAll">Перевірити все</button></div>';
+  const qcard = '<div class="card">'+(t.intro ? '<p class="muted" style="margin-bottom:8px">'+esc(t.intro)+'</p>' : '')+qs+'</div>';
+  return back()+bar+(String(t.passage || '').trim() ? '<div class="two"><div class="card sticky">'+passageHtml(t)+'</div>'+qcard+'</div>' : '<div style="max-width:860px">'+qcard+'</div>');
+};
+function trainSaveBest(sc){
+  const t = taskById(sc.id), key = S.keys[sc.id]; if(!t || !key) return;
+  const qs = t.questions || []; if(!qs.every(q => sc.checked[q.id])) return;
+  const ok = qs.filter(q => isRight(q, key, sc.answers[q.id])).length, prev = LS.get(trainKey(t.id), null);
+  LS.set(trainKey(t.id), { best: prev ? Math.max(prev.best, ok) : ok, last: ok, total: qs.length, at: Date.now() });
+}
+
+/* ---------- прогрес ---------- */
+const TIPS = {
+  mcq:'Вибір відповіді: знайдіть у тексті місце, яке підтверджує варіант, і відкидайте варіанти, що правдиві, але не відповідають на питання.',
+  tfng_T:'True: твердження має повністю збігатися зі змістом тексту, а не лише містити ті самі слова.',
+  tfng_F:'False: шукайте в тексті пряму суперечність твердженню.',
+  tfng_NG:'Not Given: якщо в тексті немає інформації ні «за», ні «проти», обирайте Not Given, навіть якщо твердження здається логічним.',
+  gap:'Вписати слово: перевіряйте граматику навколо пропуску — яка частина мови й форма слова потрібні.',
+  wf:'Словотвір: визначте частину мови й не забувайте про заперечні префікси (un-, in-, im-, dis-) та множину.',
+  kwt:'Трансформації: не змінюйте ключове слово, тримайтеся ліміту 3–6 слів і зберігайте зміст першого речення.',
+  crit_c:'Зміст: розкривайте всі пункти завдання й тримайтеся заданого обсягу.',
+  crit_o:'Структура: план «вступ – основна частина – висновок» і слова-зв’язки між абзацами.',
+  crit_v:'Лексика: уникайте повторів, використовуйте синоніми та сталі вирази.',
+  crit_g:'Граматика: перечитуйте текст наприкінці, особливо часи дієслів, артиклі та узгодження.'
+};
+const KIND_LABEL = { mcq:'Вибір відповіді', tfng_T:'True', tfng_F:'False', tfng_NG:'Not Given', gap:'Вписати слово', wf:'Словотвір', kwt:'Трансформації' };
+function progressData(uid){
+  const points = [], kinds = {}, crit = { c:[], o:[], v:[], g:[] };
+  S.subs.filter(x => x.uid === uid).forEach(sub => {
+    const t = taskById(sub.taskId); if(!t || t.practice) return;
+    if(isAuto(t)){
+      const key = S.keys[t.id]; if(!key) return;
+      const sc = scoreReading(t, key, sub.answers); if(!sc || !sc.total) return;
+      points.push({ at:sub.submittedAt, pct:sc.ok / sc.total * 100, type:t.type, title:t.title, label:sc.ok + '/' + sc.total });
+      (t.questions || []).forEach(q => {
+        const r = isRight(q, key, (sub.answers || {})[q.id]);
+        const k = q.kind === 'tfng' ? 'tfng_' + key.answers[q.id] : q.kind;
+        const o = kinds[k] = kinds[k] || [0, 0]; o[1]++; if(r) o[0]++;
+      });
+    } else if(sub.grade){
+      const g = gradeTotal(sub.grade);
+      points.push({ at:sub.submittedAt, pct:g / 20 * 100, type:'writing', title:t.title, label:g + '/20' });
+      CRIT.forEach(c => crit[c[0]].push(Number(sub.grade.scores[c[0]]) || 0));
+    }
+  });
+  points.sort((a, b) => a.at - b.at);
+  return { points, kinds, crit };
+}
+function chartSvg(points){
+  const W = 640, H = 210, pl = 38, pr = 14, pt = 14, pb = 30, n = points.length;
+  const x = i => pl + (n === 1 ? (W - pl - pr) / 2 : i * (W - pl - pr) / (n - 1)), y = v => pt + (100 - v) * (H - pt - pb) / 100;
+  let g = [0, 50, 100].map(v => '<line class="grid" x1="'+pl+'" x2="'+(W - pr)+'" y1="'+y(v)+'" y2="'+y(v)+'"/><text x="'+(pl - 8)+'" y="'+(y(v) + 4)+'" text-anchor="end">'+v+'%</text>').join('');
+  const d = t => { const dt = new Date(t); return ('0' + dt.getDate()).slice(-2) + '.' + ('0' + (dt.getMonth() + 1)).slice(-2); };
+  g += '<text x="'+x(0)+'" y="'+(H - 8)+'" text-anchor="'+(n === 1 ? 'middle' : 'start')+'">'+d(points[0].at)+'</text>';
+  if(n > 1) g += '<text x="'+x(n - 1)+'" y="'+(H - 8)+'" text-anchor="end">'+d(points[n - 1].at)+'</text>';
+  const col = { reading:'var(--s1)', use:'var(--s2)', writing:'var(--s3)' };
+  Object.keys(col).forEach(type => {
+    const idx = points.map((p, i) => p.type === type ? i : -1).filter(i => i >= 0); if(!idx.length) return;
+    if(idx.length > 1) g += '<polyline fill="none" stroke="'+col[type]+'" stroke-width="2.5" stroke-linejoin="round" points="'+idx.map(i => x(i) + ',' + y(points[i].pct)).join(' ')+'"/>';
+    idx.forEach((i, j) => { const p = points[i]; g += '<circle cx="'+x(i)+'" cy="'+y(p.pct)+'" r="'+(j === idx.length - 1 ? 5.5 : 4)+'" fill="'+col[type]+'" stroke="var(--surface)" stroke-width="2"><title>'+esc(p.title + ': ' + p.label + ' (' + d(p.at) + ')')+'</title></circle>'; });
+  });
+  return '<svg class="chart" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Результати за датою">'+g+'</svg>';
+}
+function barHtml(label, pct, extra){ const p = Math.round(pct); return '<div class="bar"><span>'+esc(label)+'</span><div class="track"><i class="'+(p < 50 ? 'low' : p < 75 ? 'mid' : '')+'" style="width:'+Math.max(2, p)+'%"></i></div><b class="num">'+p+'%</b><span class="muted small num">'+esc(extra || '')+'</span></div>'; }
+function progressHtml(uid){
+  const P = progressData(uid);
+  if(!P.points.length) return '<div class="empty">Тут з’явиться прогрес після перших виконаних і перевірених завдань.</div>';
+  const avg = a => a.length ? a.reduce((x, y) => x + y, 0) / a.length : null;
+  const tiles = ['reading','use','writing'].map(type => { const ps = P.points.filter(p => p.type === type); if(!ps.length) return ''; const last = ps[ps.length - 1].pct, a = avg(ps.map(p => p.pct)); return '<div class="tile"><b>'+Math.round(a)+'%</b><span>'+TYPE_NAME[type]+': середнє з '+ps.length+' · останнє '+Math.round(last)+'%</span></div>'; }).join('');
+  const present = ['reading','use','writing'].filter(type => P.points.some(p => p.type === type));
+  const legend = '<div class="legend">'+present.map((type, i) => '<span><i style="background:var(--s'+(['reading','use','writing'].indexOf(type) + 1)+')"></i>'+TYPE_NAME[type]+'</span>').join('')+'</div>';
+  const kindRows = Object.keys(KIND_LABEL).filter(k => P.kinds[k]).map(k => barHtml(KIND_LABEL[k], P.kinds[k][0] / P.kinds[k][1] * 100, P.kinds[k][0] + ' з ' + P.kinds[k][1]));
+  const critRows = CRIT.filter(c => P.crit[c[0]].length).map(c => barHtml(c[1], avg(P.crit[c[0]]) / 5 * 100, (Math.round(avg(P.crit[c[0]]) * 10) / 10) + ' з 5'));
+  const weak = [];
+  Object.keys(P.kinds).forEach(k => { const v = P.kinds[k]; if(v[1] >= 3) weak.push({ k, pct:v[0] / v[1] * 100 }); });
+  CRIT.forEach(c => { const a = avg(P.crit[c[0]]); if(a != null) weak.push({ k:'crit_' + c[0], pct:a / 5 * 100 }); });
+  const tips = weak.filter(w => w.pct < 75 && TIPS[w.k]).sort((a, b) => a.pct - b.pct).slice(0, 3);
+  return '<div class="tiles">'+tiles+'</div>'+
+    '<section class="card stack"><div class="row between"><h2>Результати в часі</h2>'+legend+'</div>'+chartSvg(P.points)+'</section>'+
+    (tips.length ? '<section class="stack"><h2>Над чим попрацювати</h2>'+tips.map(w => '<div class="tip"><b>'+Math.round(w.pct)+'%</b> · '+esc(TIPS[w.k])+'</div>').join('')+'</section>' : '')+
+    (kindRows.length ? '<section class="card stack"><h2>Точність за типами питань</h2><div class="bars">'+kindRows.join('')+'</div></section>' : '')+
+    (critRows.length ? '<section class="card stack"><h2>Письмо за критеріями</h2><div class="bars">'+critRows.join('')+'</div></section>' : '');
+}
+const STABS = {}, STAB_IDS = ['zavdannia','progres','slovnyk'];
+STABS.progres = () => '<h1>Мій прогрес</h1>' + progressHtml(S.user.uid);
+SCREENS.student = sc => {
+  const st = studentById(sc.id); if(!st) return back('До результатів')+'<div class="empty">Учня не знайдено.</div>';
+  const subs = S.subs.filter(x => x.uid === st.id).sort((a, b) => b.submittedAt - a.submittedAt);
+  const rows = subs.map(x => { const t = taskById(x.taskId); return t ? '<tr><td><b>'+esc(t.title)+'</b></td><td>'+TYPE_NAME[t.type]+'</td><td class="muted num">'+fmtDate(x.submittedAt)+'</td><td class="c num">'+cellFor(t, x)+'</td></tr>' : ''; }).join('');
+  return back('До результатів')+'<h1>'+esc(st.name)+'</h1><p class="muted">'+esc(st.group || '')+' · логін <code class="pw">'+esc(st.login)+'</code></p>'+progressHtml(st.id)+
+    '<section class="stack"><h2>Здані роботи</h2>'+(rows ? '<div class="scroll"><table><tbody>'+rows+'</tbody></table></div>' : '<div class="empty">Учень ще не здав жодної роботи.</div>')+'</section>';
+};
+
+/* ---------- словник ---------- */
+const normWord = w => String(w || '').trim().toLowerCase().replace(/[’`]/g, "'").replace(/\s+/g, ' ');
+const BOX_DAYS = [0, 1, 2, 4, 8, 16];
+function vocabItems(){
+  const items = [], seen = new Set();
+  const add = (w, t, ex, src, own) => { const k = normWord(w); if(!k || seen.has(k)) return; seen.add(k); items.push({ k, w, t, ex, src, own }); };
+  (S.vocab.words || []).forEach(x => add(x.w, x.t, x.ex, x.src || '', true));
+  S.tasks.forEach(t => { if(!(t.vocab || []).length || !(t.practice || subFor(t.id, S.user.uid))) return; t.vocab.forEach(v => add(v.w, v.t, v.ex, t.id, false)); });
+  return items;
+}
+const dueItems = items => { const now = Date.now(), pr = S.vocab.progress || {}; return items.filter(i => !pr[i.k] || pr[i.k].next <= now); };
+const dotsHtml = k => { const b = ((S.vocab.progress || {})[k] || {}).box || 0; return '<span class="dots" title="Рівень запам’ятовування: '+b+' з 5">'+[1,2,3,4,5].map(n => '<i class="'+(n <= b ? 'on' : '')+'"></i>').join('')+'</span>'; };
+let vocabTimer = null;
+function saveVocabSoon(){ clearTimeout(vocabTimer); vocabTimer = setTimeout(saveVocabNow, 1200); }
+async function saveVocabNow(){ clearTimeout(vocabTimer); vocabTimer = null; if(!S.user || S.role !== 'student') return; try { await S.store.set('vocab', S.user.uid, { words:S.vocab.words, progress:S.vocab.progress, updatedAt:Date.now() }); } catch(e){ console.error(e); toast(errText(e), true); } }
+STABS.slovnyk = () => {
+  const items = vocabItems(), due = dueItems(items), learned = items.filter(i => (((S.vocab.progress || {})[i.k] || {}).box || 0) >= 4).length;
+  const groups = {}; items.forEach(i => { const g = i.own ? '__own' : i.src; (groups[g] = groups[g] || []).push(i); });
+  const order = Object.keys(groups).sort((a, b) => a === '__own' ? -1 : b === '__own' ? 1 : 0);
+  const table = list => '<div class="scroll"><table><tbody>'+list.map(i => '<tr><td style="min-width:130px"><b>'+esc(i.w)+'</b></td><td>'+esc(i.t || '')+'</td><td class="muted small" style="font-family:var(--font-read);font-style:italic">'+esc(i.ex || '')+'</td><td>'+dotsHtml(i.k)+'</td><td>'+(i.own ? '<button class="btn ghost sm" data-act="delWord" data-k="'+esc(i.k)+'" aria-label="Видалити слово">×</button>' : '')+'</td></tr>').join('')+'</tbody></table></div>';
+  return '<h1>Мій словник</h1>'+
+    '<div class="tiles"><div class="tile"><b>'+items.length+'</b><span>слів у словнику</span></div><div class="tile"><b>'+due.length+'</b><span>треба повторити сьогодні</span></div><div class="tile"><b>'+learned+'</b><span>добре запам’ятовано</span></div></div>'+
+    '<div class="row">'+(due.length ? '<button class="btn" data-act="cardsStart" data-mode="due">Повторювати картки ('+Math.min(due.length, 20)+')</button>' : (items.length ? '<span class="pill good">На сьогодні все повторено</span>' : ''))+(items.length ? '<button class="btn ghost" data-act="cardsStart" data-mode="all">Повторити всі слова</button>' : '')+'</div>'+
+    '<div class="card stack" data-enter="addWord"><h2>Додати слово</h2><div class="fields"><label class="f">Слово або вираз<input type="text" id="vw-w" autocomplete="off" spellcheck="false"></label><label class="f">Переклад<input type="text" id="vw-t" autocomplete="off"></label><label class="f" style="grid-column:span 2">Приклад (необов’язково)<input type="text" id="vw-e" autocomplete="off"></label></div><div><button class="btn" data-act="addWord">Додати</button></div>'+
+    '<p class="muted small">Слова з текстів додаються самі після виконання завдання. Також можна виділити слово в тексті й натиснути «+ У словник».</p></div>'+
+    (items.length ? order.map(g => { const t = g === '__own' ? null : taskById(g); return '<section class="stack"><h2>'+(g === '__own' ? 'Мої слова' : esc(t ? t.title : 'Інші слова'))+'</h2>'+table(groups[g])+'</section>'; }).join('') : '<div class="empty">Словник порожній. Виконайте завдання з читання або додайте слова самі.</div>');
+};
+SCREENS.cards = sc => {
+  const it = sc.queue[sc.pos];
+  if(!it) return back('До словника')+'<div class="card flash"><div class="word">Готово!</div><p>Знаю: <b>'+sc.known+'</b> · ще вчу: <b>'+sc.again+'</b></p><div class="row" style="justify-content:center"><button class="btn" data-act="tab" data-tab="slovnyk">До словника</button></div></div>';
+  return back('До словника')+'<p class="muted num" style="text-align:center">Картка '+(sc.pos + 1)+' з '+sc.queue.length+'</p>'+
+    '<div class="card flash"><div class="word">'+esc(it.w)+'</div>'+
+    (sc.flipped ? '<div class="tr">'+esc(it.t || '—')+'</div>'+(it.ex ? '<div class="ex">'+esc(it.ex)+'</div>' : '')+
+      '<div class="row" style="justify-content:center"><button class="btn ghost" data-act="cardAnswer" data-k="0">Ще вчу</button><button class="btn" data-act="cardAnswer" data-k="1">Знаю</button></div>'
+      : (it.ex ? '<div class="ex">'+esc(it.ex)+'</div>' : '')+'<button class="btn" data-act="cardFlip">Показати переклад</button>')+'</div>'+
+    '<p class="muted small" style="text-align:center">Згадайте переклад, потім відкрийте картку й чесно оцініть себе. Слова, які ви знаєте, повторюватимуться все рідше.</p>';
+};
+function sentenceAround(text, word){
+  const sents = String(text || '').replace(/\s+/g, ' ').match(/[^.!?]+[.!?]+["”’]?|[^.!?]+$/g) || [];
+  const w = word.toLowerCase(); const hit = sents.find(x => x.toLowerCase().includes(w));
+  return hit ? hit.trim().slice(0, 220) : '';
+}
+function formDialog(title, html, okLabel){
+  return new Promise(res => {
+    const d = $('#dlg');
+    d.innerHTML = '<h3>'+esc(title)+'</h3><form method="dialog" class="stack" style="margin:12px 0 0">'+html+'<div class="row end"><button type="button" class="btn ghost" data-v="0">Скасувати</button><button type="submit" class="btn" data-v="1">'+esc(okLabel || 'Зберегти')+'</button></div></form>';
+    let done = false; const fin = ok => { if(done) return; done = true; const v = {}; d.querySelectorAll('[data-f]').forEach(el => { v[el.dataset.f] = el.value.trim(); }); try { d.close(); } catch(e){} res(ok ? v : null); };
+    d.querySelector('form').onsubmit = e => { e.preventDefault(); fin(true); };
+    d.onclick = e => { const b = e.target.closest('[data-v="0"]'); if(b) fin(false); };
+    d.oncancel = () => fin(false);
+    try { d.showModal(); const f = d.querySelector('[data-f="t"]') || d.querySelector('input'); if(f) f.focus(); } catch(e){ fin(false); }
+  });
+}
+const selAdd = document.getElementById('seladd');
+function hideSelAdd(){ if(selAdd) selAdd.style.display = 'none'; }
+function checkSelection(){
+  if(S.role !== 'student' || !S.screen || !['sub','train','run'].includes(S.screen.name)) return hideSelAdd();
+  const sel = window.getSelection(); if(!sel || sel.isCollapsed || !sel.rangeCount) return hideSelAdd();
+  const txt = sel.toString().replace(/\s+/g, ' ').trim(), node = sel.anchorNode && (sel.anchorNode.nodeType === 1 ? sel.anchorNode : sel.anchorNode.parentElement);
+  if(!txt || txt.length > 60 || txt.split(' ').length > 5 || !/[A-Za-z]/.test(txt) || !node || !node.closest('.passage, .qt, .essay')) return hideSelAdd();
+  const r = sel.getRangeAt(0).getBoundingClientRect();
+  selAdd.dataset.text = txt; selAdd.dataset.ctx = (node.closest('.passage p, .passage h2, .qt, .essay') || node).textContent || '';
+  selAdd.style.left = Math.max(8, Math.min(window.scrollX + r.left, window.scrollX + document.documentElement.clientWidth - 140)) + 'px';
+  selAdd.style.top = (window.scrollY + r.bottom + 8) + 'px'; selAdd.style.display = 'block';
+}
+document.addEventListener('mouseup', () => setTimeout(checkSelection, 10));
+document.addEventListener('touchend', () => setTimeout(checkSelection, 300));
+document.addEventListener('keyup', e => { if(e.shiftKey || e.key === 'Shift') checkSelection(); });
+if(selAdd){
+  selAdd.addEventListener('mousedown', e => e.preventDefault());
+  selAdd.addEventListener('click', async () => {
+    const w = (selAdd.dataset.text || '').replace(/^[^A-Za-z]+|[^A-Za-z'’]+$/g, ''), ctx = selAdd.dataset.ctx || ''; hideSelAdd();
+    if(!w) return;
+    const v = await formDialog('Додати до словника', '<label class="f">Слово або вираз<input type="text" data-f="w" value="'+esc(w)+'"></label><label class="f">Переклад<input type="text" data-f="t" autocomplete="off"></label><label class="f">Приклад<input type="text" data-f="ex" value="'+esc(sentenceAround(ctx, w))+'"></label>', 'Додати');
+    if(v) addOwnWord(v.w, v.t, v.ex, S.screen && S.screen.id ? String(S.screen.id).split('_')[0] : '');
+  });
+}
+function addOwnWord(w, t, ex, src){
+  w = String(w || '').trim(); if(!w) return toast('Вкажіть слово.', true);
+  const k = normWord(w);
+  if(vocabItems().some(i => i.k === k)) return toast('Це слово вже є у словнику.', true);
+  S.vocab.words.push({ w, t:String(t || '').trim(), ex:String(ex || '').trim(), src:src || '', added:Date.now() });
+  saveVocabNow(); toast('Додано до словника: ' + w);
+  if(!S.screen) render(true);
+}
+
+/* ---------- спільний виклик ШІ ---------- */
+async function aiGenerate(parts){
+  const mock = window.__OLYMP_AI_MOCK;
+  if(mock) return mock(parts);
+  if(S.store.mode !== 'cloud') throw aiFail('ШІ працює лише на вашому сайті, підключеному до Firebase. У демо-режимі він недоступний.');
+  let getModel; try { getModel = await loadAI(); } catch(e){ console.error(e); throw aiFail(aiErrText(e)); }
+  let last = null;
+  for(const name of aiModels()){
+    try { const r = await getModel(name).generateContent(parts); return r.response.text(); }
+    catch(e){ console.error(e); last = e; if(!/not.?found|404|not supported|unknown model|no longer available|deprecated/i.test(String(e && e.message))) break; }
+  }
+  throw aiFail(aiErrText(last));
+}
+function aiGradePrompt(t, text){
+  return [
+    'You are an experienced examiner of the Ukrainian English Olympiad for grades 10-11. Assess the student\'s piece of writing.',
+    'Task: ' + (GENRES[t.genre] || 'writing') + ', ' + (t.formal ? 'formal' : 'neutral') + ' style, ' + t.minWords + '-' + t.maxWords + ' words, level: ' + (t.level === 'B' ? 'regional/national round (B2-C1)' : 'school/city round (B1-B2)') + '.',
+    'Task wording:', t.prompt, '', 'Student\'s text (between the markers):', '<<<', text, '>>>', '',
+    'Score each criterion with an integer from 0 to 5: "c" task achievement and content (all points covered, word count); "o" organisation and cohesion; "v" vocabulary range and accuracy; "g" grammar, spelling and punctuation. Be strict but fair for the level.',
+    'Return ONLY JSON: {"scores":{"c":0,"o":0,"v":0,"g":0},"comment":"...","corrections":[{"wrong":"...","right":"...","why":"..."}]}',
+    '- "comment": 3-5 sentences in Ukrainian addressed to the student (use "ти"): strengths first, then the 2-3 most important things to improve.',
+    '- "corrections": up to 10 most important language mistakes; "wrong" is the exact fragment copied from the text, "right" is the corrected fragment, "why" is a very short explanation in Ukrainian.'
+  ].join('\n');
+}
+function aiVocabPrompt(t){
+  return [
+    'From the English text below choose 8-12 words or set phrases that are most useful for a Ukrainian student at ' + (t.level === 'B' ? 'B2-C1' : 'B1-B2') + ' level to learn (not the simplest words).',
+    'Return ONLY JSON: {"vocab":[{"w":"word or phrase in dictionary form","t":"Ukrainian translation as used in this text","ex":"the exact sentence or phrase from the text where it appears"}]}',
+    '', 'Text:', String(t.passage || '') + '\n' + (t.questions || []).map(q => q.text).join('\n')
+  ].join('\n');
+}
+const corrHtml = list => '<ul class="corr">'+(list || []).map(c => '<li><s>'+esc(c.wrong)+'</s> → <b>'+esc(c.right)+'</b>'+(c.why ? '<div class="muted small">'+esc(c.why)+'</div>' : '')+'</li>').join('')+'</ul>';
+
 /* ---------- учитель: результати ---------- */
 const TABS = {};
 const TAB_IDS = ['rezultaty','zavdannia','uchni','nalashtuvannia'];
 function cellFor(t, sub){
-  if(!sub) return '<span class="muted">·</span>';
-  if(t.type === 'reading'){ const s = scoreReading(t, S.keys[t.id], sub.answers); return '<button class="cell" data-act="openSub" data-id="'+esc(sub.id)+'">'+(s ? s.ok + '/' + s.total : 'здано')+'</button>'; }
+  if(!sub) return isOverdue(t, null) ? '<span class="pill bad" title="Термін минув, роботу не здано">не здано</span>' : '<span class="muted">·</span>';
+  const late = isLate(t, sub) ? '<span class="late" title="Здано із запізненням">!</span>' : '';
+  if(isAuto(t)){ const s = scoreReading(t, S.keys[t.id], sub.answers); return '<button class="cell" data-act="openSub" data-id="'+esc(sub.id)+'">'+(s ? s.ok + '/' + s.total : 'здано')+late+'</button>'; }
   const g = gradeTotal(sub.grade);
-  return g == null ? '<button class="cell" data-act="openSub" data-id="'+esc(sub.id)+'"><span class="pill warn">перевірити</span></button>' : '<button class="cell" data-act="openSub" data-id="'+esc(sub.id)+'">'+g+'/20</button>';
+  return g == null ? '<button class="cell" data-act="openSub" data-id="'+esc(sub.id)+'"><span class="pill warn">перевірити</span>'+late+'</button>' : '<button class="cell" data-act="openSub" data-id="'+esc(sub.id)+'">'+g+'/20'+late+'</button>';
 }
 TABS.rezultaty = () => {
   const queue = S.subs.filter(s => s.type === 'writing' && !s.grade).sort((a, b) => a.submittedAt - b.submittedAt);
   const head = '<div class="row between"><h1>Результати</h1><button class="btn ghost sm" data-act="refresh">Оновити дані</button></div>'+
-    '<div class="tiles"><div class="tile"><b>'+S.students.length+'</b><span>учнів</span></div><div class="tile"><b>'+S.tasks.filter(t => t.published).length+'</b><span>опублікованих завдань</span></div><div class="tile"><b>'+S.subs.length+'</b><span>зданих робіт</span></div><div class="tile"><b>'+queue.length+'</b><span>письмових робіт очікують перевірки</span></div></div>';
+    '<div class="tiles"><div class="tile"><b>'+S.students.length+'</b><span>учнів</span></div><div class="tile"><b>'+S.tasks.filter(t => t.published).length+'</b><span>відкритих завдань</span></div><div class="tile"><b>'+S.subs.length+'</b><span>зданих робіт</span></div><div class="tile"><b>'+queue.length+'</b><span>письмових робіт очікують перевірки</span></div></div>';
   if(!S.tasks.length || !S.students.length) return head+'<div class="card stack"><h2>З чого почати</h2><ol class="stack" style="margin:0;padding-left:22px"><li>У розділі <button class="link" data-act="tab" data-tab="zavdannia">Завдання</button> додайте стартовий банк або створіть власні завдання.</li><li>У розділі <button class="link" data-act="tab" data-tab="uchni">Учні</button> створіть логіни й паролі для учнів.</li><li>Надішліть учням адресу цього сайту та їхні дані для входу.</li></ol></div>';
   const q = queue.length ? '<section class="stack"><h2>Очікують перевірки</h2><div class="scroll"><table><tbody>'+queue.map(s => { const st = studentById(s.uid), t = taskById(s.taskId); return '<tr><td><b>'+esc(st ? st.name : 'Учня видалено')+'</b> <span class="muted">'+esc(st ? st.group || '' : '')+'</span></td><td>'+esc(t ? t.title : '—')+'</td><td class="muted num">'+fmtDate(s.submittedAt)+'</td><td class="c"><button class="btn sm" data-act="openSub" data-id="'+esc(s.id)+'">Перевірити</button></td></tr>'; }).join('')+'</tbody></table></div></section>' : '';
   const groups = allGroups(), g = groups.includes(S.resGroup) ? S.resGroup : '';
   const studs = g ? S.students.filter(x => String(x.group || '').trim() === g) : S.students;
-  const cols = g ? S.tasks.filter(t => visibleFor(t, { group:g })) : S.tasks;
+  const graded = S.tasks.filter(t => !t.practice), cols = g ? graded.filter(t => visibleFor(t, { group:g })) : graded;
   const filter = groups.length > 1 ? '<label class="f" style="max-width:260px">Клас або група<select id="res-group"><option value="">Усі учні</option>'+groups.map(x => '<option value="'+esc(x)+'"'+(x === g ? ' selected' : '')+'>'+esc(x)+'</option>').join('')+'</select></label>' : '';
-  const matrix = '<section class="stack"><div class="row between"><h2>Усі учні й завдання</h2><button class="btn ghost sm" data-act="exportResults">Завантажити в Excel</button></div>'+filter+'<p class="muted small">Читання: правильних відповідей. Письмо: бал із 20. Риска означає, що завдання не призначене групі учня. Натисніть на результат, щоб відкрити роботу.</p><div class="scroll"><table class="matrix"><thead><tr><th>Учень</th>'+cols.map(t => '<th class="t c">'+(t.type === 'reading' ? 'Чит.' : 'Письмо')+'<br>'+esc(t.title)+'</th>').join('')+'</tr></thead><tbody>'+
-    studs.map(st => '<tr><td style="white-space:nowrap"><b>'+esc(st.name)+'</b> <span class="muted">'+esc(st.group || '')+'</span></td>'+cols.map(t => { const sub = subFor(t.id, st.id); return '<td class="c num">'+(!sub && !visibleFor(t, st) ? '<span class="muted">—</span>' : cellFor(t, sub))+'</td>'; }).join('')+'</tr>').join('')+'</tbody></table></div></section>';
+  const matrix = '<section class="stack"><div class="row between"><h2>Усі учні й завдання</h2><button class="btn ghost sm" data-act="exportResults">Завантажити в Excel</button></div>'+filter+'<p class="muted small">Читання та Use of English: правильних відповідей. Письмо: бал із 20. Риска означає, що завдання не призначене групі учня; знак оклику — здано із запізненням. Натисніть на результат, щоб відкрити роботу, а на ім’я — щоб побачити прогрес учня.</p><div class="scroll"><table class="matrix"><thead><tr><th>Учень</th>'+cols.map(t => '<th class="t c">'+TYPE_SHORT[t.type]+'<br>'+esc(t.title)+(t.due ? '<br><span class="muted">до '+fmtDue(t.due)+'</span>' : '')+'</th>').join('')+'</tr></thead><tbody>'+
+    studs.map(st => '<tr><td style="white-space:nowrap"><button class="link" data-act="openStudent" data-id="'+esc(st.id)+'"><b>'+esc(st.name)+'</b></button> <span class="muted">'+esc(st.group || '')+'</span></td>'+cols.map(t => { const sub = subFor(t.id, st.id); return '<td class="c num">'+(!sub && !visibleFor(t, st) ? '<span class="muted">—</span>' : cellFor(t, sub))+'</td>'; }).join('')+'</tr>').join('')+'</tbody></table></div></section>';
   return head + q + matrix;
 };
 
 /* ---------- учитель: завдання ---------- */
 TABS.zavdannia = () => {
   const hasBank = (window.STARTER_BANK || []).some(b => taskById(b.id));
-  const head = '<div class="row between"><h1>Завдання</h1><div class="row"><button class="btn" data-act="photoTask">З фото підручника</button><button class="btn" data-act="newTask" data-type="reading">Нове: читання</button><button class="btn" data-act="newTask" data-type="writing">Нове: письмо</button>'+(hasBank ? '' : '<button class="btn ghost" data-act="importBank">Додати стартовий банк</button>')+'</div></div>';
-  if(!S.tasks.length) return head+'<div class="empty stack" style="align-items:center"><p>Завдань ще немає. Стартовий банк містить 4 тексти для читання і 4 теми письма для 10–11 класів. Також можна створити завдання зі скриншота сторінки підручника.</p><div class="row" style="justify-content:center"><button class="btn" data-act="importBank">Додати стартовий банк</button><button class="btn ghost" data-act="photoTask">З фото підручника</button></div></div>';
-  return head+'<div class="scroll"><table><thead><tr><th>Назва</th><th>Вид</th><th>Рівень</th><th class="c">Час</th><th class="c">Здано</th><th>Кому</th><th>Учням</th><th></th></tr></thead><tbody>'+
-    S.tasks.map(t => '<tr><td><b>'+esc(t.title)+'</b></td><td>'+(t.type === 'reading' ? 'Читання, ' + (t.questions || []).length + ' пит.' : esc(GENRES[t.genre] || 'Письмо'))+'</td><td>'+lvl(t.level)+'</td><td class="c num">'+(t.minutes ? t.minutes + ' хв' : '—')+'</td><td class="c num">'+S.subs.filter(s => s.taskId === t.id).length+'</td><td>'+(t.groups && t.groups.length ? esc(t.groups.join(', ')) : '<span class="muted">Усім</span>')+'</td>'+
+  const head = '<div class="row between"><h1>Завдання</h1><div class="row"><button class="btn" data-act="photoTask">З фото підручника</button><button class="btn" data-act="newTask" data-type="reading">Нове: читання</button><button class="btn" data-act="newTask" data-type="use">Нове: Use of English</button><button class="btn" data-act="newTask" data-type="writing">Нове: письмо</button>'+(hasBank ? '' : '<button class="btn ghost" data-act="importBank">Додати стартовий банк</button>')+'</div></div>';
+  if(!S.tasks.length) return head+'<div class="empty stack" style="align-items:center"><p>Завдань ще немає. Стартовий банк містить 4 тексти для читання, 2 вправи Use of English і 4 теми письма для 10–11 класів. Також можна створити завдання зі скриншота сторінки підручника.</p><div class="row" style="justify-content:center"><button class="btn" data-act="importBank">Додати стартовий банк</button><button class="btn ghost" data-act="photoTask">З фото підручника</button></div></div>';
+  return head+'<div class="scroll"><table><thead><tr><th>Назва</th><th>Вид</th><th>Рівень</th><th class="c">Час</th><th>Термін</th><th class="c">Здано</th><th>Кому</th><th>Учням</th><th></th></tr></thead><tbody>'+
+    S.tasks.map(t => '<tr><td><b>'+esc(t.title)+'</b>'+(t.practice ? ' <span class="pill">тренувальне</span>' : '')+'</td><td>'+(isAuto(t) ? TYPE_NAME[t.type] + ', ' + (t.questions || []).length + ' пит.' : esc(GENRES[t.genre] || 'Письмо'))+'</td><td>'+lvl(t.level)+'</td><td class="c num">'+(t.minutes ? t.minutes + ' хв' : '—')+'</td><td class="num">'+(t.due ? 'до ' + fmtDue(t.due) : '<span class="muted">—</span>')+'</td><td class="c num">'+S.subs.filter(s => s.taskId === t.id).length+'</td><td>'+(t.groups && t.groups.length ? esc(t.groups.join(', ')) : '<span class="muted">Усім</span>')+'</td>'+
       '<td><button class="cell" data-act="togglePub" data-id="'+esc(t.id)+'" title="Натисніть, щоб змінити"><span class="pill '+(t.published ? 'good' : '')+'">'+(t.published ? 'Відкрито' : 'Приховано')+'</span></button></td>'+
       '<td style="white-space:nowrap"><button class="btn ghost sm" data-act="editTask" data-id="'+esc(t.id)+'">Редагувати</button> <button class="btn ghost sm" data-act="delTask" data-id="'+esc(t.id)+'">Видалити</button></td></tr>').join('')+'</tbody></table></div>';
 };
-function blankQ(kind){ return kind === 'mcq' ? { kind, text:'', options:['','','',''], a:0, n:'' } : kind === 'tfng' ? { kind, text:'', a:'T', n:'' } : { kind, text:'', a:'', n:'' }; }
+function blankQ(kind){ return kind === 'mcq' ? { kind, text:'', options:['','','',''], a:0, n:'' } : kind === 'tfng' ? { kind, text:'', a:'T', n:'' } : kind === 'wf' ? { kind, text:'', word:'', a:'', n:'' } : kind === 'kwt' ? { kind, text:'', word:'', stem:'', a:'', n:'' } : { kind, text:'', a:'', n:'' }; }
 function groupPicker(d){
   const gs = allGroups(), sel = d.groups || [];
   return '<div class="f" style="grid-column:1/-1"><span>Кому видно</span>'+(gs.length ? '<div class="row">'+gs.map((g, i) => '<label class="chk"><input type="checkbox" id="grp-'+i+'" data-grp="'+esc(g)+'"'+(sel.includes(g) ? ' checked' : '')+'>'+esc(g)+'</label>').join('')+'</div><span class="muted small">'+(sel.length ? 'Завдання бачать лише позначені групи.' : 'Нічого не позначено: завдання бачать усі учні.')+'</span>' : '<span class="muted small">Усім учням. Щоб призначати завдання окремим класам, вкажіть клас у картках учнів.</span>')+'</div>';
@@ -730,28 +1049,37 @@ function groupPicker(d){
 function draftFrom(t){
   if(!t) return null;
   const d = JSON.parse(JSON.stringify(t));
-  if(d.type === 'reading'){ const k = S.keys[t.id] || { answers:{}, notes:{} }; d.questions = (d.questions || []).map(q => { const a = k.answers[q.id]; return Object.assign({}, q, { a: q.kind === 'gap' ? (Array.isArray(a) ? a.join('; ') : (a || '')) : a, n: (k.notes || {})[q.id] || '' }); }); }
+  d.groups = d.groups || []; d.vocab = d.vocab || []; d.due = d.due || ''; d.practice = !!d.practice;
+  if(isAuto(d)){ const k = S.keys[t.id] || { answers:{}, notes:{} }; d.questions = (d.questions || []).map(q => { const a = k.answers[q.id]; return Object.assign({}, q, { a: TEXT_KINDS.includes(q.kind) ? (Array.isArray(a) ? a.join('; ') : (a || '')) : a, n: (k.notes || {})[q.id] || '' }); }); }
   return d;
 }
 SCREENS.edit = sc => {
-  const d = sc.draft, rd = d.type === 'reading';
+  const d = sc.draft, auto = isAuto(d);
   const common = '<div class="fields"><label class="f" style="grid-column:1/-1">Назва<input type="text" id="ed-title" data-bind="title" value="'+esc(d.title)+'"></label>'+
     '<label class="f">Рівень<select id="ed-level" data-bind="level">'+Object.keys(LEVELS).map(k => '<option value="'+k+'"'+(d.level === k ? ' selected' : '')+'>'+LEVELS[k]+' етап</option>').join('')+'</select></label>'+
     '<label class="f">Час, хв (0 — без обмеження)<input type="number" id="ed-min" min="0" max="240" data-bind="minutes" data-num value="'+esc(d.minutes)+'"></label>'+
-    '<label class="f">Доступ<select id="ed-pub" data-bind="published" data-bool><option value="1"'+(d.published ? ' selected' : '')+'>Відкрито для учнів</option><option value="0"'+(d.published ? '' : ' selected')+'>Приховано</option></select></label>'+groupPicker(d)+'</div>';
+    '<label class="f">Доступ<select id="ed-pub" data-bind="published" data-bool><option value="1"'+(d.published ? ' selected' : '')+'>Відкрито для учнів</option><option value="0"'+(d.published ? '' : ' selected')+'>Приховано</option></select></label>'+
+    '<label class="f">Виконати до (необов’язково)<input type="date" id="ed-due" data-bind="due" value="'+esc(d.due || '')+'"></label>'+
+    (auto ? '<label class="f">Режим<select id="ed-practice" data-bind="practice" data-bool><option value="0"'+(d.practice ? '' : ' selected')+'>Звичайне: одна спроба, з оцінкою</option><option value="1"'+(d.practice ? ' selected' : '')+'>Тренувальне: без оцінки, відповіді одразу</option></select></label>' : '')+
+    groupPicker(d)+'</div>';
   let body;
-  if(rd){
+  if(auto){
+    const kinds = KINDS_FOR[d.type];
     body = '<label class="f">Інструкція англійською (над питаннями)<input type="text" id="ed-intro" data-bind="intro" value="'+esc(d.intro)+'"></label>'+
-      '<label class="f">Текст для читання (абзаци відокремлюйте порожнім рядком)<textarea id="ed-passage" rows="12" data-bind="passage" style="font-family:var(--font-read)">'+esc(d.passage)+'</textarea></label>'+
+      '<label class="f">'+(d.type === 'use' ? 'Текст (необов’язково; для вправ на пропуски в тексті позначайте їх номерами: (1) ______)' : 'Текст для читання (абзаци відокремлюйте порожнім рядком)')+'<textarea id="ed-passage" rows="'+(d.type === 'use' ? 7 : 12)+'" data-bind="passage" style="font-family:var(--font-read)">'+esc(d.passage)+'</textarea></label>'+
       '<h2>Питання</h2>'+d.questions.map((q, i) => {
-        let ans;
+        let ans, extra = '';
         if(q.kind === 'mcq') ans = '<div class="stack" style="gap:6px"><span class="small muted">Варіанти. Позначте правильний.</span>'+q.options.map((o, j) => '<div class="optedit"><input type="radio" name="ed-a-'+i+'" id="ed-a-'+i+'-'+j+'" value="'+j+'" data-bind="questions.'+i+'.a" data-num'+(Number(q.a) === j ? ' checked' : '')+' aria-label="Правильний варіант '+(j + 1)+'"><input type="text" id="ed-o-'+i+'-'+j+'" data-bind="questions.'+i+'.options.'+j+'" value="'+esc(o)+'" aria-label="Варіант '+(j + 1)+'">'+(q.options.length > 2 ? '<button class="btn ghost sm" data-act="delOpt" data-i="'+i+'" data-j="'+j+'" aria-label="Прибрати варіант">×</button>' : '')+'</div>').join('')+(q.options.length < 8 ? '<div><button class="link small" data-act="addOpt" data-i="'+i+'">+ варіант</button></div>' : '')+'</div>';
         else if(q.kind === 'tfng') ans = '<label class="f">Правильна відповідь<select id="ed-tf-'+i+'" data-bind="questions.'+i+'.a" style="max-width:200px">'+Object.keys(TF).map(k => '<option value="'+k+'"'+(q.a === k ? ' selected' : '')+'>'+TF[k]+'</option>').join('')+'</select></label>';
         else ans = '<label class="f">Правильна відповідь (кілька допустимих варіантів через крапку з комою)<input type="text" id="ed-g-'+i+'" data-bind="questions.'+i+'.a" value="'+esc(q.a)+'"></label>';
-        return '<div class="qedit"><div class="row between"><b>Питання '+(i + 1)+'</b><div class="row"><select id="ed-k-'+i+'" data-kind="'+i+'" aria-label="Тип питання" style="width:auto">'+Object.keys(KINDS).map(k => '<option value="'+k+'"'+(q.kind === k ? ' selected' : '')+'>'+KINDS[k]+'</option>').join('')+'</select><button class="btn ghost sm" data-act="delQ" data-i="'+i+'">Видалити</button></div></div>'+
-          '<label class="f">Формулювання<input type="text" id="ed-t-'+i+'" data-bind="questions.'+i+'.text" value="'+esc(q.text)+'"></label>'+ans+
+        if(q.kind === 'wf') extra = '<label class="f">Базове слово (його треба змінити)<input type="text" id="ed-w-'+i+'" data-bind="questions.'+i+'.word" value="'+esc(q.word || '')+'" placeholder="HAPPY" style="max-width:240px"></label>';
+        if(q.kind === 'kwt') extra = '<label class="f">Ключове слово (не змінюється)<input type="text" id="ed-w-'+i+'" data-bind="questions.'+i+'.word" value="'+esc(q.word || '')+'" placeholder="SUCH" style="max-width:240px"></label>'+
+          '<label class="f">Друге речення з пропуском ______<input type="text" id="ed-s-'+i+'" data-bind="questions.'+i+'.stem" value="'+esc(q.stem || '')+'" placeholder="It ______ that we left early."></label>';
+        const label = q.kind === 'kwt' ? 'Перше речення' : q.kind === 'wf' ? 'Речення з пропуском ______' : 'Формулювання';
+        return '<div class="qedit"><div class="row between"><b>Питання '+(i + 1)+'</b><div class="row"><select id="ed-k-'+i+'" data-kind="'+i+'" aria-label="Тип питання" style="width:auto">'+kinds.map(k => '<option value="'+k+'"'+(q.kind === k ? ' selected' : '')+'>'+KINDS[k]+'</option>').join('')+'</select><button class="btn ghost sm" data-act="delQ" data-i="'+i+'">Видалити</button></div></div>'+
+          '<label class="f">'+label+'<input type="text" id="ed-t-'+i+'" data-bind="questions.'+i+'.text" value="'+esc(q.text)+'"></label>'+extra+ans+
           '<label class="f">Пояснення для учня (показується після здачі)<input type="text" id="ed-n-'+i+'" data-bind="questions.'+i+'.n" value="'+esc(q.n)+'"></label></div>';
-      }).join('')+'<div class="row"><button class="btn ghost" data-act="addQ" data-kind="mcq">+ Вибір відповіді</button><button class="btn ghost" data-act="addQ" data-kind="tfng">+ True / False / Not Given</button><button class="btn ghost" data-act="addQ" data-kind="gap">+ Вписати слово</button></div>';
+      }).join('')+'<div class="row">'+kinds.map(k => '<button class="btn ghost" data-act="addQ" data-kind="'+k+'">+ '+KINDS[k]+'</button>').join('')+'</div>'+vocabEditor(d, sc);
   } else {
     body = '<div class="fields"><label class="f">Жанр<select id="ed-genre" data-bind="genre">'+Object.keys(GENRES).map(k => '<option value="'+k+'"'+(d.genre === k ? ' selected' : '')+'>'+GENRES[k]+'</option>').join('')+'</select></label>'+
       '<label class="f">Стиль<select id="ed-formal" data-bind="formal" data-bool><option value="1"'+(d.formal ? ' selected' : '')+'>Офіційний (без скорочень)</option><option value="0"'+(d.formal ? '' : ' selected')+'>Нейтральний</option></select></label>'+
@@ -762,21 +1090,34 @@ SCREENS.edit = sc => {
   }
   const form = '<div class="card stack">'+common+body+'</div><div class="row end"><button class="btn ghost" data-act="home">Скасувати</button><button class="btn" data-act="saveTask">Зберегти завдання</button></div>';
   const note = sc.imgs ? '<div class="banner">'+(sc.fromAI ? '<b>Чернетку створив ШІ.</b> Звірте з оригіналом текст, питання і <b>особливо правильні відповіді</b>: ШІ може помилятися.' : '<b>Текст розпізнано автоматично.</b> Виправте помилки розпізнавання, додайте назву та питання.')+' Завдання збережеться прихованим. Відкрийте його учням, коли все перевірите.</div>' : '';
-  const head = back('До завдань')+'<h1>'+(sc.id ? 'Редагування' : 'Нове завдання')+': '+(rd ? 'читання' : 'письмо')+'</h1>'+note;
+  const head = back('До завдань')+'<h1>'+(sc.id ? 'Редагування' : 'Нове завдання')+': '+(d.type === 'use' ? 'Use of English' : TYPE_NAME[d.type].toLowerCase())+'</h1>'+note;
   if(!sc.imgs) return head + form;
   return head+'<div class="two"><div class="card stack sticky"><h3>Оригінал</h3><div class="pages">'+sc.imgs.map((u, i) => '<img src="'+u+'" alt="Сторінка '+(i + 1)+'">').join('')+'</div></div><div class="stack">'+form+'</div></div>';
 };
+function vocabEditor(d, sc){
+  const v = d.vocab || [];
+  return '<h2>Словник до тексту</h2><p class="muted small">Слова потрапляють у словник учня після виконання завдання (а для тренувальних завдань одразу). Учень повторює їх на картках.</p>'+
+    (v.length ? '<div class="stack" style="gap:8px">'+v.map((x, i) => '<div class="fields" style="grid-template-columns:minmax(120px,1fr) minmax(120px,1fr) minmax(200px,2fr) auto;align-items:end">'+
+      '<label class="f">Слово<input type="text" id="vo-w-'+i+'" data-bind="vocab.'+i+'.w" value="'+esc(x.w)+'"></label>'+
+      '<label class="f">Переклад<input type="text" id="vo-t-'+i+'" data-bind="vocab.'+i+'.t" value="'+esc(x.t)+'"></label>'+
+      '<label class="f">Приклад із тексту<input type="text" id="vo-e-'+i+'" data-bind="vocab.'+i+'.ex" value="'+esc(x.ex)+'"></label>'+
+      '<button class="btn ghost sm" data-act="delVocab" data-i="'+i+'" aria-label="Прибрати слово">×</button></div>').join('')+'</div>' : '<div class="empty" style="padding:14px">Слів ще немає.</div>')+
+    (sc.vstatus ? '<p class="status" role="status">'+esc(sc.vstatus)+'</p>' : '')+
+    '<div class="row"><button class="btn ghost" data-act="addVocab">+ Слово</button><button class="btn ghost" data-act="genVocab"'+(sc.vstatus ? ' disabled' : '')+'>Дібрати слова за допомогою ШІ</button></div>';
+}
 function setPath(obj, path, val){ const p = path.split('.'); let o = obj; for(let i = 0; i < p.length - 1; i++) o = o[p[i]]; o[p[p.length - 1]] = val; }
 function validateDraft(d){
   if(!String(d.title || '').trim()) return 'Вкажіть назву завдання.';
-  if(d.type === 'reading'){
-    if(!String(d.passage || '').trim()) return 'Додайте текст для читання.';
+  if(isAuto(d)){
+    if(d.type === 'reading' && !String(d.passage || '').trim()) return 'Додайте текст для читання.';
     if(!d.questions.length) return 'Додайте хоча б одне питання.';
     for(let i = 0; i < d.questions.length; i++){
       const q = d.questions[i], n = 'Питання ' + (i + 1) + ': ';
       if(!String(q.text || '').trim()) return n + 'немає формулювання.';
       if(q.kind === 'mcq'){ if(q.options.some(o => !String(o).trim())) return n + 'заповніть усі варіанти або приберіть зайві.'; if(!(Number(q.a) >= 0 && Number(q.a) < q.options.length)) return n + 'позначте правильний варіант.'; }
-      if(q.kind === 'gap' && !String(q.a || '').trim()) return n + 'вкажіть правильну відповідь.';
+      if(TEXT_KINDS.includes(q.kind) && !String(q.a || '').trim()) return n + 'вкажіть правильну відповідь.';
+      if((q.kind === 'wf' || q.kind === 'kwt') && !String(q.word || '').trim()) return n + (q.kind === 'wf' ? 'вкажіть базове слово.' : 'вкажіть ключове слово.');
+      if(q.kind === 'kwt' && !/_{2,}/.test(String(q.stem || ''))) return n + 'у другому реченні позначте пропуск підкресленнями ______.';
     }
   } else {
     if(!String(d.prompt || '').trim()) return 'Додайте умову завдання.';
@@ -819,10 +1160,10 @@ function aiErrText(e){
   return 'ШІ не зміг обробити зображення: ' + m.slice(0, 220);
 }
 function aiPrompt(kind, note){
-  const hint = kind === 'reading' ? 'The teacher says this is a READING task.' : kind === 'writing' ? 'The teacher says this is a WRITING task.' : 'Decide yourself whether it is a reading or a writing task.';
+  const hint = kind === 'reading' ? 'The teacher says this is a READING task.' : kind === 'writing' ? 'The teacher says this is a WRITING task.' : kind === 'use' ? 'The teacher says this is a USE OF ENGLISH task (grammar and vocabulary).' : 'Decide yourself whether it is a reading, use of English or writing task.';
   return [
     'You help an English teacher in Ukraine turn photos or screenshots of textbook pages into an online practice task for students (grades 10-11) preparing for the English Olympiad.',
-    'The images are pages in order. They show ONE exercise: either a READING task (a text plus questions) or a WRITING task (a writing prompt). ' + hint,
+    'The images are pages in order. They show ONE exercise: a READING task (a text plus questions), a USE OF ENGLISH task (grammar/vocabulary: open cloze, multiple-choice cloze, word formation, key word transformations) or a WRITING task (a writing prompt). ' + hint,
     note ? 'Teacher\'s note (follow it): ' + note : '',
     '',
     'Return ONLY one JSON object in one of these shapes.',
@@ -831,6 +1172,12 @@ function aiPrompt(kind, note){
     '{"kind":"mcq","text":string,"options":[string,...],"answer":number,"explanation":string}  (answer = 0-based index of the correct option; options without A/B/C letters)',
     '{"kind":"tfng","text":string,"answer":"T"|"F"|"NG","explanation":string}',
     '{"kind":"gap","text":string,"answer":[string,...],"explanation":string}  (every acceptable short answer; mark the gap in text with ______)',
+    'USE OF ENGLISH: {"type":"use","title":string,"level":"A"|"B","minutes":number,"intro":string,"passage":string,"questions":[...]}  ("passage" only for a text with numbered gaps, written as (1) ______; otherwise "")',
+    'Additional question kinds for USE OF ENGLISH:',
+    '{"kind":"gap","text":"Gap (1)","answer":[string,...]}  (one question per numbered gap of an open cloze)',
+    '{"kind":"wf","text":"sentence with ______","word":"BASE WORD","answer":[string,...]}  (word formation)',
+    '{"kind":"kwt","text":"first sentence","word":"KEY WORD","stem":"second sentence with ______","answer":[string,...]}  (key word transformation; answers are the missing words only)',
+    'For READING and USE OF ENGLISH also add "vocab":[{"w":"word or phrase","t":"Ukrainian translation","ex":"sentence from the text"}] with 6-10 useful words from the text (or [] if there is no text).',
     'WRITING: {"type":"writing","title":string,"level":"A"|"B","minutes":number,"genre":"essay"|"letter"|"article"|"review"|"other","formal":boolean,"prompt":string,"minWords":number,"maxWords":number,"minParagraphs":number}',
     '',
     'Rules:',
@@ -863,13 +1210,14 @@ function draftFromAI(j){
   if(j.type === 'writing'){
     const genre = GENRES[j.genre] ? j.genre : 'other';
     if(!str(j.prompt)) throw aiFail('ШІ не знайшов умови письмового завдання. Додайте чіткіший скриншот.');
-    return { type:'writing', title:str(j.title) || 'Writing task', level:lv, minutes:mins || 40, published:false, genre,
+    return { type:'writing', groups:[], vocab:[], due:'', title:str(j.title) || 'Writing task', level:lv, minutes:mins || 40, published:false, genre,
       formal: typeof j.formal === 'boolean' ? j.formal : (genre === 'essay' || genre === 'letter'), prompt:str(j.prompt),
       minWords:Number(j.minWords) || (lv === 'B' ? 220 : 150), maxWords:Number(j.maxWords) || (lv === 'B' ? 270 : 200),
       minParagraphs:Number(j.minParagraphs) || (['essay','letter','article'].includes(genre) ? 4 : 0) };
   }
-  const passage = fixParas(j.passage);
-  if(!passage) throw aiFail('ШІ не знайшов тексту для читання. Додайте сторінку з текстом або виберіть «Письмо».');
+  const type = j.type === 'use' ? 'use' : 'reading', passage = fixParas(j.passage);
+  if(type === 'reading' && !passage) throw aiFail('ШІ не знайшов тексту для читання. Додайте сторінку з текстом або виберіть інший тип завдання.');
+  const vocab = (Array.isArray(j.vocab) ? j.vocab : []).map(v => ({ w:str(v && v.w), t:str(v && v.t), ex:str(v && v.ex) })).filter(v => v.w).slice(0, 20);
   const qs = (Array.isArray(j.questions) ? j.questions : []).map(q => {
     q = q || {}; const text = str(q.text), n = str(q.explanation);
     if(q.kind === 'mcq' && Array.isArray(q.options) && q.options.length >= 2){
@@ -879,11 +1227,14 @@ function draftFromAI(j){
       a = Number(a); if(!(a >= 0 && a < options.length)) a = 0;
       return { kind:'mcq', text, options, a, n };
     }
-    if(q.kind === 'tfng'){ const t = normAns(q.answer); return { kind:'tfng', text, a: /^(t|true|yes|y)$/.test(t) ? 'T' : /^(f|false|no|n)$/.test(t) ? 'F' : 'NG', n }; }
+    if(q.kind === 'tfng' && type === 'reading'){ const t = normAns(q.answer); return { kind:'tfng', text, a: /^(t|true|yes|y)$/.test(t) ? 'T' : /^(f|false|no|n)$/.test(t) ? 'F' : 'NG', n }; }
     const arr = Array.isArray(q.answer) ? q.answer : String(q.answer == null ? '' : q.answer).split(/[;|]/);
-    return { kind:'gap', text, a: arr.map(str).filter(Boolean).join('; '), n };
+    const a = arr.map(str).filter(Boolean).join('; ');
+    if(type === 'use' && q.kind === 'wf') return { kind:'wf', text, word:str(q.word).toUpperCase(), a, n };
+    if(type === 'use' && q.kind === 'kwt') return { kind:'kwt', text, word:str(q.word).toUpperCase(), stem:str(q.stem), a, n };
+    return { kind:'gap', text, a, n };
   }).filter(q => q.text);
-  return { type:'reading', title:str(j.title) || 'Reading task', level:lv, minutes:mins || 25, published:false, intro:str(j.intro), passage, questions: qs.length ? qs : [blankQ('mcq')] };
+  return { type, groups:[], vocab, due:'', practice:false, title:str(j.title) || (type === 'use' ? 'Use of English' : 'Reading task'), level:lv, minutes:mins || (type === 'use' ? 20 : 25), published:false, intro:str(j.intro), passage, questions: qs.length ? qs : [blankQ(type === 'use' ? 'gap' : 'mcq')] };
 }
 function cleanOcr(t){
   /* Рядки з'єднуємо в абзаци; новий абзац починається після короткого рядка, що закінчується крапкою чи двокрапкою. */
@@ -927,7 +1278,7 @@ SCREENS.photo = sc => {
     '<div class="card stack"><p class="muted">Додайте скриншоти або фото сторінок по порядку: спершу текст, потім питання. ШІ перепише текст і питання та запропонує правильні відповіді, а ви все перевірите в редакторі перед збереженням.</p>'+
     '<label class="drop" id="drop" for="ph-file"><input type="file" id="ph-file" class="vh" accept="image/*" multiple><b>Перетягніть сюди зображення, вставте скриншот (Ctrl+V) або натисніть, щоб вибрати файли</b><span class="muted small">JPG або PNG, до '+MAX_PAGES+' сторінок. Обріжте зайве: чим чіткіше видно вправу, тим точніший результат.</span></label>'+
     (has ? '<div class="thumbs">'+sc.imgs.map((u, i) => '<figure class="thumb"><img src="'+u+'" alt="Сторінка '+(i + 1)+'"><figcaption>'+(i + 1)+'</figcaption><button class="btn ghost sm" data-act="phDel" data-i="'+i+'" aria-label="Прибрати сторінку '+(i + 1)+'">×</button></figure>').join('')+'</div>' : '')+
-    '<div class="fields"><label class="f">Що на зображеннях<select id="ph-kind" data-ph="kind">'+[['auto','Визначити автоматично'],['reading','Читання: текст і питання'],['writing','Письмо: тема для есе чи листа']].map(o => '<option value="'+o[0]+'"'+(sc.kind === o[0] ? ' selected' : '')+'>'+o[1]+'</option>').join('')+'</select></label></div>'+
+    '<div class="fields"><label class="f">Що на зображеннях<select id="ph-kind" data-ph="kind">'+[['auto','Визначити автоматично'],['reading','Читання: текст і питання'],['use','Use of English: граматика й лексика'],['writing','Письмо: тема для есе чи листа']].map(o => '<option value="'+o[0]+'"'+(sc.kind === o[0] ? ' selected' : '')+'>'+o[1]+'</option>').join('')+'</select></label></div>'+
     '<label class="f">Підказка для ШІ (необов’язково)<input type="text" id="ph-note" data-ph="note" value="'+esc(sc.note)+'" placeholder="Наприклад: лише вправа 3; ключі: 1 B, 2 D, 3 A"></label>'+
     (sc.status ? '<p class="status" role="status">'+esc(sc.status)+'</p>' : '')+
     '<div class="row"><button class="btn" data-act="phAI"'+dis+'>Створити завдання за допомогою ШІ</button><button class="btn ghost" data-act="phOCR"'+dis+'>Лише розпізнати текст (без ШІ)</button></div>'+
@@ -975,7 +1326,7 @@ TABS.uchni = () => {
     '<label class="f">Пароль<input type="text" id="st-pw" autocomplete="off" value="'+genPw()+'"></label></div>'+
     '<div><button class="btn" data-act="addStudent">Додати учня</button></div></div>';
   const list = S.students.length ? '<div class="scroll"><table><thead><tr><th>Учень</th><th>Клас</th><th>Логін</th><th>Пароль</th><th class="c">Здано робіт</th><th></th></tr></thead><tbody>'+
-    S.students.map(s => '<tr><td><b>'+esc(s.name)+'</b></td><td>'+esc(s.group || '')+'</td><td><code class="pw">'+esc(s.login)+'</code></td><td><code class="pw">'+esc(s.pw)+'</code></td><td class="c num">'+S.subs.filter(x => x.uid === s.id).length+'</td>'+
+    S.students.map(s => '<tr><td><button class="link" data-act="openStudent" data-id="'+esc(s.id)+'"><b>'+esc(s.name)+'</b></button></td><td>'+esc(s.group || '')+'</td><td><code class="pw">'+esc(s.login)+'</code></td><td><code class="pw">'+esc(s.pw)+'</code></td><td class="c num">'+S.subs.filter(x => x.uid === s.id).length+'</td>'+
       '<td style="white-space:nowrap"><button class="btn ghost sm" data-act="newPw" data-id="'+esc(s.id)+'">Новий пароль</button> <button class="btn ghost sm" data-act="delStudent" data-id="'+esc(s.id)+'">Видалити</button></td></tr>').join('')+'</tbody></table></div>'
     : '<div class="empty">Учнів ще немає. Додайте першого у формі вище.</div>';
   return '<h1>Учні</h1>'+form+'<p class="muted small">Учні входять на цьому ж сайті за логіном і паролем із таблиці. Паролі видно лише вам.</p>'+list;
@@ -1011,11 +1362,12 @@ const ACT = {
     if(sc && sc.name === 'edit' && sc.dirty && !(await ask('Закрити без збереження?', 'Зміни в завданні буде втрачено.', 'Закрити', true))) return;
     S.screen = null; render();
   },
-  tab(el){ S.tab = el.dataset.tab; S.screen = null; try { location.hash = S.tab; } catch(e){} render(); },
+  tab(el){ if(vocabTimer) saveVocabNow(); S.tab = el.dataset.tab; S.screen = null; try { location.hash = S.tab; } catch(e){} render(); },
   async refresh(){ await loadAll(); render(true); toast('Дані оновлено.'); },
   openTask(el){
     if(S.role === 'student' && S.settings && S.settings.closed) return toast('Сайт тимчасово закрито вчителем.', true);
     const id = el.dataset.id, t = taskById(id); if(!t) return;
+    if(t.practice && isAuto(t)) return ACT.train(el);
     const sub = subFor(id, S.user.uid);
     if(sub){ S.screen = { name:'sub', id:sub.id }; return render(); }
     const d = LS.get(draftKey(id), null);
@@ -1028,7 +1380,9 @@ const ACT = {
   async saveGrade(el){
     const sub = subById(el.dataset.id); if(!sub) return;
     const scores = {}; CRIT.forEach(c => { scores[c[0]] = Number(val('gr-' + c[0])) || 0; });
-    const grade = { scores, comment:val('gr-comment').trim(), at:Date.now() };
+    const sc = S.screen, cb = document.getElementById('gr-corr');
+    const corr = cb && cb.checked ? ((sc && sc.ai ? sc.ai.corrections : sub.grade && sub.grade.corrections) || []) : [];
+    const grade = { scores, comment:val('gr-comment').trim(), corrections:corr, at:Date.now() };
     await S.store.update('submissions', sub.id, { grade }); sub.grade = grade;
     S.screen = null; S.tab = 'rezultaty'; render(); toast('Оцінку збережено. Учень побачить її у своєму кабінеті.');
   },
@@ -1050,12 +1404,12 @@ const ACT = {
     await S.store.set('meta', 'settings', data); S.settings = data; render(true); toast(closing ? 'Сайт закрито для учнів.' : 'Сайт знову відкрито для учнів.');
   },
   exportResults(){
-    const tasks = S.tasks;
-    const head = ['Учень', 'Клас', 'Логін'].concat(tasks.map(t => (t.type === 'reading' ? 'Читання: ' : 'Письмо: ') + t.title + (t.type === 'reading' ? ' (з ' + (t.questions || []).length + ')' : ' (з 20)')));
+    const tasks = S.tasks.filter(t => !t.practice);
+    const head = ['Учень', 'Клас', 'Логін'].concat(tasks.map(t => TYPE_NAME[t.type] + ': ' + t.title + (isAuto(t) ? ' (з ' + (t.questions || []).length + ')' : ' (з 20)')));
     const rows = S.students.map(st => [st.name, st.group || '', st.login].concat(tasks.map(t => {
       const sub = subFor(t.id, st.id);
       if(!sub) return visibleFor(t, st) ? '' : '—';
-      if(t.type === 'reading'){ const sc = scoreReading(t, S.keys[t.id], sub.answers); return sc ? sc.ok : 'здано'; }
+      if(isAuto(t)){ const sc = scoreReading(t, S.keys[t.id], sub.answers); return sc ? sc.ok : 'здано'; }
       const g = gradeTotal(sub.grade); return g == null ? 'не перевірено' : g;
     })));
     download('rezultaty-' + today() + '.csv', '﻿' + [head].concat(rows).map(r => r.map(csvCell).join(';')).join('\r\n'), 'text/csv;charset=utf-8');
@@ -1071,7 +1425,7 @@ const ACT = {
   async restoreBackup(el){
     const file = el.files[0]; el.value = '';
     let data; try { data = JSON.parse(await file.text()); } catch(e){ return toast('Це не файл резервної копії: його не вдалося прочитати.', true); }
-    const tasks = data && Array.isArray(data.tasks) ? data.tasks.filter(t => t && t.id && (t.type === 'reading' || t.type === 'writing')) : [];
+    const tasks = data && Array.isArray(data.tasks) ? data.tasks.filter(t => t && t.id && TYPE_NAME[t.type]) : [];
     if(!tasks.length) return toast('У файлі немає завдань для відновлення.', true);
     const keys = {}; (Array.isArray(data.keys) ? data.keys : []).forEach(k => { if(k && k.id) keys[k.id] = k; });
     const same = tasks.filter(t => taskById(t.id)).length;
@@ -1083,6 +1437,61 @@ const ACT = {
     }
     await loadAll(); render(true); toast('Відновлено завдань: ' + tasks.length + '.');
   },
+  openStudent(el){ S.screen = { name:'student', id:el.dataset.id }; render(); },
+  async train(el){
+    const id = el.dataset.id, t = taskById(id); if(!t) return;
+    if(!S.keys[id]){ try { const k = await S.store.get('keys', id); if(k) S.keys[id] = k; } catch(e){} }
+    if(!S.keys[id]) return toast('Відповіді до цього завдання ще недоступні.', true);
+    S.screen = { name:'train', id, answers:{}, checked:{} }; render();
+  },
+  trCheck(el){ const sc = S.screen; sc.checked[el.dataset.qid] = true; trainSaveBest(sc); render(true); },
+  trCheckAll(){ const sc = S.screen, t = taskById(sc.id); (t.questions || []).forEach(q => { sc.checked[q.id] = true; }); trainSaveBest(sc); render(true); toast('Усі відповіді перевірено.'); },
+  trReset(){ const sc = S.screen; sc.answers = {}; sc.checked = {}; render(); },
+  async aiGrade(el){
+    const sub = subById(el.dataset.id), sc = S.screen; if(!sub || !sc) return;
+    const t = taskById(sub.taskId); if(!t) return;
+    if(!String(sub.text || '').trim()) return toast('Робота порожня, оцінювати нічого.', true);
+    sc.aiStatus = 'ШІ читає роботу. Зазвичай це 15–40 секунд…'; render(true);
+    let out;
+    try { out = await aiGenerate([{ text:aiGradePrompt(t, sub.text) }]); }
+    catch(e){ sc.aiStatus = ''; if(S.screen === sc) render(true); throw e; }
+    let j; try { j = parseJsonLoose(out); } catch(e){ sc.aiStatus = ''; render(true); throw e; }
+    const clamp = v => Math.max(0, Math.min(5, Math.round(Number(v)) || 0)), sco = j.scores || {};
+    sc.ai = { scores:{ c:clamp(sco.c), o:clamp(sco.o), v:clamp(sco.v), g:clamp(sco.g) }, comment:String(j.comment || '').trim(),
+      corrections:(Array.isArray(j.corrections) ? j.corrections : []).map(c => ({ wrong:String((c && c.wrong) || '').trim(), right:String((c && c.right) || '').trim(), why:String((c && c.why) || '').trim() })).filter(c => c.wrong && c.right).slice(0, 12) };
+    sc.aiStatus = ''; if(S.screen === sc) render(true);
+  },
+  addVocab(){ const d = S.screen.draft; (d.vocab = d.vocab || []).push({ w:'', t:'', ex:'' }); S.screen.dirty = true; render(true); },
+  delVocab(el){ S.screen.draft.vocab.splice(Number(el.dataset.i), 1); S.screen.dirty = true; render(true); },
+  async genVocab(){
+    const sc = S.screen, d = sc.draft;
+    if(!String(d.passage || '').trim() && !(d.questions || []).some(q => String(q.text || '').trim())) return toast('Спершу додайте текст завдання.', true);
+    sc.vstatus = 'ШІ добирає слова…'; render(true);
+    let out; try { out = await aiGenerate([{ text:aiVocabPrompt(d) }]); } catch(e){ sc.vstatus = ''; if(S.screen === sc) render(true); throw e; }
+    sc.vstatus = '';
+    let j; try { j = parseJsonLoose(out); } catch(e){ render(true); throw e; }
+    const have = new Set((d.vocab || []).map(v => normWord(v.w)));
+    const add = (Array.isArray(j.vocab) ? j.vocab : []).map(v => ({ w:String((v && v.w) || '').trim(), t:String((v && v.t) || '').trim(), ex:String((v && v.ex) || '').trim() })).filter(v => v.w && !have.has(normWord(v.w)));
+    d.vocab = (d.vocab || []).filter(v => String(v.w || '').trim()).concat(add); sc.dirty = true;
+    if(S.screen === sc) render(true); toast('Додано слів: ' + add.length + '. Перевірте переклади.');
+  },
+  addWord(){ addOwnWord(val('vw-w'), val('vw-t'), val('vw-e'), ''); },
+  delWord(el){ const k = el.dataset.k; S.vocab.words = S.vocab.words.filter(x => normWord(x.w) !== k); delete S.vocab.progress[k]; saveVocabNow(); render(true); },
+  cardsStart(el){
+    const items = vocabItems(), list = el.dataset.mode === 'all' ? items.slice() : dueItems(items);
+    for(let i = list.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); const x = list[i]; list[i] = list[j]; list[j] = x; }
+    S.screen = { name:'cards', queue:list.slice(0, 20), pos:0, flipped:false, known:0, again:0, repeats:{} }; render();
+  },
+  cardFlip(){ S.screen.flipped = true; render(true); },
+  cardAnswer(el){
+    const sc = S.screen, it = sc.queue[sc.pos]; if(!it) return;
+    const pr = S.vocab.progress[it.k] || { box:0, next:0 }, know = el.dataset.k === '1';
+    if(know){ pr.box = Math.min(5, (pr.box || 0) + 1); pr.next = Date.now() + BOX_DAYS[pr.box] * 864e5; sc.known++; }
+    else { pr.box = 0; pr.next = Date.now(); sc.again++; if(!sc.repeats[it.k]){ sc.repeats[it.k] = 1; sc.queue.push(it); } }
+    S.vocab.progress[it.k] = pr; saveVocabSoon();
+    sc.pos++; sc.flipped = false; render(true);
+    if(sc.pos >= sc.queue.length) saveVocabNow();
+  },
   photoTask(){ S.screen = { name:'photo', imgs:[], kind:'auto', note:'', status:'' }; render(); },
   phDel(el){ S.screen.imgs.splice(Number(el.dataset.i), 1); render(true); },
   async phAI(){
@@ -1093,14 +1502,7 @@ const ACT = {
       set('Підключаю ШІ…');
       const parts = sc.imgs.map(u => ({ inlineData:{ mimeType:'image/jpeg', data:u.split(',')[1] } })).concat([{ text:aiPrompt(sc.kind, sc.note.trim()) }]);
       set('ШІ читає сторінки. Зазвичай це триває 20–60 секунд…');
-      if(mock) return mock(parts);
-      let getModel; try { getModel = await loadAI(); } catch(e){ console.error(e); throw aiFail(aiErrText(e)); }
-      let last = null;
-      for(const name of aiModels()){
-        try { const r = await getModel(name).generateContent(parts); return r.response.text(); }
-        catch(e){ console.error(e); last = e; if(!/not.?found|404|not supported|unknown model|no longer available|deprecated/i.test(String(e && e.message))) break; }
-      }
-      throw aiFail(aiErrText(last));
+      return aiGenerate(parts);
     });
     let d; try { d = draftFromAI(parseJsonLoose(out)); } catch(e){ sc.status = ''; render(true); throw e; }
     if(S.screen !== sc) return;
@@ -1119,16 +1521,16 @@ const ACT = {
     if(S.screen !== sc) return;
     if(!text) { sc.status = ''; render(true); return toast('На зображеннях не вдалося знайти англійський текст.', true); }
     const d = sc.kind === 'writing'
-      ? { type:'writing', title:'', level:'A', minutes:40, published:false, genre:'essay', formal:true, prompt:text, minWords:150, maxWords:200, minParagraphs:4 }
-      : { type:'reading', title:'', level:'A', minutes:25, published:false, intro:'', passage:text, questions:[blankQ('mcq')] };
+      ? { type:'writing', groups:[], vocab:[], due:'', title:'', level:'A', minutes:40, published:false, genre:'essay', formal:true, prompt:text, minWords:150, maxWords:200, minParagraphs:4 }
+      : { type: sc.kind === 'use' ? 'use' : 'reading', groups:[], vocab:[], due:'', practice:false, title:'', level:'A', minutes:25, published:false, intro:'', passage:text, questions:[blankQ(sc.kind === 'use' ? 'gap' : 'mcq')] };
     S.screen = { name:'edit', id:null, draft:d, dirty:true, imgs:sc.imgs, fromAI:false }; render();
     toast('Текст розпізнано. Перевірте його, додайте назву й питання.');
   },
   async importBank(){ const n = await importBank(); await loadAll(); render(); toast('Додано завдань: ' + n + '.'); },
   newTask(el){
     const type = el.dataset.type;
-    const d = type === 'reading' ? { type, groups:[], title:'', level:'A', minutes:25, published:true, intro:'', passage:'', questions:[blankQ('mcq')] }
-      : { type, groups:[], title:'', level:'A', minutes:40, published:true, genre:'essay', formal:true, prompt:'', minWords:150, maxWords:200, minParagraphs:4 };
+    const d = type !== 'writing' ? { type, groups:[], vocab:[], due:'', practice:false, title:'', level:'A', minutes:type === 'use' ? 20 : 25, published:true, intro:'', passage:'', questions:[blankQ(type === 'use' ? 'gap' : 'mcq')] }
+      : { type, groups:[], vocab:[], due:'', title:'', level:'A', minutes:40, published:true, genre:'essay', formal:true, prompt:'', minWords:150, maxWords:200, minParagraphs:4 };
     S.screen = { name:'edit', id:null, draft:d, dirty:false }; render();
   },
   editTask(el){ const t = taskById(el.dataset.id); if(!t) return; S.screen = { name:'edit', id:t.id, draft:draftFrom(t), dirty:false }; render(); },
@@ -1140,7 +1542,7 @@ const ACT = {
     const sc = S.screen, d = sc.draft, bad = validateDraft(d); if(bad) return toast(bad, true);
     const old = sc.id ? taskById(sc.id) : null, id = sc.id || S.store.newId();
     const full = Object.assign({}, d, { createdAt: old ? old.createdAt : Date.now() });
-    if(d.type === 'reading') full.questions = d.questions.map((q, i) => Object.assign({}, q, { id: q.id || ('q' + Date.now().toString(36) + i) }));
+    if(isAuto(d)) full.questions = d.questions.map((q, i) => Object.assign({}, q, { id: q.id || ('q' + Date.now().toString(36) + i) }));
     const r = splitTask(full);
     r.task.title = r.task.title.trim();
     await S.store.set('tasks', id, r.task);
@@ -1152,7 +1554,7 @@ const ACT = {
     const subs = S.subs.filter(s => s.taskId === t.id);
     if(!(await ask('Видалити завдання?', '«' + esc(t.title) + '»' + (subs.length ? ' і зданих робіт до нього: <b>' + subs.length + '</b>.' : '.') + ' Відновити буде неможливо.', 'Видалити', true))) return;
     for(const s of subs) await S.store.del('submissions', s.id);
-    await S.store.del('tasks', t.id); if(t.type === 'reading') await S.store.del('keys', t.id);
+    await S.store.del('tasks', t.id); if(isAuto(t)) await S.store.del('keys', t.id);
     await loadAll(); render(true); toast('Завдання видалено.');
   },
   async togglePub(el){ const t = taskById(el.dataset.id); if(!t) return; await S.store.update('tasks', t.id, { published: !t.published }); t.published = !t.published; render(true); },
@@ -1199,6 +1601,10 @@ function onField(e){
     if(el.dataset.ph) sc[el.dataset.ph] = el.value;
     return;
   }
+  if(sc.name === 'train'){
+    if(el.dataset.q){ const v = el.type === 'radio' ? (el.checked ? (isNaN(Number(el.value)) ? el.value : Number(el.value)) : undefined) : el.value; if(v === undefined) return; sc.answers[el.dataset.q] = v; if(sc.checked[el.dataset.q] && e.type === 'change'){ delete sc.checked[el.dataset.q]; render(true); } }
+    return;
+  }
   if(sc.name === 'run'){
     if(el.dataset.q){ if(el.type === 'radio'){ if(el.checked) sc.answers[el.dataset.q] = isNaN(Number(el.value)) ? el.value : Number(el.value); } else sc.answers[el.dataset.q] = el.value; saveDraft(); }
     else if(el.id === 'essay'){ sc.text = el.value; saveDraft(); liveAnalysis(); }
@@ -1206,7 +1612,7 @@ function onField(e){
   }
   if(sc.name === 'edit'){
     if(el.dataset.grp != null){ if(e.type !== 'change') return; const gs = sc.draft.groups = sc.draft.groups || []; const g = el.dataset.grp, i = gs.indexOf(g); if(el.checked && i < 0) gs.push(g); if(!el.checked && i >= 0) gs.splice(i, 1); sc.dirty = true; return render(true); }
-    if(el.dataset.kind != null){ if(e.type !== 'change') return; const i = Number(el.dataset.kind), old = sc.draft.questions[i], q = blankQ(el.value); q.text = old.text; q.n = old.n; if(old.id) q.id = old.id; sc.draft.questions[i] = q; sc.dirty = true; return render(true); }
+    if(el.dataset.kind != null){ if(e.type !== 'change') return; const i = Number(el.dataset.kind), old = sc.draft.questions[i], q = blankQ(el.value); q.text = old.text; q.n = old.n; if(old.id) q.id = old.id; if('word' in q && old.word) q.word = old.word; if(TEXT_KINDS.includes(q.kind) && TEXT_KINDS.includes(old.kind)) q.a = old.a; sc.draft.questions[i] = q; sc.dirty = true; return render(true); }
     if(el.dataset.bind){
       if(el.type === 'radio' && !el.checked) return;
       let v = el.value; if('num' in el.dataset) v = Number(v) || 0; if('bool' in el.dataset) v = v === '1';
@@ -1221,7 +1627,7 @@ document.addEventListener('dragover', e => { if(!onPhoto()) return; e.preventDef
 document.addEventListener('dragleave', e => { const d = $('#drop'); if(d && !d.contains(e.relatedTarget)) d.classList.remove('over'); });
 document.addEventListener('drop', e => { if(!onPhoto()) return; e.preventDefault(); const d = $('#drop'); if(d) d.classList.remove('over'); if(e.dataTransfer) addImages(e.dataTransfer.files); });
 document.addEventListener('change', onField);
-window.addEventListener('hashchange', () => { const h = (location.hash || '').slice(1); if(S.phase === 'app' && S.role === 'teacher' && !S.screen && TAB_IDS.includes(h) && h !== S.tab){ S.tab = h; render(); } });
+window.addEventListener('hashchange', () => { const h = (location.hash || '').slice(1); if(S.phase === 'app' && !S.screen && (S.role === 'teacher' ? TAB_IDS : STAB_IDS).includes(h) && h !== S.tab){ S.tab = h; render(); } });
 window.addEventListener('beforeunload', () => { if(S.screen && S.screen.name === 'run') saveDraft(); });
 
 /* ---------- запуск ---------- */
