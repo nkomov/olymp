@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Олімпіадний тренажер English</title>
+<meta name="robots" content="noindex, nofollow">
+<title>EnglishGym</title>
 <link rel="icon" href="data:,">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -72,7 +73,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .btn.danger{background:var(--bad);border-color:var(--bad);color:#fff}
 .btn.sm{padding:6px 10px;font-size:14px}
 .link{background:none;border:0;padding:0;color:var(--accent);cursor:pointer;text-decoration:underline;font-size:inherit}
-label.f{display:flex;flex-direction:column;gap:5px;font-size:14px;font-weight:500}
+label.f,div.f{display:flex;flex-direction:column;gap:5px;font-size:14px;font-weight:500}
 input[type=text],input[type=password],input[type=email],input[type=number],select,textarea{
   background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:9px 11px;width:100%;min-width:0}
 textarea{resize:vertical;line-height:1.55}
@@ -157,6 +158,24 @@ textarea.write{font:400 17px/1.65 var(--font-read);min-height:340px}
 .auth .logo{font:700 22px/1.2 var(--font-display)}
 .auth .logo i{font-style:normal;color:var(--accent)}
 
+/* імпорт із фото */
+.vh{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden}
+.drop{border:2px dashed var(--line);border-radius:var(--radius);padding:26px 16px;display:flex;flex-direction:column;gap:6px;align-items:center;text-align:center;cursor:pointer;background:var(--paper)}
+.drop:hover,.drop.over{border-color:var(--accent);background:var(--soft)}
+.drop:focus-within{outline:3px solid var(--accent);outline-offset:2px}
+.thumbs{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
+.thumb{margin:0;position:relative;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--surface)}
+.thumb img{display:block;width:100%;height:150px;object-fit:cover;object-position:top}
+.thumb figcaption{position:absolute;left:6px;top:6px;background:var(--ink);color:var(--paper);font-size:12px;font-weight:700;padding:1px 7px;border-radius:99px}
+.thumb button{position:absolute;right:6px;top:6px;background:var(--surface)}
+.pages{display:flex;flex-direction:column;gap:10px}
+.pages img{width:100%;border:1px solid var(--line);border-radius:8px;display:block}
+.status{display:flex;gap:10px;align-items:center;font-weight:500}
+.status::before{content:"";flex:0 0 16px;height:16px;border-radius:50%;border:2px solid var(--line);border-top-color:var(--accent);animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.banner.info{background:var(--soft);border-left-color:var(--accent);white-space:pre-wrap}
+.chk{display:inline-flex;gap:7px;align-items:center;padding:5px 11px;border:1px solid var(--line);border-radius:99px;cursor:pointer;font-weight:500;background:var(--surface)}
+.chk input{accent-color:var(--accent)}
 dialog{border:1px solid var(--line);border-radius:14px;background:var(--surface);color:var(--ink);padding:22px;max-width:min(440px,calc(100vw - 32px));width:100%}
 dialog::backdrop{background:rgba(10,20,16,.5)}
 dialog .dlg-body{margin:10px 0 18px;color:var(--muted)}
@@ -188,6 +207,20 @@ const CRIT = [['c','Зміст і розкриття теми'],['o','Струк
 const TF = { T:'True', F:'False', NG:'Not Given' };
 const DOMAIN = '@students.example.com';
 const FB_VERSION = '10.12.2';
+const SITE_BASE = Object.assign({ name:'EnglishGym', tagline:'Тренування з англійської: читання, письмо, підготовка до олімпіад' }, window.SITE_SETTINGS || {});
+const SITE = Object.assign({}, SITE_BASE);
+function applySettings(){
+  const st = (typeof S !== 'undefined' && S.settings) || {};
+  SITE.name = String(st.name || '').trim() || SITE_BASE.name;
+  SITE.tagline = String(st.tagline || '').trim() || SITE_BASE.tagline;
+  try { document.title = SITE.name; } catch(e){}
+}
+try { document.title = SITE.name; } catch(e){}
+function logo(withTag){
+  const m = String(SITE.name).match(/^(.+?[a-zа-яіїєґ])([A-ZА-ЯІЇЄҐ].*)$/);
+  const name = m ? esc(m[1]) + '<i>' + esc(m[2]) + '</i>' : esc(SITE.name);
+  return '<div class="logo">' + name + (withTag && SITE.tagline ? '<div class="muted small" style="font:400 15px/1.4 var(--font-body);margin-top:6px">' + esc(SITE.tagline) + '</div>' : '') + '</div>';
+}
 
 /* ---------- дрібні помічники ---------- */
 const $ = (s, r) => (r || document).querySelector(s);
@@ -207,6 +240,7 @@ const toEmail = login => login.includes('@') ? login : login + DOMAIN;
 const normAns = s => String(s==null?'':s).trim().toLowerCase().replace(/[’`]/g,"'").replace(/\s+/g,' ').replace(/[.,;:!?]+$/,'');
 function errText(e){
   const c = (e && e.code) || '';
+  if(String(c).indexOf('ai/') === 0) return e.message;
   const map = {
     'auth/invalid-credential':'Невірний логін або пароль.', 'auth/wrong-password':'Невірний логін або пароль.',
     'auth/user-not-found':'Невірний логін або пароль.', 'auth/invalid-email':'Перевірте логін або e-mail.',
@@ -266,11 +300,13 @@ function localStore(){
 }
 
 /* ---------- сховище: хмара (Firebase) ---------- */
+const FB_KEYS = ['apiKey','authDomain','projectId','storageBucket','messagingSenderId','appId','measurementId'];
+const fbOptions = c => { const o = {}; FB_KEYS.forEach(k => { if(c && c[k]) o[k] = c[k]; }); return o; };
 function loadScript(src){ return new Promise((res, rej) => { const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = () => rej(new Error('Не вдалося завантажити ' + src)); document.head.appendChild(s); }); }
 function cloudStore(cfg){
   let auth, fs, current = null;
   const second = async fn => {
-    const app2 = firebase.initializeApp(cfg, 'aux' + Date.now());
+    const app2 = firebase.initializeApp(fbOptions(cfg), 'aux' + Date.now());
     try { const a = app2.auth(); await a.setPersistence(firebase.auth.Auth.Persistence.NONE); return await fn(a); }
     finally { try { await app2.auth().signOut(); } catch(e){} try { await app2.delete(); } catch(e){} }
   };
@@ -282,7 +318,7 @@ function cloudStore(cfg){
       await loadScript(base + 'firebase-app-compat.js');
       await loadScript(base + 'firebase-auth-compat.js');
       await loadScript(base + 'firebase-firestore-compat.js');
-      firebase.initializeApp(cfg); auth = firebase.auth(); fs = firebase.firestore();
+      firebase.initializeApp(fbOptions(cfg)); auth = firebase.auth(); fs = firebase.firestore();
       await new Promise(res => { let first = true; auth.onAuthStateChanged(u => { current = u; if(first){ first = false; res(); } }); });
     },
     isEmpty(){ return false; },
@@ -306,10 +342,12 @@ function cloudStore(cfg){
 /* ---------- стан ---------- */
 const cfg = window.FIREBASE_CONFIG;
 const cloudOn = !!(cfg && cfg.apiKey && cfg.projectId && !/ВСТАВТЕ|YOUR_|XXXX/i.test(cfg.apiKey));
-const S = { store:null, phase:'loading', user:null, role:null, profile:null, owner:null, tab:null, screen:null,
+const S = { settings:{}, resGroup:'', store:null, phase:'loading', user:null, role:null, profile:null, owner:null, tab:null, screen:null,
             tasks:[], subs:[], keys:{}, students:[], error:'' };
 const app = $('#app');
 
+const allGroups = () => Array.from(new Set(S.students.map(x => String(x.group || '').trim()).filter(Boolean))).sort((a, b) => a.localeCompare(b, 'uk'));
+const visibleFor = (t, st) => !t.groups || !t.groups.length || !!(st && t.groups.includes(String(st.group || '').trim()));
 const taskById = id => S.tasks.find(t => t.id === id) || null;
 const subById = id => S.subs.find(s => s.id === id) || null;
 const subFor = (taskId, uid) => subById(taskId + '_' + uid);
@@ -400,7 +438,7 @@ async function loadAll(){
     S.subs = r[2]; S.keys = {}; r[3].forEach(k => { S.keys[k.id] = k; });
   } else {
     const r = await Promise.all([st.list('tasks', ['published', true]), st.list('submissions', ['uid', S.user.uid])]);
-    S.tasks = sortTasks(r[0]); S.subs = r[1]; S.keys = {};
+    S.tasks = sortTasks(r[0].filter(t => visibleFor(t, S.profile))); S.subs = r[1]; S.keys = {};
     await Promise.all(S.subs.filter(s => s.type === 'reading').map(async s => { try { const k = await st.get('keys', s.taskId); if(k) S.keys[s.taskId] = k; } catch(e){} }));
   }
 }
@@ -409,6 +447,8 @@ async function session(){
   S.user = st.user(); S.role = null; S.profile = null; S.screen = null;
   try { S.owner = await st.get('meta', 'owner'); }
   catch(e){ S.phase = 'error'; S.error = errText(e); return render(); }
+  try { S.settings = (await st.get('meta', 'settings')) || {}; } catch(e){ S.settings = {}; }
+  applySettings();
   if(!S.owner){ S.phase = 'setup'; return render(); }
   if(!S.user){ S.phase = 'login'; return render(); }
   try {
@@ -417,13 +457,13 @@ async function session(){
     await loadAll();
   } catch(e){ S.phase = 'error'; S.error = errText(e); return render(); }
   const h = (location.hash || '').slice(1);
-  if(S.role === 'teacher' && ['rezultaty','zavdannia','uchni'].includes(h)) S.tab = h;
+  if(S.role === 'teacher' && TAB_IDS.includes(h)) S.tab = h;
   S.phase = 'app'; render();
 }
 
 /* ---------- демо-дані ---------- */
 function splitTask(full){
-  const t = { type:full.type, level:full.level, minutes:Number(full.minutes)||0, title:full.title, published: full.published !== false, createdAt: full.createdAt || Date.now() };
+  const t = { groups: Array.isArray(full.groups) ? full.groups.filter(Boolean) : [], type:full.type, level:full.level, minutes:Number(full.minutes)||0, title:full.title, published: full.published !== false, createdAt: full.createdAt || Date.now() };
   if(full.type === 'reading'){
     t.intro = full.intro || ''; t.passage = full.passage || '';
     const answers = {}, notes = {};
@@ -464,10 +504,10 @@ async function seedDemo(){
 
 /* ---------- відображення: загальне ---------- */
 function header(){
-  const tabs = S.role === 'teacher' ? [['rezultaty','Результати'],['zavdannia','Завдання'],['uchni','Учні']] : [];
+  const tabs = S.role === 'teacher' ? [['rezultaty','Результати'],['zavdannia','Завдання'],['uchni','Учні'],['nalashtuvannia','Налаштування']] : [];
   const name = S.role === 'teacher' ? (S.owner.name || 'Учитель') : (S.profile ? S.profile.name : '');
   return '<header class="top"><div class="top-in">'+
-    '<button class="brand" data-act="home"><i>EN</i>Олімпіадний тренажер</button>'+
+    '<button class="brand" data-act="home"><i>EN</i>'+esc(SITE.name)+'</button>'+
     (tabs.length ? '<nav class="tabs" aria-label="Розділи">'+tabs.map(t => '<button class="tab" data-act="tab" data-tab="'+t[0]+'"'+(S.tab === t[0] && !S.screen ? ' aria-current="page"' : '')+'>'+t[1]+'</button>').join('')+'</nav>' : '')+
     '<div class="who"><span class="name">'+esc(name)+(S.role === 'teacher' ? ' · учитель' : '')+'</span><button class="btn ghost sm" data-act="logout">Вийти</button></div>'+
   '</div></header>';
@@ -480,7 +520,7 @@ function render(keepScroll){
   stopTimer();
   let html;
   if(S.phase === 'loading') html = '<div class="wrap"><p class="muted">Завантаження…</p></div>';
-  else if(S.phase === 'error') html = '<div class="wrap"><div class="auth"><div class="logo">Олімпіадний <i>тренажер</i></div><div class="card stack"><h2>Не вдалося відкрити тренажер</h2><p>'+esc(S.error)+'</p><div><button class="btn" data-act="reload">Спробувати ще раз</button></div></div></div></div>';
+  else if(S.phase === 'error') html = '<div class="wrap"><div class="auth">'+logo()+'<div class="card stack"><h2>Не вдалося відкрити сайт</h2><p>'+esc(S.error)+'</p><div><button class="btn" data-act="reload">Спробувати ще раз</button></div></div></div></div>';
   else if(S.phase === 'setup') html = viewSetup();
   else if(S.phase === 'login') html = viewLogin();
   else if(S.phase === 'noaccess') html = '<div class="wrap"><div class="auth"><div class="card stack"><h2>Обліковий запис не підключено</h2><p class="muted">Цей логін не внесено до списку учнів. Зверніться до вчителя.</p><div><button class="btn" data-act="logout">Вийти</button></div></div></div></div>';
@@ -497,7 +537,7 @@ function render(keepScroll){
 
 /* ---------- вхід і перше налаштування ---------- */
 function viewSetup(){
-  return '<div class="wrap"><div class="auth" data-enter="setup"><div class="logo">Олімпіадний <i>тренажер</i></div>'+
+  return '<div class="wrap"><div class="auth" data-enter="setup">'+logo()+
     '<div class="card stack"><h2>Перше налаштування</h2><p class="muted">Створіть обліковий запис учителя. Він буде єдиним, хто керує завданнями, учнями та оцінками.</p>'+
     '<label class="f">Ваше ім’я<input type="text" id="su-name" autocomplete="name"></label>'+
     '<label class="f">E-mail<input type="email" id="su-email" autocomplete="email"></label>'+
@@ -506,7 +546,7 @@ function viewSetup(){
 }
 function viewLogin(){
   const demo = S.store.mode === 'demo';
-  return '<div class="wrap"><div class="auth" data-enter="login"><div class="logo">Олімпіадний <i>тренажер</i><div class="muted small" style="font:400 15px/1.4 var(--font-body);margin-top:6px">Читання і письмо англійською для 10–11 класів</div></div>'+
+  return '<div class="wrap"><div class="auth" data-enter="login">'+logo(true)+
     '<div class="card stack"><h2>Вхід</h2>'+
     '<label class="f">Логін учня або e-mail учителя<input type="text" id="li-login" autocomplete="username" autocapitalize="none" spellcheck="false"></label>'+
     '<label class="f">Пароль<input type="password" id="li-pw" autocomplete="current-password"></label>'+
@@ -540,7 +580,10 @@ function taskCard(t){
 function studentHome(){
   const s = studentStats(), rd = S.tasks.filter(t => t.type === 'reading'), wr = S.tasks.filter(t => t.type === 'writing');
   const sec = (title, list) => '<section class="stack"><h2>'+title+'</h2>'+(list.length ? '<div class="tasks">'+list.map(taskCard).join('')+'</div>' : '<div class="empty">Учитель ще не додав завдань у цей розділ.</div>')+'</section>';
-  return '<h1>Привіт, '+esc((S.profile.name || '').split(' ')[0])+'!</h1>'+
+  const set = S.settings || {}, hi = '<h1>Привіт, '+esc((S.profile.name || '').split(' ')[0])+'!</h1>';
+  const ann = String(set.announcement || '').trim() ? '<div class="banner info"><b>Оголошення.</b> '+esc(String(set.announcement).trim())+'</div>' : '';
+  if(set.closed) return hi + '<div class="card stack"><h2>Сайт тимчасово закрито</h2><p style="white-space:pre-wrap">'+esc(String(set.closedMessage || '').trim() || 'Учитель тимчасово закрив доступ до завдань. Зайдіть пізніше.')+'</p></div>';
+  return hi + ann +
     '<div class="tiles"><div class="tile"><b>'+s.done+' / '+s.total+'</b><span>завдань виконано</span></div>'+
     '<div class="tile"><b>'+(s.rd == null ? '—' : Math.round(s.rd) + '%')+'</b><span>середній результат із читання</span></div>'+
     '<div class="tile"><b>'+(s.wr == null ? '—' : s.wr)+'</b><span>середній бал за письмо з 20</span></div>'+
@@ -647,6 +690,7 @@ SCREENS.sub = sc => {
 
 /* ---------- учитель: результати ---------- */
 const TABS = {};
+const TAB_IDS = ['rezultaty','zavdannia','uchni','nalashtuvannia'];
 function cellFor(t, sub){
   if(!sub) return '<span class="muted">·</span>';
   if(t.type === 'reading'){ const s = scoreReading(t, S.keys[t.id], sub.answers); return '<button class="cell" data-act="openSub" data-id="'+esc(sub.id)+'">'+(s ? s.ok + '/' + s.total : 'здано')+'</button>'; }
@@ -659,23 +703,30 @@ TABS.rezultaty = () => {
     '<div class="tiles"><div class="tile"><b>'+S.students.length+'</b><span>учнів</span></div><div class="tile"><b>'+S.tasks.filter(t => t.published).length+'</b><span>опублікованих завдань</span></div><div class="tile"><b>'+S.subs.length+'</b><span>зданих робіт</span></div><div class="tile"><b>'+queue.length+'</b><span>письмових робіт очікують перевірки</span></div></div>';
   if(!S.tasks.length || !S.students.length) return head+'<div class="card stack"><h2>З чого почати</h2><ol class="stack" style="margin:0;padding-left:22px"><li>У розділі <button class="link" data-act="tab" data-tab="zavdannia">Завдання</button> додайте стартовий банк або створіть власні завдання.</li><li>У розділі <button class="link" data-act="tab" data-tab="uchni">Учні</button> створіть логіни й паролі для учнів.</li><li>Надішліть учням адресу цього сайту та їхні дані для входу.</li></ol></div>';
   const q = queue.length ? '<section class="stack"><h2>Очікують перевірки</h2><div class="scroll"><table><tbody>'+queue.map(s => { const st = studentById(s.uid), t = taskById(s.taskId); return '<tr><td><b>'+esc(st ? st.name : 'Учня видалено')+'</b> <span class="muted">'+esc(st ? st.group || '' : '')+'</span></td><td>'+esc(t ? t.title : '—')+'</td><td class="muted num">'+fmtDate(s.submittedAt)+'</td><td class="c"><button class="btn sm" data-act="openSub" data-id="'+esc(s.id)+'">Перевірити</button></td></tr>'; }).join('')+'</tbody></table></div></section>' : '';
-  const cols = S.tasks;
-  const matrix = '<section class="stack"><h2>Усі учні й завдання</h2><p class="muted small">Читання: правильних відповідей. Письмо: бал із 20. Натисніть на результат, щоб відкрити роботу.</p><div class="scroll"><table class="matrix"><thead><tr><th>Учень</th>'+cols.map(t => '<th class="t c">'+(t.type === 'reading' ? 'Чит.' : 'Письмо')+'<br>'+esc(t.title)+'</th>').join('')+'</tr></thead><tbody>'+
-    S.students.map(st => '<tr><td style="white-space:nowrap"><b>'+esc(st.name)+'</b> <span class="muted">'+esc(st.group || '')+'</span></td>'+cols.map(t => '<td class="c num">'+cellFor(t, subFor(t.id, st.id))+'</td>').join('')+'</tr>').join('')+'</tbody></table></div></section>';
+  const groups = allGroups(), g = groups.includes(S.resGroup) ? S.resGroup : '';
+  const studs = g ? S.students.filter(x => String(x.group || '').trim() === g) : S.students;
+  const cols = g ? S.tasks.filter(t => visibleFor(t, { group:g })) : S.tasks;
+  const filter = groups.length > 1 ? '<label class="f" style="max-width:260px">Клас або група<select id="res-group"><option value="">Усі учні</option>'+groups.map(x => '<option value="'+esc(x)+'"'+(x === g ? ' selected' : '')+'>'+esc(x)+'</option>').join('')+'</select></label>' : '';
+  const matrix = '<section class="stack"><div class="row between"><h2>Усі учні й завдання</h2><button class="btn ghost sm" data-act="exportResults">Завантажити в Excel</button></div>'+filter+'<p class="muted small">Читання: правильних відповідей. Письмо: бал із 20. Риска означає, що завдання не призначене групі учня. Натисніть на результат, щоб відкрити роботу.</p><div class="scroll"><table class="matrix"><thead><tr><th>Учень</th>'+cols.map(t => '<th class="t c">'+(t.type === 'reading' ? 'Чит.' : 'Письмо')+'<br>'+esc(t.title)+'</th>').join('')+'</tr></thead><tbody>'+
+    studs.map(st => '<tr><td style="white-space:nowrap"><b>'+esc(st.name)+'</b> <span class="muted">'+esc(st.group || '')+'</span></td>'+cols.map(t => { const sub = subFor(t.id, st.id); return '<td class="c num">'+(!sub && !visibleFor(t, st) ? '<span class="muted">—</span>' : cellFor(t, sub))+'</td>'; }).join('')+'</tr>').join('')+'</tbody></table></div></section>';
   return head + q + matrix;
 };
 
 /* ---------- учитель: завдання ---------- */
 TABS.zavdannia = () => {
   const hasBank = (window.STARTER_BANK || []).some(b => taskById(b.id));
-  const head = '<div class="row between"><h1>Завдання</h1><div class="row"><button class="btn" data-act="newTask" data-type="reading">Нове: читання</button><button class="btn" data-act="newTask" data-type="writing">Нове: письмо</button>'+(hasBank ? '' : '<button class="btn ghost" data-act="importBank">Додати стартовий банк</button>')+'</div></div>';
-  if(!S.tasks.length) return head+'<div class="empty stack" style="align-items:center"><p>Завдань ще немає. Стартовий банк містить 4 тексти для читання і 4 теми письма для 10–11 класів.</p><button class="btn" data-act="importBank">Додати стартовий банк</button></div>';
-  return head+'<div class="scroll"><table><thead><tr><th>Назва</th><th>Вид</th><th>Рівень</th><th class="c">Час</th><th class="c">Здано</th><th>Учням</th><th></th></tr></thead><tbody>'+
-    S.tasks.map(t => '<tr><td><b>'+esc(t.title)+'</b></td><td>'+(t.type === 'reading' ? 'Читання, ' + (t.questions || []).length + ' пит.' : esc(GENRES[t.genre] || 'Письмо'))+'</td><td>'+lvl(t.level)+'</td><td class="c num">'+(t.minutes ? t.minutes + ' хв' : '—')+'</td><td class="c num">'+S.subs.filter(s => s.taskId === t.id).length+'</td>'+
+  const head = '<div class="row between"><h1>Завдання</h1><div class="row"><button class="btn" data-act="photoTask">З фото підручника</button><button class="btn" data-act="newTask" data-type="reading">Нове: читання</button><button class="btn" data-act="newTask" data-type="writing">Нове: письмо</button>'+(hasBank ? '' : '<button class="btn ghost" data-act="importBank">Додати стартовий банк</button>')+'</div></div>';
+  if(!S.tasks.length) return head+'<div class="empty stack" style="align-items:center"><p>Завдань ще немає. Стартовий банк містить 4 тексти для читання і 4 теми письма для 10–11 класів. Також можна створити завдання зі скриншота сторінки підручника.</p><div class="row" style="justify-content:center"><button class="btn" data-act="importBank">Додати стартовий банк</button><button class="btn ghost" data-act="photoTask">З фото підручника</button></div></div>';
+  return head+'<div class="scroll"><table><thead><tr><th>Назва</th><th>Вид</th><th>Рівень</th><th class="c">Час</th><th class="c">Здано</th><th>Кому</th><th>Учням</th><th></th></tr></thead><tbody>'+
+    S.tasks.map(t => '<tr><td><b>'+esc(t.title)+'</b></td><td>'+(t.type === 'reading' ? 'Читання, ' + (t.questions || []).length + ' пит.' : esc(GENRES[t.genre] || 'Письмо'))+'</td><td>'+lvl(t.level)+'</td><td class="c num">'+(t.minutes ? t.minutes + ' хв' : '—')+'</td><td class="c num">'+S.subs.filter(s => s.taskId === t.id).length+'</td><td>'+(t.groups && t.groups.length ? esc(t.groups.join(', ')) : '<span class="muted">Усім</span>')+'</td>'+
       '<td><button class="cell" data-act="togglePub" data-id="'+esc(t.id)+'" title="Натисніть, щоб змінити"><span class="pill '+(t.published ? 'good' : '')+'">'+(t.published ? 'Відкрито' : 'Приховано')+'</span></button></td>'+
       '<td style="white-space:nowrap"><button class="btn ghost sm" data-act="editTask" data-id="'+esc(t.id)+'">Редагувати</button> <button class="btn ghost sm" data-act="delTask" data-id="'+esc(t.id)+'">Видалити</button></td></tr>').join('')+'</tbody></table></div>';
 };
 function blankQ(kind){ return kind === 'mcq' ? { kind, text:'', options:['','','',''], a:0, n:'' } : kind === 'tfng' ? { kind, text:'', a:'T', n:'' } : { kind, text:'', a:'', n:'' }; }
+function groupPicker(d){
+  const gs = allGroups(), sel = d.groups || [];
+  return '<div class="f" style="grid-column:1/-1"><span>Кому видно</span>'+(gs.length ? '<div class="row">'+gs.map((g, i) => '<label class="chk"><input type="checkbox" id="grp-'+i+'" data-grp="'+esc(g)+'"'+(sel.includes(g) ? ' checked' : '')+'>'+esc(g)+'</label>').join('')+'</div><span class="muted small">'+(sel.length ? 'Завдання бачать лише позначені групи.' : 'Нічого не позначено: завдання бачать усі учні.')+'</span>' : '<span class="muted small">Усім учням. Щоб призначати завдання окремим класам, вкажіть клас у картках учнів.</span>')+'</div>';
+}
 function draftFrom(t){
   if(!t) return null;
   const d = JSON.parse(JSON.stringify(t));
@@ -687,14 +738,14 @@ SCREENS.edit = sc => {
   const common = '<div class="fields"><label class="f" style="grid-column:1/-1">Назва<input type="text" id="ed-title" data-bind="title" value="'+esc(d.title)+'"></label>'+
     '<label class="f">Рівень<select id="ed-level" data-bind="level">'+Object.keys(LEVELS).map(k => '<option value="'+k+'"'+(d.level === k ? ' selected' : '')+'>'+LEVELS[k]+' етап</option>').join('')+'</select></label>'+
     '<label class="f">Час, хв (0 — без обмеження)<input type="number" id="ed-min" min="0" max="240" data-bind="minutes" data-num value="'+esc(d.minutes)+'"></label>'+
-    '<label class="f">Доступ<select id="ed-pub" data-bind="published" data-bool><option value="1"'+(d.published ? ' selected' : '')+'>Відкрито для учнів</option><option value="0"'+(d.published ? '' : ' selected')+'>Приховано</option></select></label></div>';
+    '<label class="f">Доступ<select id="ed-pub" data-bind="published" data-bool><option value="1"'+(d.published ? ' selected' : '')+'>Відкрито для учнів</option><option value="0"'+(d.published ? '' : ' selected')+'>Приховано</option></select></label>'+groupPicker(d)+'</div>';
   let body;
   if(rd){
     body = '<label class="f">Інструкція англійською (над питаннями)<input type="text" id="ed-intro" data-bind="intro" value="'+esc(d.intro)+'"></label>'+
       '<label class="f">Текст для читання (абзаци відокремлюйте порожнім рядком)<textarea id="ed-passage" rows="12" data-bind="passage" style="font-family:var(--font-read)">'+esc(d.passage)+'</textarea></label>'+
       '<h2>Питання</h2>'+d.questions.map((q, i) => {
         let ans;
-        if(q.kind === 'mcq') ans = '<div class="stack" style="gap:6px"><span class="small muted">Варіанти. Позначте правильний.</span>'+q.options.map((o, j) => '<div class="optedit"><input type="radio" name="ed-a-'+i+'" id="ed-a-'+i+'-'+j+'" value="'+j+'" data-bind="questions.'+i+'.a" data-num'+(Number(q.a) === j ? ' checked' : '')+' aria-label="Правильний варіант '+(j + 1)+'"><input type="text" id="ed-o-'+i+'-'+j+'" data-bind="questions.'+i+'.options.'+j+'" value="'+esc(o)+'" aria-label="Варіант '+(j + 1)+'">'+(q.options.length > 2 ? '<button class="btn ghost sm" data-act="delOpt" data-i="'+i+'" data-j="'+j+'" aria-label="Прибрати варіант">×</button>' : '')+'</div>').join('')+(q.options.length < 6 ? '<div><button class="link small" data-act="addOpt" data-i="'+i+'">+ варіант</button></div>' : '')+'</div>';
+        if(q.kind === 'mcq') ans = '<div class="stack" style="gap:6px"><span class="small muted">Варіанти. Позначте правильний.</span>'+q.options.map((o, j) => '<div class="optedit"><input type="radio" name="ed-a-'+i+'" id="ed-a-'+i+'-'+j+'" value="'+j+'" data-bind="questions.'+i+'.a" data-num'+(Number(q.a) === j ? ' checked' : '')+' aria-label="Правильний варіант '+(j + 1)+'"><input type="text" id="ed-o-'+i+'-'+j+'" data-bind="questions.'+i+'.options.'+j+'" value="'+esc(o)+'" aria-label="Варіант '+(j + 1)+'">'+(q.options.length > 2 ? '<button class="btn ghost sm" data-act="delOpt" data-i="'+i+'" data-j="'+j+'" aria-label="Прибрати варіант">×</button>' : '')+'</div>').join('')+(q.options.length < 8 ? '<div><button class="link small" data-act="addOpt" data-i="'+i+'">+ варіант</button></div>' : '')+'</div>';
         else if(q.kind === 'tfng') ans = '<label class="f">Правильна відповідь<select id="ed-tf-'+i+'" data-bind="questions.'+i+'.a" style="max-width:200px">'+Object.keys(TF).map(k => '<option value="'+k+'"'+(q.a === k ? ' selected' : '')+'>'+TF[k]+'</option>').join('')+'</select></label>';
         else ans = '<label class="f">Правильна відповідь (кілька допустимих варіантів через крапку з комою)<input type="text" id="ed-g-'+i+'" data-bind="questions.'+i+'.a" value="'+esc(q.a)+'"></label>';
         return '<div class="qedit"><div class="row between"><b>Питання '+(i + 1)+'</b><div class="row"><select id="ed-k-'+i+'" data-kind="'+i+'" aria-label="Тип питання" style="width:auto">'+Object.keys(KINDS).map(k => '<option value="'+k+'"'+(q.kind === k ? ' selected' : '')+'>'+KINDS[k]+'</option>').join('')+'</select><button class="btn ghost sm" data-act="delQ" data-i="'+i+'">Видалити</button></div></div>'+
@@ -709,8 +760,11 @@ SCREENS.edit = sc => {
       '<label class="f">Абзаців щонайменше<input type="number" id="ed-minp" min="0" max="12" data-bind="minParagraphs" data-num value="'+esc(d.minParagraphs)+'"></label></div>'+
       '<label class="f">Умова завдання англійською<textarea id="ed-prompt" rows="9" data-bind="prompt" style="font-family:var(--font-read)">'+esc(d.prompt)+'</textarea></label>';
   }
-  return back('До завдань')+'<h1>'+(sc.id ? 'Редагування' : 'Нове завдання')+': '+(rd ? 'читання' : 'письмо')+'</h1><div class="card stack">'+common+body+'</div>'+
-    '<div class="row end"><button class="btn ghost" data-act="home">Скасувати</button><button class="btn" data-act="saveTask">Зберегти завдання</button></div>';
+  const form = '<div class="card stack">'+common+body+'</div><div class="row end"><button class="btn ghost" data-act="home">Скасувати</button><button class="btn" data-act="saveTask">Зберегти завдання</button></div>';
+  const note = sc.imgs ? '<div class="banner">'+(sc.fromAI ? '<b>Чернетку створив ШІ.</b> Звірте з оригіналом текст, питання і <b>особливо правильні відповіді</b>: ШІ може помилятися.' : '<b>Текст розпізнано автоматично.</b> Виправте помилки розпізнавання, додайте назву та питання.')+' Завдання збережеться прихованим. Відкрийте його учням, коли все перевірите.</div>' : '';
+  const head = back('До завдань')+'<h1>'+(sc.id ? 'Редагування' : 'Нове завдання')+': '+(rd ? 'читання' : 'письмо')+'</h1>'+note;
+  if(!sc.imgs) return head + form;
+  return head+'<div class="two"><div class="card stack sticky"><h3>Оригінал</h3><div class="pages">'+sc.imgs.map((u, i) => '<img src="'+u+'" alt="Сторінка '+(i + 1)+'">').join('')+'</div></div><div class="stack">'+form+'</div></div>';
 };
 function setPath(obj, path, val){ const p = path.split('.'); let o = obj; for(let i = 0; i < p.length - 1; i++) o = o[p[i]]; o[p[p.length - 1]] = val; }
 function validateDraft(d){
@@ -731,6 +785,187 @@ function validateDraft(d){
   return '';
 }
 
+/* ---------- імпорт завдання з фото підручника ---------- */
+const AI_VERSION = '12.12.0';
+const OCR_URL = 'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js';
+const MAX_PAGES = 6;
+const aiModels = () => [cfg && cfg.aiModel, 'gemini-3.5-flash', 'gemini-2.5-flash'].filter((v, i, a) => v && a.indexOf(v) === i);
+const aiFail = msg => { const e = new Error(msg); e.code = 'ai/msg'; return e; };
+let aiPromise = null;
+function loadAI(){
+  if(aiPromise) return aiPromise;
+  const base = 'https://www.gstatic.com/firebasejs/' + AI_VERSION + '/';
+  aiPromise = (async () => {
+    const appMod = await import(base + 'firebase-app.js');
+    const aiMod = await import(base + 'firebase-ai.js');
+    const app = appMod.initializeApp(fbOptions(cfg), 'olymp-ai');
+    if(cfg.recaptchaSiteKey){
+      const ac = await import(base + 'firebase-app-check.js');
+      ac.initializeAppCheck(app, { provider:new ac.ReCaptchaV3Provider(cfg.recaptchaSiteKey), isTokenAutoRefreshEnabled:true });
+    }
+    const ai = aiMod.getAI(app, { backend:new aiMod.GoogleAIBackend() });
+    return name => aiMod.getGenerativeModel(ai, { model:name, generationConfig:{ responseMimeType:'application/json', temperature:0.2 } });
+  })();
+  aiPromise.catch(() => { aiPromise = null; });
+  return aiPromise;
+}
+function aiErrText(e){
+  const m = String((e && (e.message || e.code)) || e || '');
+  if(/app[\s_-]?check/i.test(m)) return 'Firebase не пропускає запит до ШІ через захист App Check. Виконайте крок «Захист App Check» з інструкції.';
+  if(/api-not-enabled|has not been used|SERVICE_DISABLED|is disabled|not been enabled/i.test(m)) return 'ШІ ще не ввімкнено в проєкті Firebase. Виконайте крок «Увімкнути ШІ» з інструкції.';
+  if(/429|quota|RESOURCE_EXHAUSTED|rate.?limit/i.test(m)) return 'Вичерпано безкоштовний ліміт запитів до ШІ. Спробуйте за хвилину, а якщо не допоможе, то завтра.';
+  if(/Failed to fetch|NetworkError|network|dynamically imported module/i.test(m)) return 'Немає з’єднання із сервісом ШІ. Перевірте інтернет і спробуйте ще раз.';
+  if(/safety|blocked/i.test(m)) return 'ШІ не став обробляти це зображення. Спробуйте обрізати скриншот до самої вправи.';
+  return 'ШІ не зміг обробити зображення: ' + m.slice(0, 220);
+}
+function aiPrompt(kind, note){
+  const hint = kind === 'reading' ? 'The teacher says this is a READING task.' : kind === 'writing' ? 'The teacher says this is a WRITING task.' : 'Decide yourself whether it is a reading or a writing task.';
+  return [
+    'You help an English teacher in Ukraine turn photos or screenshots of textbook pages into an online practice task for students (grades 10-11) preparing for the English Olympiad.',
+    'The images are pages in order. They show ONE exercise: either a READING task (a text plus questions) or a WRITING task (a writing prompt). ' + hint,
+    note ? 'Teacher\'s note (follow it): ' + note : '',
+    '',
+    'Return ONLY one JSON object in one of these shapes.',
+    'READING: {"type":"reading","title":string,"level":"A"|"B","minutes":number,"intro":string,"passage":string,"questions":[...]}',
+    'Each question is one of:',
+    '{"kind":"mcq","text":string,"options":[string,...],"answer":number,"explanation":string}  (answer = 0-based index of the correct option; options without A/B/C letters)',
+    '{"kind":"tfng","text":string,"answer":"T"|"F"|"NG","explanation":string}',
+    '{"kind":"gap","text":string,"answer":[string,...],"explanation":string}  (every acceptable short answer; mark the gap in text with ______)',
+    'WRITING: {"type":"writing","title":string,"level":"A"|"B","minutes":number,"genre":"essay"|"letter"|"article"|"review"|"other","formal":boolean,"prompt":string,"minWords":number,"maxWords":number,"minParagraphs":number}',
+    '',
+    'Rules:',
+    '- Copy the reading text and the questions exactly as printed. Keep the original paragraphs and separate them with a blank line. Join lines that were broken only by the page layout. Leave out page numbers, running headers, exercise numbers and picture captions.',
+    '- If paragraphs or gaps in the text are lettered or numbered, keep those labels in the passage.',
+    '- Convert other formats to the closest kind: True/False and Yes/No/Not Given -> "tfng" (Yes = T, No = F); matching (headings, people, statements, missing sentences) -> one "mcq" per item whose options are the whole list to choose from; open questions and sentence completion -> "gap".',
+    '- If no answer key is printed, work out the correct answers yourself from the text, carefully.',
+    '- "explanation": one short sentence in Ukrainian saying where the answer is in the text, e.g. "Абзац 3: ...".',
+    '- "intro": the exercise instructions in English as printed, or a short instruction if there are none.',
+    '- "title": the title of the text, or a short English title if there is none.',
+    '- "level": "A" = school/city olympiad level (about B1-B2), "B" = regional/national level (B2-C1).',
+    '- "minutes": a sensible time limit (reading 15-40, writing 30-60).',
+    '- Writing: put the full task wording into "prompt", keeping line breaks and bullet points. Take the word limits from the task, otherwise use 150-200 for level A and 220-270 for level B. "formal" is true for essays, formal letters, applications and reports.',
+    '- If the images are unreadable or contain no exercise, return {"error":"<short reason in Ukrainian>"}.'
+  ].filter(x => x !== '').join('\n');
+}
+function parseJsonLoose(t){
+  const s = String(t || '').trim().replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '');
+  const a = s.indexOf('{'), b = s.lastIndexOf('}');
+  const bad = 'ШІ повернув відповідь у незрозумілому форматі. Спробуйте ще раз.';
+  if(a < 0 || b < a) throw aiFail(bad);
+  try { return JSON.parse(s.slice(a, b + 1)); } catch(e){ throw aiFail(bad); }
+}
+function fixParas(p){ p = String(p || '').replace(/\r/g, '').trim(); return (!/\n\s*\n/.test(p) && /\n/.test(p)) ? p.replace(/\s*\n+\s*/g, '\n\n') : p; }
+function draftFromAI(j){
+  if(!j || typeof j !== 'object') throw aiFail('ШІ повернув порожню відповідь. Спробуйте ще раз.');
+  if(j.error) throw aiFail('ШІ не знайшов вправи на зображенні: ' + String(j.error));
+  const str = v => String(v == null ? '' : v).trim();
+  const lv = j.level === 'B' ? 'B' : 'A', mins = Math.max(0, Math.min(240, Math.round(Number(j.minutes)) || 0));
+  if(j.type === 'writing'){
+    const genre = GENRES[j.genre] ? j.genre : 'other';
+    if(!str(j.prompt)) throw aiFail('ШІ не знайшов умови письмового завдання. Додайте чіткіший скриншот.');
+    return { type:'writing', title:str(j.title) || 'Writing task', level:lv, minutes:mins || 40, published:false, genre,
+      formal: typeof j.formal === 'boolean' ? j.formal : (genre === 'essay' || genre === 'letter'), prompt:str(j.prompt),
+      minWords:Number(j.minWords) || (lv === 'B' ? 220 : 150), maxWords:Number(j.maxWords) || (lv === 'B' ? 270 : 200),
+      minParagraphs:Number(j.minParagraphs) || (['essay','letter','article'].includes(genre) ? 4 : 0) };
+  }
+  const passage = fixParas(j.passage);
+  if(!passage) throw aiFail('ШІ не знайшов тексту для читання. Додайте сторінку з текстом або виберіть «Письмо».');
+  const qs = (Array.isArray(j.questions) ? j.questions : []).map(q => {
+    q = q || {}; const text = str(q.text), n = str(q.explanation);
+    if(q.kind === 'mcq' && Array.isArray(q.options) && q.options.length >= 2){
+      const options = q.options.slice(0, 8).map(o => str(o).replace(/^\(?[A-Ha-h][).:]\s+/, ''));
+      let a = q.answer;
+      if(typeof a === 'string'){ const t = a.trim(); if(/^[A-Ha-h]$/.test(t)) a = t.toUpperCase().charCodeAt(0) - 65; else { const i = options.findIndex(o => normAns(o) === normAns(t)); a = i >= 0 ? i : Number(t); } }
+      a = Number(a); if(!(a >= 0 && a < options.length)) a = 0;
+      return { kind:'mcq', text, options, a, n };
+    }
+    if(q.kind === 'tfng'){ const t = normAns(q.answer); return { kind:'tfng', text, a: /^(t|true|yes|y)$/.test(t) ? 'T' : /^(f|false|no|n)$/.test(t) ? 'F' : 'NG', n }; }
+    const arr = Array.isArray(q.answer) ? q.answer : String(q.answer == null ? '' : q.answer).split(/[;|]/);
+    return { kind:'gap', text, a: arr.map(str).filter(Boolean).join('; '), n };
+  }).filter(q => q.text);
+  return { type:'reading', title:str(j.title) || 'Reading task', level:lv, minutes:mins || 25, published:false, intro:str(j.intro), passage, questions: qs.length ? qs : [blankQ('mcq')] };
+}
+function cleanOcr(t){
+  /* Рядки з'єднуємо в абзаци; новий абзац починається після короткого рядка, що закінчується крапкою чи двокрапкою. */
+  const lines = String(t || '').replace(/\r/g, '').split('\n').map(l => l.trim());
+  const lens = lines.filter(Boolean).map(l => l.length).sort((a, b) => a - b), full = lens.length ? lens[Math.floor(lens.length * 0.75)] : 0;
+  const paras = []; let cur = '';
+  lines.forEach(l => {
+    if(!l){ if(cur) paras.push(cur); cur = ''; return; }
+    cur = !cur ? l : /-$/.test(cur) && /^[a-z]/.test(l) ? cur.slice(0, -1) + l : cur + ' ' + l;
+    if(/[.!?:"”’)]$/.test(l) && l.length < full * 0.8){ paras.push(cur); cur = ''; }
+  });
+  if(cur) paras.push(cur);
+  return paras.map(p => p.replace(/\s{2,}/g, ' ').replace(/^‘(?=[A-Z])/, '').trim()).filter(Boolean).join('\n\n');
+}
+function fileToJpeg(file){
+  return new Promise((res, rej) => {
+    const url = URL.createObjectURL(file), img = new Image();
+    img.onload = () => {
+      const k = Math.min(1, 2000 / Math.max(img.naturalWidth, img.naturalHeight)), c = document.createElement('canvas');
+      c.width = Math.max(1, Math.round(img.naturalWidth * k)); c.height = Math.max(1, Math.round(img.naturalHeight * k));
+      const x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); x.drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url); res(c.toDataURL('image/jpeg', 0.88));
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); rej(mkErr('img/bad')); };
+    img.src = url;
+  });
+}
+async function addImages(list){
+  const sc = S.screen; if(!sc || sc.name !== 'photo') return;
+  const files = Array.from(list || []).filter(f => /^image\//.test(f.type));
+  if(!files.length) return toast('Додайте зображення у форматі JPG або PNG.', true);
+  for(const f of files){
+    if(sc.imgs.length >= MAX_PAGES){ toast('Можна додати до ' + MAX_PAGES + ' сторінок.', true); break; }
+    try { sc.imgs.push(await fileToJpeg(f)); } catch(e){ toast('Не вдалося відкрити «' + (f.name || 'зображення') + '». Збережіть його як JPG або PNG.', true); }
+  }
+  if(S.screen === sc) render(true);
+}
+SCREENS.photo = sc => {
+  const has = sc.imgs.length > 0, dis = has && !sc.status ? '' : ' disabled';
+  return back('До завдань')+'<h1>Завдання з фото підручника</h1>'+
+    '<div class="card stack"><p class="muted">Додайте скриншоти або фото сторінок по порядку: спершу текст, потім питання. ШІ перепише текст і питання та запропонує правильні відповіді, а ви все перевірите в редакторі перед збереженням.</p>'+
+    '<label class="drop" id="drop" for="ph-file"><input type="file" id="ph-file" class="vh" accept="image/*" multiple><b>Перетягніть сюди зображення, вставте скриншот (Ctrl+V) або натисніть, щоб вибрати файли</b><span class="muted small">JPG або PNG, до '+MAX_PAGES+' сторінок. Обріжте зайве: чим чіткіше видно вправу, тим точніший результат.</span></label>'+
+    (has ? '<div class="thumbs">'+sc.imgs.map((u, i) => '<figure class="thumb"><img src="'+u+'" alt="Сторінка '+(i + 1)+'"><figcaption>'+(i + 1)+'</figcaption><button class="btn ghost sm" data-act="phDel" data-i="'+i+'" aria-label="Прибрати сторінку '+(i + 1)+'">×</button></figure>').join('')+'</div>' : '')+
+    '<div class="fields"><label class="f">Що на зображеннях<select id="ph-kind" data-ph="kind">'+[['auto','Визначити автоматично'],['reading','Читання: текст і питання'],['writing','Письмо: тема для есе чи листа']].map(o => '<option value="'+o[0]+'"'+(sc.kind === o[0] ? ' selected' : '')+'>'+o[1]+'</option>').join('')+'</select></label></div>'+
+    '<label class="f">Підказка для ШІ (необов’язково)<input type="text" id="ph-note" data-ph="note" value="'+esc(sc.note)+'" placeholder="Наприклад: лише вправа 3; ключі: 1 B, 2 D, 3 A"></label>'+
+    (sc.status ? '<p class="status" role="status">'+esc(sc.status)+'</p>' : '')+
+    '<div class="row"><button class="btn" data-act="phAI"'+dis+'>Створити завдання за допомогою ШІ</button><button class="btn ghost" data-act="phOCR"'+dis+'>Лише розпізнати текст (без ШІ)</button></div>'+
+    (S.store.mode === 'cloud' || window.__OLYMP_AI_MOCK ? '' : '<p class="muted small">У демо-режимі ШІ недоступний, бо він працює через ваш проєкт Firebase. Розпізнавання тексту без ШІ працює.</p>')+
+    '</div>';
+};
+async function withStatus(sc, fn){
+  try { return await fn(msg => { sc.status = msg; if(S.screen === sc) render(true); }); }
+  catch(e){ sc.status = ''; if(S.screen === sc) render(true); throw e; }
+}
+
+/* ---------- учитель: налаштування, експорт, резервна копія ---------- */
+function csvCell(v){ v = v == null ? '' : String(v); return /[;"\n\r]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }
+function download(name, text, mime){
+  const blob = new Blob([text], { type:mime }), a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+}
+const today = () => new Date().toISOString().slice(0, 10);
+TABS.nalashtuvannia = () => {
+  const st = S.settings || {}, closed = !!st.closed;
+  return '<h1>Налаштування</h1>'+
+    '<div class="card stack" data-enter="saveSettings"><h2>Сайт</h2><div class="fields">'+
+      '<label class="f">Назва сайту<input type="text" id="set-name" maxlength="40" value="'+esc(st.name || '')+'" placeholder="'+esc(SITE_BASE.name)+'"></label>'+
+      '<label class="f" style="grid-column:span 2">Підпис на екрані входу<input type="text" id="set-tag" maxlength="120" value="'+esc(st.tagline || '')+'" placeholder="'+esc(SITE_BASE.tagline)+'"></label></div>'+
+      '<label class="f">Оголошення для учнів (видно над списком завдань; порожнє поле — без оголошення)<textarea id="set-ann" rows="3" maxlength="1000">'+esc(st.announcement || '')+'</textarea></label>'+
+      '<div><button class="btn" data-act="saveSettings">Зберегти</button></div></div>'+
+    '<div class="card stack"><div class="row between"><h2>Доступ учнів</h2><span class="pill '+(closed ? 'bad' : 'good')+'">'+(closed ? 'Закрито' : 'Відкрито')+'</span></div>'+
+      '<p class="muted small">Коли сайт закрито, учні можуть увійти, але бачать лише ваше повідомлення й не можуть виконувати чи здавати завдання. Знадобиться на час канікул або перед контрольною.</p>'+
+      '<label class="f">Повідомлення для учнів, коли сайт закрито<textarea id="set-closed" rows="2" maxlength="500" placeholder="Учитель тимчасово закрив доступ до завдань. Зайдіть пізніше.">'+esc(st.closedMessage || '')+'</textarea></label>'+
+      '<div><button class="btn '+(closed ? '' : 'danger')+'" data-act="toggleClosed">'+(closed ? 'Відкрити сайт для учнів' : 'Закрити сайт для учнів')+'</button></div></div>'+
+    '<div class="card stack"><h2>Експорт і резервна копія</h2>'+
+      '<div class="row"><button class="btn ghost" data-act="exportResults">Результати в Excel (CSV)</button><button class="btn ghost" data-act="exportBackup">Завантажити резервну копію</button></div>'+
+      '<p class="muted small">Резервна копія містить завдання з відповідями, налаштування, список учнів із паролями та всі здані роботи. Зберігайте файл у надійному місці й нікому не пересилайте.</p>'+
+      '<label class="f">Відновити завдання з резервної копії<input type="file" id="restore-file" accept=".json,application/json"></label>'+
+      '<p class="muted small">Відновлюються лише завдання та відповіді до них. Завдання, які вже є на сайті, буде замінено версією з файлу. Учні та їхні роботи не змінюються.</p></div>'+
+    '<div class="card stack"><h2>Пошукові системи</h2><p class="muted">Сайт приховано від Google та інших пошуковиків. Відкрити його можуть лише ті, кому ви дали адресу, а побачити завдання й роботи — лише учні з вашими логінами.</p></div>';
+};
 /* ---------- учитель: учні ---------- */
 TABS.uchni = () => {
   const form = '<div class="card stack" data-enter="addStudent"><h2>Додати учня</h2><div class="fields">'+
@@ -779,6 +1014,7 @@ const ACT = {
   tab(el){ S.tab = el.dataset.tab; S.screen = null; try { location.hash = S.tab; } catch(e){} render(); },
   async refresh(){ await loadAll(); render(true); toast('Дані оновлено.'); },
   openTask(el){
+    if(S.role === 'student' && S.settings && S.settings.closed) return toast('Сайт тимчасово закрито вчителем.', true);
     const id = el.dataset.id, t = taskById(id); if(!t) return;
     const sub = subFor(id, S.user.uid);
     if(sub){ S.screen = { name:'sub', id:sub.id }; return render(); }
@@ -801,11 +1037,98 @@ const ACT = {
     await S.store.del('submissions', el.dataset.id); S.subs = S.subs.filter(s => s.id !== el.dataset.id);
     S.screen = null; render(); toast('Роботу видалено. Учень може виконати завдання знову.');
   },
+  async saveSettings(){
+    const data = Object.assign({}, S.settings, { name:val('set-name').trim(), tagline:val('set-tag').trim(), announcement:val('set-ann').trim(), updatedAt:Date.now() });
+    const cm = document.getElementById('set-closed'); if(cm) data.closedMessage = cm.value.trim();
+    await S.store.set('meta', 'settings', data); S.settings = data; applySettings(); render(true); toast('Налаштування збережено.');
+  },
+  async toggleClosed(){
+    const closing = !(S.settings && S.settings.closed);
+    if(closing && !(await ask('Закрити сайт для учнів?', 'Учні не зможуть виконувати й здавати завдання, доки ви знову не відкриєте сайт.', 'Закрити', true))) return;
+    const cm = document.getElementById('set-closed');
+    const data = Object.assign({}, S.settings, { closed:closing, closedMessage: cm ? cm.value.trim() : (S.settings.closedMessage || ''), updatedAt:Date.now() });
+    await S.store.set('meta', 'settings', data); S.settings = data; render(true); toast(closing ? 'Сайт закрито для учнів.' : 'Сайт знову відкрито для учнів.');
+  },
+  exportResults(){
+    const tasks = S.tasks;
+    const head = ['Учень', 'Клас', 'Логін'].concat(tasks.map(t => (t.type === 'reading' ? 'Читання: ' : 'Письмо: ') + t.title + (t.type === 'reading' ? ' (з ' + (t.questions || []).length + ')' : ' (з 20)')));
+    const rows = S.students.map(st => [st.name, st.group || '', st.login].concat(tasks.map(t => {
+      const sub = subFor(t.id, st.id);
+      if(!sub) return visibleFor(t, st) ? '' : '—';
+      if(t.type === 'reading'){ const sc = scoreReading(t, S.keys[t.id], sub.answers); return sc ? sc.ok : 'здано'; }
+      const g = gradeTotal(sub.grade); return g == null ? 'не перевірено' : g;
+    })));
+    download('rezultaty-' + today() + '.csv', '﻿' + [head].concat(rows).map(r => r.map(csvCell).join(';')).join('\r\n'), 'text/csv;charset=utf-8');
+    toast('Файл із результатами завантажено. Відкрийте його в Excel або Google Таблицях.');
+  },
+  exportBackup(){
+    const strip = o => { const c = Object.assign({}, o); return c; };
+    const data = { app:'EnglishGym', version:1, exportedAt:new Date().toISOString(), settings:S.settings || {},
+      tasks:S.tasks.map(strip), keys:Object.keys(S.keys).map(k => strip(S.keys[k])), students:S.students.map(strip), submissions:S.subs.map(strip) };
+    download('englishgym-backup-' + today() + '.json', JSON.stringify(data, null, 1), 'application/json');
+    toast('Резервну копію завантажено.');
+  },
+  async restoreBackup(el){
+    const file = el.files[0]; el.value = '';
+    let data; try { data = JSON.parse(await file.text()); } catch(e){ return toast('Це не файл резервної копії: його не вдалося прочитати.', true); }
+    const tasks = data && Array.isArray(data.tasks) ? data.tasks.filter(t => t && t.id && (t.type === 'reading' || t.type === 'writing')) : [];
+    if(!tasks.length) return toast('У файлі немає завдань для відновлення.', true);
+    const keys = {}; (Array.isArray(data.keys) ? data.keys : []).forEach(k => { if(k && k.id) keys[k.id] = k; });
+    const same = tasks.filter(t => taskById(t.id)).length;
+    if(!(await ask('Відновити завдання?', 'У файлі завдань: <b>' + tasks.length + '</b>.' + (same ? ' Вже існують і будуть замінені: <b>' + same + '</b>.' : ''), 'Відновити'))) return;
+    for(const t of tasks){
+      const id = t.id, body = Object.assign({}, t); delete body.id;
+      await S.store.set('tasks', id, body);
+      if(keys[id]){ const k = Object.assign({}, keys[id]); delete k.id; await S.store.set('keys', id, k); }
+    }
+    await loadAll(); render(true); toast('Відновлено завдань: ' + tasks.length + '.');
+  },
+  photoTask(){ S.screen = { name:'photo', imgs:[], kind:'auto', note:'', status:'' }; render(); },
+  phDel(el){ S.screen.imgs.splice(Number(el.dataset.i), 1); render(true); },
+  async phAI(){
+    const sc = S.screen; if(!sc || !sc.imgs.length) return;
+    const mock = window.__OLYMP_AI_MOCK;
+    if(!mock && S.store.mode !== 'cloud') return toast('ШІ працює лише після підключення Firebase. Скористайтеся кнопкою «Лише розпізнати текст».', true);
+    const out = await withStatus(sc, async set => {
+      set('Підключаю ШІ…');
+      const parts = sc.imgs.map(u => ({ inlineData:{ mimeType:'image/jpeg', data:u.split(',')[1] } })).concat([{ text:aiPrompt(sc.kind, sc.note.trim()) }]);
+      set('ШІ читає сторінки. Зазвичай це триває 20–60 секунд…');
+      if(mock) return mock(parts);
+      let getModel; try { getModel = await loadAI(); } catch(e){ console.error(e); throw aiFail(aiErrText(e)); }
+      let last = null;
+      for(const name of aiModels()){
+        try { const r = await getModel(name).generateContent(parts); return r.response.text(); }
+        catch(e){ console.error(e); last = e; if(!/not.?found|404|not supported|unknown model|no longer available|deprecated/i.test(String(e && e.message))) break; }
+      }
+      throw aiFail(aiErrText(last));
+    });
+    let d; try { d = draftFromAI(parseJsonLoose(out)); } catch(e){ sc.status = ''; render(true); throw e; }
+    if(S.screen !== sc) return;
+    S.screen = { name:'edit', id:null, draft:d, dirty:true, imgs:sc.imgs, fromAI:true }; render();
+    toast('Чернетку створено. Перевірте текст і відповіді перед збереженням.');
+  },
+  async phOCR(){
+    const sc = S.screen; if(!sc || !sc.imgs.length) return;
+    const text = await withStatus(sc, async set => {
+      set('Завантажую модуль розпізнавання тексту…');
+      if(!window.Tesseract){ try { await loadScript(OCR_URL); } catch(e){ throw aiFail('Не вдалося завантажити модуль розпізнавання. Перевірте інтернет.'); } }
+      const out = [];
+      for(let i = 0; i < sc.imgs.length; i++){ set('Розпізнаю сторінку ' + (i + 1) + ' з ' + sc.imgs.length + '. Перша сторінка може тривати до хвилини…'); const r = await window.Tesseract.recognize(sc.imgs[i], 'eng'); out.push(r.data.text); }
+      return cleanOcr(out.join('\n\n'));
+    });
+    if(S.screen !== sc) return;
+    if(!text) { sc.status = ''; render(true); return toast('На зображеннях не вдалося знайти англійський текст.', true); }
+    const d = sc.kind === 'writing'
+      ? { type:'writing', title:'', level:'A', minutes:40, published:false, genre:'essay', formal:true, prompt:text, minWords:150, maxWords:200, minParagraphs:4 }
+      : { type:'reading', title:'', level:'A', minutes:25, published:false, intro:'', passage:text, questions:[blankQ('mcq')] };
+    S.screen = { name:'edit', id:null, draft:d, dirty:true, imgs:sc.imgs, fromAI:false }; render();
+    toast('Текст розпізнано. Перевірте його, додайте назву й питання.');
+  },
   async importBank(){ const n = await importBank(); await loadAll(); render(); toast('Додано завдань: ' + n + '.'); },
   newTask(el){
     const type = el.dataset.type;
-    const d = type === 'reading' ? { type, title:'', level:'A', minutes:25, published:true, intro:'', passage:'', questions:[blankQ('mcq')] }
-      : { type, title:'', level:'A', minutes:40, published:true, genre:'essay', formal:true, prompt:'', minWords:150, maxWords:200, minParagraphs:4 };
+    const d = type === 'reading' ? { type, groups:[], title:'', level:'A', minutes:25, published:true, intro:'', passage:'', questions:[blankQ('mcq')] }
+      : { type, groups:[], title:'', level:'A', minutes:40, published:true, genre:'essay', formal:true, prompt:'', minWords:150, maxWords:200, minParagraphs:4 };
     S.screen = { name:'edit', id:null, draft:d, dirty:false }; render();
   },
   editTask(el){ const t = taskById(el.dataset.id); if(!t) return; S.screen = { name:'edit', id:t.id, draft:draftFrom(t), dirty:false }; render(); },
@@ -867,13 +1190,22 @@ async function run(name, el){
 document.addEventListener('click', e => { const el = e.target.closest('[data-act]'); if(el && app.contains(el)){ e.preventDefault(); run(el.dataset.act, el); } });
 document.addEventListener('keydown', e => { if(e.key !== 'Enter' || e.target.tagName !== 'INPUT') return; const box = e.target.closest('[data-enter]'); if(box){ e.preventDefault(); run(box.dataset.enter, null); } });
 function onField(e){
-  const el = e.target, sc = S.screen; if(!sc) return;
+  const el = e.target, sc = S.screen;
+  if(el.id === 'res-group'){ if(e.type === 'change'){ S.resGroup = el.value; render(true); } return; }
+  if(el.id === 'restore-file'){ if(e.type === 'change' && el.files && el.files[0]) run('restoreBackup', el); return; }
+  if(!sc) return;
+  if(sc.name === 'photo'){
+    if(el.id === 'ph-file'){ if(e.type === 'change'){ addImages(el.files).finally(() => { try { el.value = ''; } catch(x){} }); } return; }
+    if(el.dataset.ph) sc[el.dataset.ph] = el.value;
+    return;
+  }
   if(sc.name === 'run'){
     if(el.dataset.q){ if(el.type === 'radio'){ if(el.checked) sc.answers[el.dataset.q] = isNaN(Number(el.value)) ? el.value : Number(el.value); } else sc.answers[el.dataset.q] = el.value; saveDraft(); }
     else if(el.id === 'essay'){ sc.text = el.value; saveDraft(); liveAnalysis(); }
     return;
   }
   if(sc.name === 'edit'){
+    if(el.dataset.grp != null){ if(e.type !== 'change') return; const gs = sc.draft.groups = sc.draft.groups || []; const g = el.dataset.grp, i = gs.indexOf(g); if(el.checked && i < 0) gs.push(g); if(!el.checked && i >= 0) gs.splice(i, 1); sc.dirty = true; return render(true); }
     if(el.dataset.kind != null){ if(e.type !== 'change') return; const i = Number(el.dataset.kind), old = sc.draft.questions[i], q = blankQ(el.value); q.text = old.text; q.n = old.n; if(old.id) q.id = old.id; sc.draft.questions[i] = q; sc.dirty = true; return render(true); }
     if(el.dataset.bind){
       if(el.type === 'radio' && !el.checked) return;
@@ -883,8 +1215,13 @@ function onField(e){
   }
 }
 document.addEventListener('input', onField);
+const onPhoto = () => S.screen && S.screen.name === 'photo';
+document.addEventListener('paste', e => { if(!onPhoto() || !e.clipboardData) return; const f = Array.from(e.clipboardData.files || []).filter(x => /^image\//.test(x.type)); if(f.length){ e.preventDefault(); addImages(f); } });
+document.addEventListener('dragover', e => { if(!onPhoto()) return; e.preventDefault(); const d = $('#drop'); if(d) d.classList.add('over'); });
+document.addEventListener('dragleave', e => { const d = $('#drop'); if(d && !d.contains(e.relatedTarget)) d.classList.remove('over'); });
+document.addEventListener('drop', e => { if(!onPhoto()) return; e.preventDefault(); const d = $('#drop'); if(d) d.classList.remove('over'); if(e.dataTransfer) addImages(e.dataTransfer.files); });
 document.addEventListener('change', onField);
-window.addEventListener('hashchange', () => { const h = (location.hash || '').slice(1); if(S.phase === 'app' && S.role === 'teacher' && !S.screen && ['rezultaty','zavdannia','uchni'].includes(h) && h !== S.tab){ S.tab = h; render(); } });
+window.addEventListener('hashchange', () => { const h = (location.hash || '').slice(1); if(S.phase === 'app' && S.role === 'teacher' && !S.screen && TAB_IDS.includes(h) && h !== S.tab){ S.tab = h; render(); } });
 window.addEventListener('beforeunload', () => { if(S.screen && S.screen.name === 'run') saveDraft(); });
 
 /* ---------- запуск ---------- */
