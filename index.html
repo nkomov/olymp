@@ -231,6 +231,7 @@ details>summary{cursor:pointer;font-weight:600;color:var(--accent)}
 
 <script src="firebase-config.js"></script>
 <script src="bank.js"></script>
+<script src="bank-b.js"></script>
 <script>
 (function(){
 'use strict';
@@ -554,8 +555,9 @@ function splitTask(full){
   Object.assign(t, { genre:full.genre || 'essay', formal:!!full.formal, prompt:full.prompt || '', minWords:Number(full.minWords)||0, maxWords:Number(full.maxWords)||0, minParagraphs:Number(full.minParagraphs)||0 });
   return { task:t, key:null };
 }
+const missingBank = () => (window.STARTER_BANK || []).filter(b => !taskById(b.id));
 async function importBank(){
-  const bank = window.STARTER_BANK || []; let i = 0;
+  const bank = S.tasks.length ? missingBank() : (window.STARTER_BANK || []); let i = 0;
   for(const full of bank){
     const r = splitTask(Object.assign({}, full, { createdAt: Date.now() + (i++) }));
     await S.store.set('tasks', full.id, r.task);
@@ -1033,9 +1035,9 @@ TABS.rezultaty = () => {
 
 /* ---------- учитель: завдання ---------- */
 TABS.zavdannia = () => {
-  const hasBank = (window.STARTER_BANK || []).some(b => taskById(b.id));
-  const head = '<div class="row between"><h1>Завдання</h1><div class="row"><button class="btn" data-act="photoTask">З фото підручника</button><button class="btn" data-act="newTask" data-type="reading">Нове: читання</button><button class="btn" data-act="newTask" data-type="use">Нове: Use of English</button><button class="btn" data-act="newTask" data-type="writing">Нове: письмо</button>'+(hasBank ? '' : '<button class="btn ghost" data-act="importBank">Додати стартовий банк</button>')+'</div></div>';
-  if(!S.tasks.length) return head+'<div class="empty stack" style="align-items:center"><p>Завдань ще немає. Стартовий банк містить 4 тексти для читання, 2 вправи Use of English і 4 теми письма для 10–11 класів. Також можна створити завдання зі скриншота сторінки підручника.</p><div class="row" style="justify-content:center"><button class="btn" data-act="importBank">Додати стартовий банк</button><button class="btn ghost" data-act="photoTask">З фото підручника</button></div></div>';
+  const miss = missingBank().length;
+  const head = '<div class="row between"><h1>Завдання</h1><div class="row"><button class="btn" data-act="photoTask">З фото підручника</button><button class="btn" data-act="newTask" data-type="reading">Нове: читання</button><button class="btn" data-act="newTask" data-type="use">Нове: Use of English</button><button class="btn" data-act="newTask" data-type="writing">Нове: письмо</button>'+(miss ? '<button class="btn ghost" data-act="importBank">Додати стартові завдання ('+miss+')</button>' : '')+'</div></div>';
+  if(!S.tasks.length) return head+'<div class="empty stack" style="align-items:center"><p>Завдань ще немає. Стартовий банк містить 10 текстів для читання, 8 вправ Use of English і 10 тем для письма для 10–11 класів обох рівнів. Також можна створити завдання зі скриншота сторінки підручника.</p><div class="row" style="justify-content:center"><button class="btn" data-act="importBank">Додати стартовий банк</button><button class="btn ghost" data-act="photoTask">З фото підручника</button></div></div>';
   return head+'<div class="scroll"><table><thead><tr><th>Назва</th><th>Вид</th><th>Рівень</th><th class="c">Час</th><th>Термін</th><th class="c">Здано</th><th>Кому</th><th>Учням</th><th></th></tr></thead><tbody>'+
     S.tasks.map(t => '<tr><td><b>'+esc(t.title)+'</b>'+(t.practice ? ' <span class="pill">тренувальне</span>' : '')+'</td><td>'+(isAuto(t) ? TYPE_NAME[t.type] + ', ' + (t.questions || []).length + ' пит.' : esc(GENRES[t.genre] || 'Письмо'))+'</td><td>'+lvl(t.level)+'</td><td class="c num">'+(t.minutes ? t.minutes + ' хв' : '—')+'</td><td class="num">'+(t.due ? 'до ' + fmtDue(t.due) : '<span class="muted">—</span>')+'</td><td class="c num">'+S.subs.filter(s => s.taskId === t.id).length+'</td><td>'+(t.groups && t.groups.length ? esc(t.groups.join(', ')) : '<span class="muted">Усім</span>')+'</td>'+
       '<td><button class="cell" data-act="togglePub" data-id="'+esc(t.id)+'" title="Натисніть, щоб змінити"><span class="pill '+(t.published ? 'good' : '')+'">'+(t.published ? 'Відкрито' : 'Приховано')+'</span></button></td>'+
@@ -1526,7 +1528,7 @@ const ACT = {
     S.screen = { name:'edit', id:null, draft:d, dirty:true, imgs:sc.imgs, fromAI:false }; render();
     toast('Текст розпізнано. Перевірте його, додайте назву й питання.');
   },
-  async importBank(){ const n = await importBank(); await loadAll(); render(); toast('Додано завдань: ' + n + '.'); },
+  async importBank(){ const n = await importBank(); await loadAll(); render(); toast(n ? 'Додано завдань: ' + n + '.' : 'Усі стартові завдання вже додано.'); },
   newTask(el){
     const type = el.dataset.type;
     const d = type !== 'writing' ? { type, groups:[], vocab:[], due:'', practice:false, title:'', level:'A', minutes:type === 'use' ? 20 : 25, published:true, intro:'', passage:'', questions:[blankQ(type === 'use' ? 'gap' : 'mcq')] }
